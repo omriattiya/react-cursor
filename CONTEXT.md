@@ -1,0 +1,37 @@
+# React Cursor
+
+A React library providing a unified API for native CSS cursors and custom-rendered cursors.
+
+## Language
+
+**Cursor**:
+The mouse pointer visual, either a native OS/CSS cursor or a custom-rendered React element that follows the mouse.
+_Avoid_: Pointer (ambiguous with CSS `pointer` value)
+
+**Native Cursor**:
+A cursor rendered by the browser via the CSS `cursor` property (e.g. `pointer`, `grab`, `crosshair`, `wait`).
+_Avoid_: CSS cursor, system cursor, default cursor
+
+**Custom Cursor**:
+A React element rendered by the library that visually replaces the native cursor and tracks mouse position via direct DOM manipulation.
+_Avoid_: Fake cursor, overlay cursor, virtual cursor
+
+**Preset**:
+A built-in custom cursor style shipped with the library (Dot, Ring, Spotlight, Emoji, Image, Text).
+_Avoid_: Template, theme, skin
+
+**Provider**:
+The `<CursorProvider>` component that wraps the application, owns cursor state, and renders the custom cursor element.
+_Avoid_: Context, wrapper
+
+**Cursor Zone**:
+An element-scoped region that overrides the global cursor when the mouse enters it. Takes priority over the global cursor; falls back to global on exit.
+_Avoid_: Hover zone, cursor area, trigger zone
+
+**Global Cursor**:
+The cursor active across the entire page, set via `useCursor()`. Acts as the fallback when no Cursor Zone is hovered.
+_Avoid_: Default cursor, base cursor
+
+**Smoothing**:
+Optional lerp-based easing that makes the custom cursor trail behind the actual mouse position. Disabled by default. Automatically disabled when `prefers-reduced-motion` is active.
+_Avoid_: Lerp, easing, animation (too generic)
