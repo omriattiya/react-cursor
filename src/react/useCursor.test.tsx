@@ -29,6 +29,29 @@ describe("useCursor with a native cursor", () => {
     expect(document.documentElement.style.cursor).toBe("auto");
   });
 
+  test("picks up hideNativeCursor changes on a render cursor with a stable node", () => {
+    const stableNode = <span>custom</span>;
+
+    function Cursor({ hide }: { hide: boolean }) {
+      useCursor({ render: stableNode, hideNativeCursor: hide });
+      return null;
+    }
+
+    const { rerender } = render(
+      <CursorProvider>
+        <Cursor hide={true} />
+      </CursorProvider>,
+    );
+    expect(document.documentElement.style.cursor).toBe("none");
+
+    rerender(
+      <CursorProvider>
+        <Cursor hide={false} />
+      </CursorProvider>,
+    );
+    expect(document.documentElement.style.cursor).toBe("auto");
+  });
+
   test("last writer wins when two components set the global cursor", () => {
     function WaitCursor() {
       useCursor("wait");
