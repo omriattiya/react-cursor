@@ -1,6 +1,6 @@
 {
   "name": "@omriattiya/react-cursor",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A unified API for native CSS cursors and custom-rendered cursors in React",
   "license": "MIT",
   "author": "Omri Attiya",
@@ -8,7 +8,7 @@
     "type": "git",
     "url": "git+https://github.com/omriattiya/react-cursor.git"
   },
-  "homepage": "https://github.com/omriattiya/react-cursor#readme",
+  "homepage": "https://react-cursor-xi.vercel.app/",
   "bugs": {
     "url": "https://github.com/omriattiya/react-cursor/issues"
   },
