@@ -44,7 +44,11 @@ function Page() {
 ## Installation
 
 ```bash
+# npm
 npm install @omri/react-cursor
+
+# pnpm
+pnpm add @omri/react-cursor
 ```
 
 Requires React 19 or later (`react` and `react-dom` are peer dependencies).
@@ -281,10 +285,10 @@ import type {
 ## Development
 
 ```bash
-npm install
-npm test          # vitest run
-npm run typecheck # tsc --noEmit
-npm run build     # tsdown → dist/
+pnpm install
+pnpm test           # vitest run
+pnpm run typecheck  # tsc --noEmit
+pnpm run build      # tsdown → dist/
 ```
 
 ## License
