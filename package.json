@@ -4,6 +4,14 @@
   "description": "A unified API for native CSS cursors and custom-rendered cursors in React",
   "license": "MIT",
   "author": "Omri Attiya",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/omriattiya/react-cursor.git"
+  },
+  "homepage": "https://github.com/omriattiya/react-cursor#readme",
+  "bugs": {
+    "url": "https://github.com/omriattiya/react-cursor/issues"
+  },
   "type": "module",
   "packageManager": "pnpm@10.33.0",
   "main": "./dist/index.cjs",
@@ -31,7 +39,8 @@
     "build:playground": "vite build playground",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
     "react": ">=19.0.0",
