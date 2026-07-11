@@ -108,6 +108,7 @@ useCursor({ preset: "spotlight", size: 300 });
 useCursor({ preset: "emoji", content: "👆", size: 28 });
 useCursor({ preset: "text", content: "View", color: "#fff" });
 useCursor({ preset: "image", content: "/cursor.png", size: 32 });
+useCursor({ preset: "pulse", size: 40, color: "#7c3aed" });
 ```
 
 | Preset | Renders | `size` default | `color` default | `content` |
@@ -118,8 +119,11 @@ useCursor({ preset: "image", content: "/cursor.png", size: 32 });
 | `emoji` | An emoji (font size = `size`) | `24` | — | The emoji string |
 | `text` | A text label | `14` | `#000` | The label string |
 | `image` | An `<img>` | `32` | — | The image URL |
+| `pulse` | Dot with an animated expanding ripple ring | `32` | `#000` | — |
 
 All presets are centered on the mouse position and also accept `smoothing` and `hideNativeCursor` (see below).
+
+The `pulse` preset's ripple animation is pure CSS and pauses automatically when `prefers-reduced-motion: reduce` is active (the ring stays visible, statically).
 
 ### 3. Render (escape hatch)
 
@@ -271,7 +275,7 @@ import type {
   NativeCursor,      // { native: CSSProperties["cursor"] }
   PresetCursor,      // { preset: PresetName; size?; color?; content?; smoothing?; hideNativeCursor? }
   RenderCursor,      // { render: ReactNode; smoothing?; hideNativeCursor? }
-  PresetName,        // "dot" | "ring" | "spotlight" | "emoji" | "image" | "text"
+  PresetName,        // "dot" | "ring" | "spotlight" | "emoji" | "image" | "text" | "pulse"
   NativeCursorValue, // CSSProperties["cursor"]
 } from "@omriattiya/react-cursor";
 ```

@@ -57,6 +57,23 @@ describe("custom cursor", () => {
     expect(getCursorElement()!.style.transform).toBe("translate3d(120px, 80px, 0)");
   });
 
+  test("the pulse preset renders an animated ripple ring", () => {
+    function PulseCursor() {
+      useCursor({ preset: "pulse", color: "tomato", size: 40 });
+      return null;
+    }
+
+    render(
+      <CursorProvider>
+        <PulseCursor />
+      </CursorProvider>,
+    );
+
+    const ring = getCursorElement()!.querySelector<HTMLElement>(".react-cursor-pulse-ring");
+    expect(ring).toBeInTheDocument();
+    expect(ring!.style.border).toContain("tomato");
+  });
+
   test("the render escape hatch renders custom content", () => {
     function FancyCursor() {
       useCursor({ render: <span>sparkle</span> });
