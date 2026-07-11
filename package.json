@@ -28,6 +28,7 @@
   "scripts": {
     "build": "tsdown",
     "playground": "vite playground",
+    "build:playground": "vite build playground",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
