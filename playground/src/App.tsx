@@ -5,7 +5,7 @@ import {
   useHasCursor,
   type CursorInput,
   type PresetCursor,
-} from "@omri/react-cursor";
+} from "@omriattiya/react-cursor";
 
 const TARGET_SVG =
   "data:image/svg+xml," +
@@ -84,7 +84,7 @@ export function App() {
       <GlobalCursor choice={choice} smoothing={smoothing} hideNative={hideNative} />
 
       <header className="header">
-        <h1>@omri/react-cursor</h1>
+        <h1>@omriattiya/react-cursor</h1>
         <p>One API for native CSS cursors and custom-rendered cursors.</p>
         {!hasCursor && <p className="warning">Touch-only device detected — custom cursors are disabled.</p>}
       </header>

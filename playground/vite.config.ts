@@ -7,7 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       // Import the library from source so changes show up instantly
-      "@omri/react-cursor": fileURLToPath(new URL("../src/index.ts", import.meta.url)),
+      "@omriattiya/react-cursor": fileURLToPath(new URL("../src/index.ts", import.meta.url)),
     },
   },
 });

@@ -5,7 +5,7 @@ A unified API for native CSS cursors and custom-rendered cursors in React.
 Declare what the cursor should look like — a native CSS value, a built-in preset, or any React element — and the library takes care of the rest: mouse tracking, zone hovering, priority resolution, touch-device detection, and reduced-motion support.
 
 ```tsx
-import { CursorProvider, CursorZone, useCursor } from "@omri/react-cursor";
+import { CursorProvider, CursorZone, useCursor } from "@omriattiya/react-cursor";
 
 function App() {
   return (
@@ -45,10 +45,10 @@ function Page() {
 
 ```bash
 # npm
-npm install @omri/react-cursor
+npm install @omriattiya/react-cursor
 
 # pnpm
-pnpm add @omri/react-cursor
+pnpm add @omriattiya/react-cursor
 ```
 
 Requires React 19 or later (`react` and `react-dom` are peer dependencies).
@@ -58,7 +58,7 @@ Requires React 19 or later (`react` and `react-dom` are peer dependencies).
 Wrap your app (or the subtree that should use managed cursors) in a single `CursorProvider`. It owns all cursor state and renders the custom cursor element when one is active.
 
 ```tsx
-import { CursorProvider } from "@omri/react-cursor";
+import { CursorProvider } from "@omriattiya/react-cursor";
 
 export function App() {
   return (
@@ -219,7 +219,7 @@ Changing the input object also works — the hook re-registers when any of the c
 - **Screen readers:** the custom cursor layer is `aria-hidden` and `pointer-events: none`, so it never intercepts clicks or appears in the accessibility tree.
 
 ```tsx
-import { useHasCursor } from "@omri/react-cursor";
+import { useHasCursor } from "@omriattiya/react-cursor";
 
 function Hint() {
   const hasCursor = useHasCursor();
@@ -273,7 +273,7 @@ import type {
   RenderCursor,      // { render: ReactNode; smoothing?; hideNativeCursor? }
   PresetName,        // "dot" | "ring" | "spotlight" | "emoji" | "image" | "text"
   NativeCursorValue, // CSSProperties["cursor"]
-} from "@omri/react-cursor";
+} from "@omriattiya/react-cursor";
 ```
 
 ## How it works
