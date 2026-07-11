@@ -1,6 +1,12 @@
 # react-cursor
 
+[![npm version](https://img.shields.io/npm/v/%40omriattiya%2Freact-cursor)](https://www.npmjs.com/package/@omriattiya/react-cursor)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/omriattiya/react-cursor?style=social)](https://github.com/omriattiya/react-cursor/stargazers)
+
 A unified API for native CSS cursors and custom-rendered cursors in React.
+
+**[Live playground →](https://react-cursor-xi.vercel.app/)**
 
 Declare what the cursor should look like — a native CSS value, a built-in preset, or any React element — and the library takes care of the rest: mouse tracking, zone hovering, priority resolution, touch-device detection, and reduced-motion support.
 

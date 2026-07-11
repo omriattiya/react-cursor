@@ -1,6 +1,6 @@
 {
   "name": "@omriattiya/react-cursor",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A unified API for native CSS cursors and custom-rendered cursors in React",
   "license": "MIT",
   "author": "Omri Attiya",
