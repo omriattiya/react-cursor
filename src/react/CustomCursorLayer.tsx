@@ -65,9 +65,9 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
   );
 }
 
-function PresetVisual({ style }: { style: PresetCursor }): ReactNode {
-  const center: CSSProperties = { transform: "translate(-50%, -50%)", display: "block" };
+const center: CSSProperties = { transform: "translate(-50%, -50%)", display: "block" };
 
+function PresetVisual({ style }: { style: PresetCursor }): ReactNode {
   switch (style.preset) {
     case "dot": {
       const size = style.size ?? 10;

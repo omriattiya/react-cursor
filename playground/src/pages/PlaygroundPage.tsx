@@ -184,6 +184,7 @@ export function PlaygroundPage() {
             {(["native", "preset", "render"] as const).map((m) => (
               <button
                 key={m}
+                type="button"
                 className={mode === m ? "segment active" : "segment"}
                 onClick={() => setMode(m)}
               >
@@ -200,6 +201,7 @@ export function PlaygroundPage() {
               {NATIVE_CURSORS.map((v) => (
                 <button
                   key={v}
+                  type="button"
                   className={nativeValue === v ? "chip active" : "chip"}
                   onClick={() => setNativeValue(v)}
                 >
@@ -218,6 +220,7 @@ export function PlaygroundPage() {
                 {PRESET_NAMES.map((name) => (
                   <button
                     key={name}
+                    type="button"
                     className={presetName === name ? "chip active" : "chip"}
                     onClick={() => setPresetName(name)}
                   >

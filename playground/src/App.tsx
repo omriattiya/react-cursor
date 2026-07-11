@@ -63,12 +63,14 @@ export function App() {
 
           <nav className="tabs" aria-label="Pages">
             <button
+              type="button"
               className={page === "playground" ? "tab active" : "tab"}
               onClick={() => setPage("playground")}
             >
               Playground
             </button>
             <button
+              type="button"
               className={page === "getting-started" ? "tab active" : "tab"}
               onClick={() => setPage("getting-started")}
             >
@@ -98,6 +100,7 @@ export function App() {
               <NpmIcon />
             </a>
             <button
+              type="button"
               className="icon-button"
               onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
               title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}

@@ -1,0 +1,4 @@
+# Supply-chain hardening: wait 7 days before installing newly published
+# versions, and never accept packages whose trust signals weaken.
+minimumReleaseAge: 10080
+trustPolicy: no-downgrade
