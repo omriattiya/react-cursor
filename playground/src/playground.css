@@ -162,10 +162,6 @@ code {
 .hero h1 {
   margin: 0 0 8px;
   font-size: 2rem;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
 }
 
 .hero p {
@@ -358,9 +354,52 @@ code {
   color: var(--text-soft);
 }
 
-.code-block {
+.code-block-wrap {
   border: 1px solid var(--border);
   border-radius: 12px;
+  overflow: hidden;
+}
+
+.code-block-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px 8px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-inset);
+}
+
+.code-block-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.code-block-copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.code-block-copy:hover {
+  color: var(--text);
+  border-color: var(--border);
+  background: var(--bg-soft);
+}
+
+.install-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .snippet code,

@@ -6,7 +6,7 @@ export const GITHUB_URL = "https://github.com/omriattiya/react-cursor";
 export const NPM_URL = "https://www.npmjs.com/package/@omriattiya/react-cursor";
 
 type Page = "playground" | "getting-started";
-type Theme = "dark" | "light";
+export type Theme = "dark" | "light";
 
 function getInitialTheme(): Theme {
   const stored = localStorage.getItem("playground-theme");
@@ -112,7 +112,7 @@ export function App() {
         </div>
       </header>
 
-      {page === "playground" ? <PlaygroundPage /> : <GettingStartedPage />}
+      {page === "playground" ? <PlaygroundPage theme={theme} /> : <GettingStartedPage />}
     </div>
   );
 }

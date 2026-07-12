@@ -1,0 +1,29 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Playground",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "pnpm playground",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Playground (Chrome)",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}/playground/src"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Playground: Debug",
+            "configurations": ["Playground", "Playground (Chrome)"],
+            "stopAll": true
+        }
+    ]
+}

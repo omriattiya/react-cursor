@@ -21,7 +21,7 @@ export interface PresetCursor {
   color?: string;
   /** Content for the emoji / image / text presets. */
   content?: string;
-  /** 0 = snap (default); (0, 1] = fraction of remaining distance per frame. */
+  /** 0 = snap; (0, 1] = fraction of remaining distance per frame (default 0.75). */
   smoothing?: number;
   /** Set false to keep the native cursor visible alongside the custom one. */
   hideNativeCursor?: boolean;

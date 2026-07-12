@@ -19,7 +19,7 @@ const layerStyle: CSSProperties = {
 export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
   const ref = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
-  const smoothing = reducedMotion ? 0 : (style.smoothing ?? 0);
+  const smoothing = reducedMotion ? 0 : (style.smoothing ?? 0.75);
 
   useEffect(() => {
     const el = ref.current;

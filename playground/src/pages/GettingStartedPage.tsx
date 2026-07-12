@@ -1,18 +1,79 @@
+import { useState } from "react";
 import { GITHUB_URL, NPM_URL } from "../App";
 
-function CodeBlock({ code }: { code: string }) {
+function CopyIcon() {
   return (
-    <pre className="code-block">
-      <code>{code}</code>
-    </pre>
+    <svg
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
   );
 }
 
-const INSTALL = `# npm
-npm install @omriattiya/react-cursor
+function CheckIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
 
-# pnpm
-pnpm add @omriattiya/react-cursor`;
+function CodeBlock({ code, label }: { code: string; label?: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // clipboard unavailable
+    }
+  }
+
+  return (
+    <div className="code-block-wrap">
+      <div className="code-block-toolbar">
+        {label ? <span className="code-block-label">{label}</span> : <span />}
+        <button
+          type="button"
+          className="code-block-copy"
+          onClick={handleCopy}
+          title={copied ? "Copied!" : "Copy"}
+          aria-label={copied ? "Copied" : "Copy code"}
+        >
+          {copied ? <CheckIcon /> : <CopyIcon />}
+        </button>
+      </div>
+      <pre className="code-block">
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
+}
+
+const NPM_INSTALL = "npm install @omriattiya/react-cursor";
+const PNPM_INSTALL = "pnpm add @omriattiya/react-cursor";
 
 const SETUP = `import { CursorProvider } from "@omriattiya/react-cursor";
 
@@ -80,7 +141,10 @@ export function GettingStartedPage() {
           Requires React 19 or later (<code>react</code> and <code>react-dom</code> are peer
           dependencies).
         </p>
-        <CodeBlock code={INSTALL} />
+        <div className="install-blocks">
+          <CodeBlock code={NPM_INSTALL} label="npm" />
+          <CodeBlock code={PNPM_INSTALL} label="pnpm" />
+        </div>
       </section>
 
       <section className="card">

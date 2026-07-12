@@ -6,6 +6,45 @@ import {
   type CursorInput,
   type PresetName,
 } from "@omriattiya/react-cursor";
+import type { Theme } from "../App";
+
+function spotlightColor(theme: Theme) {
+  return theme === "dark" ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)";
+}
+
+const SPOTLIGHT_ALPHA = 0.12;
+
+function parseHex6(color: string): string | null {
+  return /^#[0-9a-fA-F]{6}$/.test(color) ? color : null;
+}
+
+function rgbaToHex(color: string): string | null {
+  const match = /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(color);
+  if (!match) return null;
+  const r = Number(match[1]);
+  const g = Number(match[2]);
+  const b = Number(match[3]);
+  return `#${[r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+}
+
+function colorPickerValue(color: string | undefined): string {
+  if (!color) return "#38bdf8";
+  return parseHex6(color) ?? rgbaToHex(color) ?? "#38bdf8";
+}
+
+function hexToRgba(hex: string, alpha: number): string {
+  const match = /^#([0-9a-fA-F]{6})$/.exec(hex);
+  if (!match?.[1]) return hex;
+  const n = parseInt(match[1], 16);
+  const r = (n >> 16) & 255;
+  const g = (n >> 8) & 255;
+  const b = n & 255;
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function colorFromPicker(hex: string, preset: PresetName): string {
+  return preset === "spotlight" ? hexToRgba(hex, SPOTLIGHT_ALPHA) : hex;
+}
 
 const TARGET_SVG =
   "data:image/svg+xml," +
@@ -50,7 +89,6 @@ const PRESETS: Record<PresetName, PresetMeta> = {
   pulse: { defaultSize: 40, defaultColor: "#a78bfa", hasColor: true, hasContent: false, sizeMax: 96 },
   spotlight: {
     defaultSize: 320,
-    defaultColor: "rgba(255,255,255,0.12)",
     hasColor: true,
     hasContent: false,
     sizeMax: 600,
@@ -103,7 +141,7 @@ function buildSnippet(mode: Mode, input: CursorInput): string {
   return ["useCursor({", ...lines, "});"].join("\n");
 }
 
-export function PlaygroundPage() {
+export function PlaygroundPage({ theme }: { theme: Theme }) {
   const hasCursor = useHasCursor();
 
   const [mode, setMode] = useState<Mode>("preset");
@@ -115,10 +153,16 @@ export function PlaygroundPage() {
     Partial<Record<PresetName, { size?: number; color?: string; content?: string }>>
   >({});
 
-  const [smoothing, setSmoothing] = useState(0.2);
+  const [smoothing, setSmoothing] = useState(75);
   const [hideNative, setHideNative] = useState(true);
 
-  const meta = PRESETS[presetName];
+  const meta = useMemo(() => {
+    const base = PRESETS[presetName];
+    if (presetName === "spotlight") {
+      return { ...base, defaultColor: spotlightColor(theme) };
+    }
+    return base;
+  }, [presetName, theme]);
   const current = {
     size: overrides[presetName]?.size ?? meta.defaultSize,
     color: overrides[presetName]?.color ?? meta.defaultColor,
@@ -148,13 +192,13 @@ export function PlaygroundPage() {
     mode === "native"
       ? nativeValue
       : mode === "render"
-        ? { render: sparkle, smoothing, hideNativeCursor: hideNative }
+        ? { render: sparkle, smoothing: smoothing / 100, hideNativeCursor: hideNative }
         : {
             preset: presetName,
             size: current.size,
             ...(meta.hasColor && current.color ? { color: current.color } : {}),
             ...(meta.hasContent && current.content ? { content: current.content } : {}),
-            smoothing,
+            smoothing: smoothing / 100,
             hideNativeCursor: hideNative,
           };
 
@@ -165,7 +209,7 @@ export function PlaygroundPage() {
       <GlobalCursor input={cursorInput} />
 
       <header className="hero">
-        <h1>Playground</h1>
+        <h1 className="brand-name">@omriattiya/react-cursor</h1>
         <p>
           Configure a cursor below — it applies to this whole page instantly. The generated code
           updates as you tweak.
@@ -251,8 +295,8 @@ export function PlaygroundPage() {
                   <div className="color-row">
                     <input
                       type="color"
-                      value={/^#[0-9a-fA-F]{6}$/.test(current.color ?? "") ? current.color : "#38bdf8"}
-                      onChange={(e) => setOverride({ color: e.target.value })}
+                      value={colorPickerValue(current.color)}
+                      onChange={(e) => setOverride({ color: colorFromPicker(e.target.value, presetName) })}
                     />
                     <input
                       type="text"
@@ -285,13 +329,13 @@ export function PlaygroundPage() {
           <div className="controls-grid">
             <label className="control">
               <span className="field-label">
-                Smoothing <code>{smoothing.toFixed(2)}</code>
+                Smoothing <code>{smoothing}</code>
               </span>
               <input
                 type="range"
                 min={0}
-                max={1}
-                step={0.05}
+                max={100}
+                step={1}
                 value={smoothing}
                 onChange={(e) => setSmoothing(Number(e.target.value))}
               />
