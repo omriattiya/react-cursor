@@ -381,13 +381,23 @@ code {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
+  gap: 4px;
+  min-width: 28px;
   height: 28px;
+  padding: 0 6px;
   border-radius: 6px;
   border: 1px solid transparent;
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.code-block-copy.copied {
+  color: var(--text);
+  border-color: var(--border);
+  background: var(--bg-soft);
 }
 
 .code-block-copy:hover {

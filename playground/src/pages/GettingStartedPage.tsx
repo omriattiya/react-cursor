@@ -57,12 +57,19 @@ function CodeBlock({ code, label }: { code: string; label?: string }) {
         {label ? <span className="code-block-label">{label}</span> : <span />}
         <button
           type="button"
-          className="code-block-copy"
+          className={`code-block-copy${copied ? " copied" : ""}`}
           onClick={handleCopy}
           title={copied ? "Copied!" : "Copy"}
           aria-label={copied ? "Copied" : "Copy code"}
         >
-          {copied ? <CheckIcon /> : <CopyIcon />}
+          {copied ? (
+            <>
+              <CheckIcon />
+              <span>Copied</span>
+            </>
+          ) : (
+            <CopyIcon />
+          )}
         </button>
       </div>
       <pre className="code-block">
