@@ -44,19 +44,18 @@ export function CursorProvider({ children }: CursorProviderProps) {
   const hasCursor = useHasCursor();
   const isCustom = active.native === undefined && hasCursor;
   const hideNative = isCustom && (active as PresetCursor | RenderCursor).hideNativeCursor !== false;
+  const cursorValue = hideNative ? "none" : (active.native ?? "auto");
 
   useEffect(() => {
-    document.documentElement.style.cursor = hideNative ? "none" : (active.native ?? "auto");
-
-    if (!hideNative) return;
+    document.documentElement.style.cursor = cursorValue;
 
     // Inheritance alone isn't enough: buttons, links, etc. get their own
-    // cursor from the UA stylesheet, so force it off everywhere.
+    // cursor from the UA stylesheet, so apply the active value everywhere.
     const styleEl = document.createElement("style");
-    styleEl.textContent = "html, html * { cursor: none !important; }";
+    styleEl.textContent = `html, html * { cursor: ${cursorValue} !important; }`;
     document.head.appendChild(styleEl);
     return () => styleEl.remove();
-  }, [hideNative, active]);
+  }, [cursorValue]);
 
   return (
     <CursorContext.Provider value={registry}>

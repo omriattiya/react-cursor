@@ -17,6 +17,18 @@ describe("useCursor with a native cursor", () => {
     expect(document.documentElement.style.cursor).toBe("grab");
   });
 
+  test("applies the native cursor on elements with their own cursor styling (e.g. buttons)", () => {
+    render(
+      <CursorProvider>
+        <GrabCursor />
+        <button>click me</button>
+      </CursorProvider>,
+    );
+
+    const button = document.querySelector("button")!;
+    expect(getComputedStyle(button).cursor).toBe("grab");
+  });
+
   test("reverts to the default cursor on unmount", () => {
     const { rerender } = render(
       <CursorProvider>
