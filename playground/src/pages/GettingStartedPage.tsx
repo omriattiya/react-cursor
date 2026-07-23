@@ -1,83 +1,6 @@
-import { useState } from "react";
-import { GITHUB_URL, NPM_URL } from "../App";
-
-function CopyIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width="16"
-      height="16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width="16"
-      height="16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
-}
-
-function CodeBlock({ code, label }: { code: string; label?: string }) {
-  const [copied, setCopied] = useState(false);
-
-  async function handleCopy() {
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // clipboard unavailable
-    }
-  }
-
-  return (
-    <div className="code-block-wrap">
-      <div className="code-block-toolbar">
-        {label ? <span className="code-block-label">{label}</span> : <span />}
-        <button
-          type="button"
-          className={`code-block-copy${copied ? " copied" : ""}`}
-          onClick={handleCopy}
-          title={copied ? "Copied!" : "Copy"}
-          aria-label={copied ? "Copied" : "Copy code"}
-        >
-          {copied ? (
-            <>
-              <CheckIcon />
-              <span>Copied</span>
-            </>
-          ) : (
-            <CopyIcon />
-          )}
-        </button>
-      </div>
-      <pre className="code-block">
-        <code>{code}</code>
-      </pre>
-    </div>
-  );
-}
+import { ExternalLink } from "lucide-react";
+import { GITHUB_URL, NPM_URL, type Theme } from "../App";
+import { CodeBlock } from "../components/CodeBlock";
 
 const NPM_INSTALL = "npm install @omriattiya/react-cursor";
 const PNPM_INSTALL = "pnpm add @omriattiya/react-cursor";
@@ -96,7 +19,7 @@ const GLOBAL = `import { useCursor } from "@omriattiya/react-cursor";
 
 function Page() {
   // A ring that follows the mouse everywhere
-  useCursor({ preset: "ring", color: "#38bdf8", smoothing: 0.2 });
+  useCursor({ preset: "ring", color: "#ff7a59", smoothing: 0.2 });
 
   return <main>...</main>;
 }`;
@@ -116,13 +39,15 @@ const ZONES = `import { CursorZone } from "@omriattiya/react-cursor";
 
 const MOTION = `// Stretch along the movement path as speed grows
 useCursor({
-  preset: "dot",
-  velocity: { stretch: 1.6 },
+  preset: "comet",
+  color: "#a78bfa",
+  velocity: { stretch: 1.8 },
 });
 
 // A snake trail that retraces the exact mouse path
 useCursor({
-  preset: "dot",
+  preset: "wand",
+  color: "#c084fc",
   trail: {
     count: 5,       // segments (default 3)
     delay: 100,     // lag (ms) per segment
@@ -147,7 +72,7 @@ const RENDER = `useCursor({
   smoothing: 0.15,
 });`;
 
-export function GettingStartedPage() {
+export function GettingStartedPage({ theme }: { theme: Theme }) {
   return (
     <main className="page">
       <header className="hero">
@@ -166,8 +91,8 @@ export function GettingStartedPage() {
           dependencies).
         </p>
         <div className="install-blocks">
-          <CodeBlock code={NPM_INSTALL} label="npm" />
-          <CodeBlock code={PNPM_INSTALL} label="pnpm" />
+          <CodeBlock code={NPM_INSTALL} label="npm" language="bash" theme={theme} />
+          <CodeBlock code={PNPM_INSTALL} label="pnpm" language="bash" theme={theme} />
         </div>
       </section>
 
@@ -177,7 +102,7 @@ export function GettingStartedPage() {
           A single <code>CursorProvider</code> owns all cursor state and renders the custom cursor
           element when one is active.
         </p>
-        <CodeBlock code={SETUP} />
+        <CodeBlock code={SETUP} theme={theme} />
       </section>
 
       <section className="card">
@@ -186,7 +111,7 @@ export function GettingStartedPage() {
           <code>useCursor</code> applies a page-wide cursor while the calling component is mounted,
           and cleans up on unmount. Pass a CSS cursor string, a preset, or a custom render.
         </p>
-        <CodeBlock code={GLOBAL} />
+        <CodeBlock code={GLOBAL} theme={theme} />
       </section>
 
       <section className="card">
@@ -195,7 +120,7 @@ export function GettingStartedPage() {
           <code>CursorZone</code> swaps in its cursor while hovered, then falls back to the
           enclosing zone, the global cursor, or the browser default.
         </p>
-        <CodeBlock code={ZONES} />
+        <CodeBlock code={ZONES} theme={theme} />
       </section>
 
       <section className="card">
@@ -205,7 +130,7 @@ export function GettingStartedPage() {
           <code>trail</code> of segments that snakes behind the cursor and fades away when the mouse
           rests.
         </p>
-        <CodeBlock code={MOTION} />
+        <CodeBlock code={MOTION} theme={theme} />
       </section>
 
       <section className="card">
@@ -214,79 +139,149 @@ export function GettingStartedPage() {
           Pass any React element via <code>render</code>. It's placed in a fixed, pointer-events-none
           layer that tracks the mouse.
         </p>
-        <CodeBlock code={RENDER} />
+        <CodeBlock code={RENDER} theme={theme} />
       </section>
 
       <section className="card">
         <h2>Built-in presets</h2>
-        <table className="presets-table">
-          <thead>
-            <tr>
-              <th>Preset</th>
-              <th>Renders</th>
-              <th>
-                <code>size</code>
-              </th>
-              <th>
-                <code>color</code>
-              </th>
-              <th>
-                <code>content</code>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>dot</code></td>
-              <td>Filled circle</td>
-              <td>10</td>
-              <td>#000</td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td><code>ring</code></td>
-              <td>2px outlined circle</td>
-              <td>32</td>
-              <td>#000</td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td><code>spotlight</code></td>
-              <td>Soft radial gradient</td>
-              <td>200</td>
-              <td>rgba(255,255,255,0.15)</td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td><code>emoji</code></td>
-              <td>An emoji</td>
-              <td>24</td>
-              <td>—</td>
-              <td>The emoji string</td>
-            </tr>
-            <tr>
-              <td><code>text</code></td>
-              <td>A text label</td>
-              <td>14</td>
-              <td>#000</td>
-              <td>The label string</td>
-            </tr>
-            <tr>
-              <td><code>image</code></td>
-              <td>An image</td>
-              <td>32</td>
-              <td>—</td>
-              <td>The image URL</td>
-            </tr>
-            <tr>
-              <td><code>pulse</code></td>
-              <td>Dot with animated ripple ring</td>
-              <td>32</td>
-              <td>#000</td>
-              <td>—</td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="table-scroll">
+          <table className="presets-table">
+            <thead>
+              <tr>
+                <th>Preset</th>
+                <th>Renders</th>
+                <th>
+                  <code>size</code>
+                </th>
+                <th>
+                  <code>color</code>
+                </th>
+                <th>
+                  <code>content</code>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <code>dot</code>
+                </td>
+                <td>Filled circle</td>
+                <td>10</td>
+                <td>#000</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>
+                  <code>ring</code>
+                </td>
+                <td>2px outlined circle</td>
+                <td>32</td>
+                <td>#000</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>
+                  <code>spotlight</code>
+                </td>
+                <td>Soft radial gradient</td>
+                <td>200</td>
+                <td>rgba(255,255,255,0.15)</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>
+                  <code>emoji</code>
+                </td>
+                <td>An emoji</td>
+                <td>24</td>
+                <td>—</td>
+                <td>The emoji string</td>
+              </tr>
+              <tr>
+                <td>
+                  <code>text</code>
+                </td>
+                <td>A text label</td>
+                <td>14</td>
+                <td>#000</td>
+                <td>The label string</td>
+              </tr>
+              <tr>
+                <td>
+                  <code>image</code>
+                </td>
+                <td>An image</td>
+                <td>32</td>
+                <td>—</td>
+                <td>The image URL</td>
+              </tr>
+              <tr>
+                <td>
+                  <code>pulse</code>
+                </td>
+                <td>Dot with animated ripple ring</td>
+                <td>32</td>
+                <td>#000</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>
+                  <code>arrow</code>
+                </td>
+                <td>Classic OS arrow (tip hotspot)</td>
+                <td>24</td>
+                <td>#000</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>
+                  <code>hand</code>
+                </td>
+                <td>Pointing hand (fingertip hotspot)</td>
+                <td>28</td>
+                <td>#000</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>
+                  <code>crosshair</code>
+                </td>
+                <td>Game-style FPS reticle</td>
+                <td>28</td>
+                <td>#000</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>
+                  <code>wand</code>
+                </td>
+                <td>Magic wand with twinkling star tip</td>
+                <td>28</td>
+                <td>#c084fc</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>
+                  <code>comet</code>
+                </td>
+                <td>Bright core with soft bloom</td>
+                <td>28</td>
+                <td>#a78bfa</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>
+                  <code>trump</code>
+                </td>
+                <td>Presidential caricature (color = hair)</td>
+                <td>32</td>
+                <td>#f5d76e</td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <p>
           All presets also accept <code>smoothing</code> (0 = snap, (0, 1] = trailing) and{" "}
           <code>hideNativeCursor</code> (defaults to <code>true</code>).
@@ -296,13 +291,20 @@ export function GettingStartedPage() {
       <section className="card">
         <h2>Accessibility, touch, and SSR</h2>
         <ul className="feature-list">
-          <li>Custom cursors are disabled on touch-only devices — check with <code>useHasCursor()</code>.</li>
+          <li>
+            Custom cursors are disabled on touch-only devices — check with{" "}
+            <code>useHasCursor()</code>.
+          </li>
           <li>
             When <code>prefers-reduced-motion</code> is active, smoothing snaps, velocity effects are
             skipped, and trails are not rendered.
           </li>
-          <li>The cursor layer is <code>aria-hidden</code> and never intercepts clicks.</li>
-          <li>SSR-safe: nothing touches <code>window</code> during render.</li>
+          <li>
+            The cursor layer is <code>aria-hidden</code> and never intercepts clicks.
+          </li>
+          <li>
+            SSR-safe: nothing touches <code>window</code> during render.
+          </li>
         </ul>
       </section>
 
@@ -311,9 +313,11 @@ export function GettingStartedPage() {
         <div className="link-row">
           <a href={GITHUB_URL} target="_blank" rel="noreferrer" className="link-button">
             Full docs on GitHub
+            <ExternalLink size={14} strokeWidth={2} aria-hidden="true" />
           </a>
           <a href={NPM_URL} target="_blank" rel="noreferrer" className="link-button">
             Package on npm
+            <ExternalLink size={14} strokeWidth={2} aria-hidden="true" />
           </a>
         </div>
       </section>

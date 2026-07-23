@@ -1,8 +1,9 @@
-import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { nextPosition, type Point } from "../core/position";
 import { recordTrailPoint, sampleTrail, type TrailPathPoint } from "../core/trail";
 import type { PresetCursor, RenderCursor } from "../core/types";
 import { smoothVelocity, velocityTransform } from "../core/velocity";
+import { PresetVisual } from "./PresetVisual";
 import { useReducedMotion } from "./useReducedMotion";
 
 type CustomCursorStyle = PresetCursor | RenderCursor;
@@ -187,111 +188,3 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
   );
 }
 
-const center: CSSProperties = { transform: "translate(-50%, -50%)", display: "block" };
-
-function PresetVisual({ style }: { style: PresetCursor }): ReactNode {
-  switch (style.preset) {
-    case "dot": {
-      const size = style.size ?? 10;
-      return (
-        <span
-          style={{
-            ...center,
-            width: size,
-            height: size,
-            borderRadius: "50%",
-            background: style.color ?? "#000",
-          }}
-        />
-      );
-    }
-    case "ring": {
-      const size = style.size ?? 32;
-      return (
-        <span
-          style={{
-            ...center,
-            width: size,
-            height: size,
-            borderRadius: "50%",
-            border: `2px solid ${style.color ?? "#000"}`,
-            background: "transparent",
-          }}
-        />
-      );
-    }
-    case "spotlight": {
-      const size = style.size ?? 200;
-      return (
-        <span
-          style={{
-            ...center,
-            width: size,
-            height: size,
-            borderRadius: "50%",
-            background: `radial-gradient(circle, ${style.color ?? "rgba(255, 255, 255, 0.15)"} 0%, transparent 70%)`,
-          }}
-        />
-      );
-    }
-    case "emoji":
-      return <span style={{ ...center, fontSize: style.size ?? 24, lineHeight: 1 }}>{style.content}</span>;
-    case "text":
-      return (
-        <span style={{ ...center, fontSize: style.size ?? 14, color: style.color ?? "#000", whiteSpace: "nowrap" }}>
-          {style.content}
-        </span>
-      );
-    case "image": {
-      const size = style.size ?? 32;
-      return <img src={style.content} alt="" style={{ ...center, width: size, height: size }} />;
-    }
-    case "pulse": {
-      const size = style.size ?? 32;
-      const color = style.color ?? "#000";
-      const dotSize = Math.max(4, Math.round(size * 0.25));
-      return (
-        <span style={{ ...center, position: "relative", width: size, height: size }}>
-          <style>{PULSE_CSS}</style>
-          <span
-            className="react-cursor-pulse-ring"
-            style={{
-              position: "absolute",
-              inset: 0,
-              borderRadius: "50%",
-              border: `2px solid ${color}`,
-            }}
-          />
-          <span
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: dotSize,
-              height: dotSize,
-              borderRadius: "50%",
-              background: color,
-            }}
-          />
-        </span>
-      );
-    }
-  }
-}
-
-const PULSE_CSS = `
-@keyframes react-cursor-pulse {
-  0% { transform: scale(0.35); opacity: 0.9; }
-  100% { transform: scale(1); opacity: 0; }
-}
-.react-cursor-pulse-ring {
-  animation: react-cursor-pulse 1.2s ease-out infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .react-cursor-pulse-ring {
-    animation: none;
-    opacity: 0.6;
-  }
-}
-`;

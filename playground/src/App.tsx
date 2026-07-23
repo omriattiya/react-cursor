@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import * as Tabs from "@radix-ui/react-tabs";
+import { Moon, Package, Sun } from "lucide-react";
 import { GettingStartedPage } from "./pages/GettingStartedPage";
 import { PlaygroundPage } from "./pages/PlaygroundPage";
 
@@ -22,27 +24,6 @@ function GitHubIcon() {
   );
 }
 
-function NpmIcon() {
-  return (
-    <svg viewBox="0 0 27.23 27.23" width="18" height="18" fill="currentColor" aria-hidden="true">
-      <path d="M0 0v27.23h27.23V0H0zm22.46 22.46h-4.03V9.53h-4.02v12.93H4.77V4.77h17.69v17.69z" />
-    </svg>
-  );
-}
-
-function ThemeIcon({ theme }: { theme: Theme }) {
-  return theme === "dark" ? (
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
-    </svg>
-  ) : (
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-    </svg>
-  );
-}
-
 export function App() {
   const [page, setPage] = useState<Page>("playground");
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
@@ -61,22 +42,20 @@ export function App() {
             <span className="brand-name">react-cursor</span>
           </div>
 
-          <nav className="tabs" aria-label="Pages">
-            <button
-              type="button"
-              className={page === "playground" ? "tab active" : "tab"}
-              onClick={() => setPage("playground")}
-            >
-              Playground
-            </button>
-            <button
-              type="button"
-              className={page === "getting-started" ? "tab active" : "tab"}
-              onClick={() => setPage("getting-started")}
-            >
-              Getting Started
-            </button>
-          </nav>
+          <Tabs.Root
+            value={page}
+            onValueChange={(value) => setPage(value as Page)}
+            className="tabs-root"
+          >
+            <Tabs.List className="tabs" aria-label="Pages">
+              <Tabs.Trigger value="playground" className="tab">
+                Playground
+              </Tabs.Trigger>
+              <Tabs.Trigger value="getting-started" className="tab">
+                Getting Started
+              </Tabs.Trigger>
+            </Tabs.List>
+          </Tabs.Root>
 
           <div className="navbar-actions">
             <a
@@ -97,22 +76,28 @@ export function App() {
               title="npm package"
               aria-label="npm package"
             >
-              <NpmIcon />
+              <Package size={18} strokeWidth={1.75} aria-hidden="true" />
             </a>
             <button
               type="button"
               className="icon-button"
               onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
               title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-              aria-label="Toggle theme"
+              aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
             >
-              <ThemeIcon theme={theme} />
+              <span className="theme-icon" aria-hidden="true">
+                {theme === "dark" ? (
+                  <Sun size={18} strokeWidth={1.75} />
+                ) : (
+                  <Moon size={18} strokeWidth={1.75} />
+                )}
+              </span>
             </button>
           </div>
         </div>
       </header>
 
-      {page === "playground" ? <PlaygroundPage theme={theme} /> : <GettingStartedPage />}
+      {page === "playground" ? <PlaygroundPage theme={theme} /> : <GettingStartedPage theme={theme} />}
     </div>
   );
 }

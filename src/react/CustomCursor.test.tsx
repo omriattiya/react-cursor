@@ -74,6 +74,75 @@ describe("custom cursor", () => {
     expect(ring!.style.border).toContain("tomato");
   });
 
+  test("native-look presets render SVG cursors", () => {
+    function ArrowCursor() {
+      useCursor({ preset: "arrow", color: "navy" });
+      return null;
+    }
+
+    render(
+      <CursorProvider>
+        <ArrowCursor />
+      </CursorProvider>,
+    );
+
+    const path = getCursorElement()!.querySelector("path");
+    expect(path).toBeInTheDocument();
+    expect(path!.getAttribute("fill")).toBe("navy");
+  });
+
+  test("the wand preset renders a star tip", () => {
+    function WandCursor() {
+      useCursor({ preset: "wand", color: "orchid", size: 32 });
+      return null;
+    }
+
+    render(
+      <CursorProvider>
+        <WandCursor />
+      </CursorProvider>,
+    );
+
+    const star = getCursorElement()!.querySelector(".react-cursor-wand-star");
+    expect(star).toBeInTheDocument();
+    expect(star!.getAttribute("fill")).toBe("orchid");
+  });
+
+  test("the trump preset renders a presidential caricature", () => {
+    function TrumpCursor() {
+      useCursor({ preset: "trump", color: "gold" });
+      return null;
+    }
+
+    render(
+      <CursorProvider>
+        <TrumpCursor />
+      </CursorProvider>,
+    );
+
+    const face = getCursorElement()!.querySelector(".react-cursor-trump");
+    expect(face).toBeInTheDocument();
+    const hair = face!.querySelector(".react-cursor-trump-hair");
+    expect(hair!.getAttribute("fill")).toBe("gold");
+  });
+
+  test("the comet preset renders a bloom orb", () => {
+    function CometCursor() {
+      useCursor({ preset: "comet", color: "violet" });
+      return null;
+    }
+
+    render(
+      <CursorProvider>
+        <CometCursor />
+      </CursorProvider>,
+    );
+
+    const comet = getCursorElement()!.querySelector<HTMLElement>(".react-cursor-comet");
+    expect(comet).toBeInTheDocument();
+    expect(comet!.style.background).toContain("violet");
+  });
+
   test("the render escape hatch renders custom content", () => {
     function FancyCursor() {
       useCursor({ render: <span>sparkle</span> });

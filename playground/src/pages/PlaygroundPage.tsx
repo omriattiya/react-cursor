@@ -1,11 +1,17 @@
 import { useMemo, useState } from "react";
+import * as Label from "@radix-ui/react-label";
+import * as Slider from "@radix-ui/react-slider";
+import * as Switch from "@radix-ui/react-switch";
+import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import {
+  PresetVisual,
   useCursor,
   useHasCursor,
   type CursorInput,
   type PresetName,
 } from "@omriattiya/react-cursor";
 import type { Theme } from "../App";
+import { CodeBlock } from "../components/CodeBlock";
 
 function spotlightColor(theme: Theme) {
   return theme === "dark" ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)";
@@ -27,8 +33,8 @@ function rgbaToHex(color: string): string | null {
 }
 
 function colorPickerValue(color: string | undefined): string {
-  if (!color) return "#38bdf8";
-  return parseHex6(color) ?? rgbaToHex(color) ?? "#38bdf8";
+  if (!color) return "#ff7a59";
+  return parseHex6(color) ?? rgbaToHex(color) ?? "#ff7a59";
 }
 
 function hexToRgba(hex: string, alpha: number): string {
@@ -84,8 +90,14 @@ interface PresetMeta {
 
 const PRESETS: Record<PresetName, PresetMeta> = {
   dot: { defaultSize: 12, defaultColor: "#f43f5e", hasColor: true, hasContent: false, sizeMax: 64 },
-  ring: { defaultSize: 36, defaultColor: "#38bdf8", hasColor: true, hasContent: false, sizeMax: 96 },
-  pulse: { defaultSize: 40, defaultColor: "#a78bfa", hasColor: true, hasContent: false, sizeMax: 96 },
+  ring: { defaultSize: 36, defaultColor: "#ff7a59", hasColor: true, hasContent: false, sizeMax: 96 },
+  pulse: { defaultSize: 40, defaultColor: "#f0b429", hasColor: true, hasContent: false, sizeMax: 96 },
+  arrow: { defaultSize: 24, defaultColor: "#111827", hasColor: true, hasContent: false, sizeMax: 64 },
+  hand: { defaultSize: 28, defaultColor: "#111827", hasColor: true, hasContent: false, sizeMax: 64 },
+  crosshair: { defaultSize: 32, defaultColor: "#a3e635", hasColor: true, hasContent: false, sizeMax: 64 },
+  wand: { defaultSize: 28, defaultColor: "#c084fc", hasColor: true, hasContent: false, sizeMax: 64 },
+  comet: { defaultSize: 32, defaultColor: "#a78bfa", hasColor: true, hasContent: false, sizeMax: 96 },
+  trump: { defaultSize: 44, defaultColor: "#f0d060", hasColor: true, hasContent: false, sizeMax: 80 },
   spotlight: {
     defaultSize: 320,
     hasColor: true,
@@ -114,6 +126,54 @@ const PRESETS: Record<PresetName, PresetMeta> = {
 
 const PRESET_NAMES = Object.keys(PRESETS) as PresetName[];
 
+/** Compact sizes so each chip shows a recognizable glyph. */
+const PREVIEW_SIZE: Record<PresetName, number> = {
+  dot: 10,
+  ring: 14,
+  pulse: 14,
+  arrow: 16,
+  hand: 16,
+  crosshair: 14,
+  wand: 16,
+  comet: 12,
+  trump: 20,
+  spotlight: 18,
+  emoji: 14,
+  text: 9,
+  image: 14,
+};
+
+const TIP_HOTSPOT = new Set<PresetName>(["arrow", "hand", "wand"]);
+
+function PresetChipPreview({ name, theme }: { name: PresetName; theme: Theme }) {
+  const meta = PRESETS[name];
+  const color = name === "spotlight" ? spotlightColor(theme) : meta.defaultColor;
+  const content = name === "text" ? "Aa" : meta.defaultContent;
+  const visual = (
+    <PresetVisual
+      style={{
+        preset: name,
+        size: PREVIEW_SIZE[name],
+        color,
+        content,
+      }}
+    />
+  );
+  // Tip-hotspot presets aren't centered via translate(-50%), so box-center them instead.
+  if (TIP_HOTSPOT.has(name)) {
+    return (
+      <span className="chip-preview chip-preview-tip" aria-hidden>
+        {visual}
+      </span>
+    );
+  }
+  return (
+    <span className="chip-preview" aria-hidden>
+      <span className="chip-preview-origin">{visual}</span>
+    </span>
+  );
+}
+
 function GlobalCursor({ input }: { input: CursorInput }) {
   useCursor(input);
   return null;
@@ -141,6 +201,81 @@ function buildSnippet(mode: Mode, input: CursorInput): string {
   return ["useCursor({", ...lines, "});"].join("\n");
 }
 
+function RangeControl({
+  id,
+  label,
+  valueLabel,
+  value,
+  min,
+  max,
+  step,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  valueLabel: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <div className="control">
+      <div className="control-label-row">
+        <Label.Root htmlFor={id} className="field-label">
+          {label}
+        </Label.Root>
+        <code className="control-value">{valueLabel}</code>
+      </div>
+      <Slider.Root
+        id={id}
+        className="slider-root"
+        value={[value]}
+        min={min}
+        max={max}
+        step={step}
+        onValueChange={([next]) => {
+          if (next !== undefined) onChange(next);
+        }}
+      >
+        <Slider.Track className="slider-track">
+          <Slider.Range className="slider-range" />
+        </Slider.Track>
+        <Slider.Thumb className="slider-thumb" aria-label={label} />
+      </Slider.Root>
+    </div>
+  );
+}
+
+function SwitchControl({
+  id,
+  label,
+  checked,
+  onCheckedChange,
+}: {
+  id: string;
+  label: string;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+}) {
+  return (
+    <div className="control switch-control">
+      <Label.Root htmlFor={id} className="switch-label">
+        {label}
+      </Label.Root>
+      <Switch.Root
+        id={id}
+        className="switch-root"
+        checked={checked}
+        onCheckedChange={onCheckedChange}
+      >
+        <Switch.Thumb className="switch-thumb" />
+      </Switch.Root>
+    </div>
+  );
+}
+
 export function PlaygroundPage({ theme }: { theme: Theme }) {
   const hasCursor = useHasCursor();
 
@@ -148,13 +283,13 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
   const [nativeValue, setNativeValue] = useState<string>("pointer");
   const [presetName, setPresetName] = useState<PresetName>("ring");
 
-  // Per-preset overrides so switching presets keeps your tweaks
   const [overrides, setOverrides] = useState<
     Partial<Record<PresetName, { size?: number; color?: string; content?: string }>>
   >({});
 
   const [smoothing, setSmoothing] = useState(75);
   const [stretch, setStretch] = useState(1);
+  const [trailEnabled, setTrailEnabled] = useState(true);
   const [trailCount, setTrailCount] = useState(3);
   const [trailDelay, setTrailDelay] = useState(100);
   const [trailFadeDelay, setTrailFadeDelay] = useState(200);
@@ -185,8 +320,8 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
           transform: "translate(-50%, -50%) rotate(45deg)",
           width: 22,
           height: 22,
-          background: "linear-gradient(135deg, #f0abfc, #818cf8)",
-          boxShadow: "0 0 18px 4px rgba(129, 140, 248, 0.6)",
+          background: "linear-gradient(135deg, #ff7a59, #f0b429)",
+          boxShadow: "0 0 18px 4px rgba(255, 122, 89, 0.45)",
         }}
       />
     ),
@@ -196,7 +331,7 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
   const motionOptions = {
     smoothing: smoothing / 100,
     ...(stretch > 1 ? { velocity: { stretch } } : {}),
-    ...(trailCount > 0
+    ...(trailEnabled
       ? {
           trail: {
             count: trailCount,
@@ -235,216 +370,260 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
           updates as you tweak.
         </p>
         {!hasCursor && (
-          <p className="warning">Touch-only device detected — custom cursors are disabled.</p>
+          <p className="warning" role="status">
+            Touch-only device detected — custom cursors are disabled.
+          </p>
         )}
       </header>
 
-      <section className="card">
-        <h2>Global Cursor</h2>
+      <section className="card editor-card">
+        <header className="card-header">
+          <h2>Global Cursor</h2>
+          <p className="card-lede">Pick a type, tune the look, then copy the snippet.</p>
+        </header>
 
-        <div className="field">
-          <span className="field-label">Type</span>
-          <div className="segmented">
-            {(["native", "preset", "render"] as const).map((m) => (
-              <button
-                key={m}
-                type="button"
-                className={mode === m ? "segment active" : "segment"}
-                onClick={() => setMode(m)}
+        <div className="control-stack">
+          <section className="control-panel" aria-labelledby="panel-type">
+            <h3 className="panel-title" id="panel-type">
+              Type
+            </h3>
+            <div className="field field-flush">
+              <ToggleGroup.Root
+                type="single"
+                className="segmented"
+                value={mode}
+                onValueChange={(value) => {
+                  if (value) setMode(value as Mode);
+                }}
+                aria-labelledby="panel-type"
               >
-                {m === "native" ? "Native CSS" : m === "preset" ? "Preset" : "Custom render"}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {mode === "native" && (
-          <div className="field">
-            <span className="field-label">Cursor value</span>
-            <div className="chips">
-              {NATIVE_CURSORS.map((v) => (
-                <button
-                  key={v}
-                  type="button"
-                  className={nativeValue === v ? "chip active" : "chip"}
-                  onClick={() => setNativeValue(v)}
-                >
-                  {v}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {mode === "preset" && (
-          <>
-            <div className="field">
-              <span className="field-label">Preset</span>
-              <div className="chips">
-                {PRESET_NAMES.map((name) => (
-                  <button
-                    key={name}
-                    type="button"
-                    className={presetName === name ? "chip active" : "chip"}
-                    onClick={() => setPresetName(name)}
-                  >
-                    {name}
-                  </button>
-                ))}
-              </div>
+                <ToggleGroup.Item value="native" className="segment">
+                  Native CSS
+                </ToggleGroup.Item>
+                <ToggleGroup.Item value="preset" className="segment">
+                  Preset
+                </ToggleGroup.Item>
+                <ToggleGroup.Item value="render" className="segment">
+                  Custom render
+                </ToggleGroup.Item>
+              </ToggleGroup.Root>
             </div>
 
-            <div className="controls-grid">
-              <label className="control">
-                <span className="field-label">
-                  Size <code>{current.size}px</code>
+            {mode === "native" && (
+              <div className="field field-flush">
+                <span className="field-label" id="native-label">
+                  Cursor value
                 </span>
-                <input
-                  type="range"
+                <ToggleGroup.Root
+                  type="single"
+                  className="chips"
+                  value={nativeValue}
+                  onValueChange={(value) => {
+                    if (value) setNativeValue(value);
+                  }}
+                  aria-labelledby="native-label"
+                >
+                  {NATIVE_CURSORS.map((v) => (
+                    <ToggleGroup.Item key={v} value={v} className="chip">
+                      {v}
+                    </ToggleGroup.Item>
+                  ))}
+                </ToggleGroup.Root>
+              </div>
+            )}
+
+            {mode === "preset" && (
+              <div className="field field-flush">
+                <span className="field-label" id="preset-label">
+                  Preset
+                </span>
+                <ToggleGroup.Root
+                  type="single"
+                  className="chips"
+                  value={presetName}
+                  onValueChange={(value) => {
+                    if (value) setPresetName(value as PresetName);
+                  }}
+                  aria-labelledby="preset-label"
+                >
+                  {PRESET_NAMES.map((name) => (
+                    <ToggleGroup.Item key={name} value={name} className="chip">
+                      <PresetChipPreview name={name} theme={theme} />
+                      {name}
+                    </ToggleGroup.Item>
+                  ))}
+                </ToggleGroup.Root>
+              </div>
+            )}
+
+            {mode === "render" && (
+              <p className="panel-note">Uses a built-in sparkle element as the custom render demo.</p>
+            )}
+          </section>
+
+          {mode === "preset" && (
+            <section className="control-panel" aria-labelledby="panel-appearance">
+              <h3 className="panel-title" id="panel-appearance">
+                Appearance
+              </h3>
+              <div className="controls-grid">
+                <RangeControl
+                  id="size"
+                  label="Size"
+                  valueLabel={`${current.size}px`}
+                  value={current.size}
                   min={4}
                   max={meta.sizeMax}
                   step={1}
-                  value={current.size}
-                  onChange={(e) => setOverride({ size: Number(e.target.value) })}
+                  onChange={(size) => setOverride({ size })}
                 />
-              </label>
 
-              {meta.hasColor && (
-                <label className="control">
-                  <span className="field-label">Color</span>
-                  <div className="color-row">
+                {meta.hasColor && (
+                  <div className="control">
+                    <Label.Root htmlFor="color-text" className="field-label">
+                      Color
+                    </Label.Root>
+                    <div className="color-row">
+                      <input
+                        id="color-swatch"
+                        type="color"
+                        aria-label="Color swatch"
+                        value={colorPickerValue(current.color)}
+                        onChange={(e) =>
+                          setOverride({ color: colorFromPicker(e.target.value, presetName) })
+                        }
+                      />
+                      <input
+                        id="color-text"
+                        type="text"
+                        className="text-input"
+                        value={current.color ?? ""}
+                        onChange={(e) => setOverride({ color: e.target.value })}
+                        spellCheck={false}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {meta.hasContent && (
+                  <div className="control control-span">
+                    <Label.Root htmlFor="content" className="field-label">
+                      {meta.contentLabel}
+                    </Label.Root>
                     <input
-                      type="color"
-                      value={colorPickerValue(current.color)}
-                      onChange={(e) => setOverride({ color: colorFromPicker(e.target.value, presetName) })}
-                    />
-                    <input
+                      id="content"
                       type="text"
                       className="text-input"
-                      value={current.color ?? ""}
-                      onChange={(e) => setOverride({ color: e.target.value })}
+                      value={current.content ?? ""}
+                      onChange={(e) => setOverride({ content: e.target.value })}
                       spellCheck={false}
                     />
                   </div>
-                </label>
-              )}
+                )}
+              </div>
+            </section>
+          )}
 
-              {meta.hasContent && (
-                <label className="control">
-                  <span className="field-label">{meta.contentLabel}</span>
-                  <input
-                    type="text"
-                    className="text-input"
-                    value={current.content ?? ""}
-                    onChange={(e) => setOverride({ content: e.target.value })}
-                    spellCheck={false}
-                  />
-                </label>
-              )}
-            </div>
-          </>
-        )}
-
-        {mode !== "native" && (
-          <>
-            <div className="controls-grid">
-              <label className="control">
-                <span className="field-label">
-                  Smoothing <code>{smoothing}</code>
-                </span>
-                <input
-                  type="range"
+          {mode !== "native" && (
+            <section className="control-panel" aria-labelledby="panel-motion">
+              <h3 className="panel-title" id="panel-motion">
+                Motion
+              </h3>
+              <div className="controls-grid">
+                <RangeControl
+                  id="smoothing"
+                  label="Smoothing"
+                  valueLabel={String(smoothing)}
+                  value={smoothing}
                   min={0}
                   max={100}
                   step={1}
-                  value={smoothing}
-                  onChange={(e) => setSmoothing(Number(e.target.value))}
+                  onChange={setSmoothing}
                 />
-              </label>
 
-              <label className="control">
-                <span className="field-label">
-                  Velocity stretch <code>{stretch.toFixed(1)}x</code>
-                </span>
-                <input
-                  type="range"
+                <RangeControl
+                  id="stretch"
+                  label="Velocity stretch"
+                  valueLabel={`${stretch.toFixed(1)}x`}
+                  value={stretch}
                   min={1}
                   max={3}
                   step={0.1}
-                  value={stretch}
-                  onChange={(e) => setStretch(Number(e.target.value))}
+                  onChange={setStretch}
                 />
-              </label>
 
-              <label className="control">
-                <span className="field-label">
-                  Trail segments <code>{trailCount === 0 ? "off" : trailCount}</code>
-                </span>
-                <input
-                  type="range"
-                  min={0}
-                  max={12}
-                  step={1}
-                  value={trailCount}
-                  onChange={(e) => setTrailCount(Number(e.target.value))}
+              </div>
+
+              <div className="controls-options">
+                <SwitchControl
+                  id="trail-enabled"
+                  label="Trail"
+                  checked={trailEnabled}
+                  onCheckedChange={setTrailEnabled}
                 />
-              </label>
-              {trailCount > 0 && (
-                <>
-                  <label className="control">
-                    <span className="field-label">
-                      Trail delay <code>{trailDelay}ms</code>
-                    </span>
-                    <input
-                      type="range"
+              </div>
+
+              {trailEnabled && (
+                <div className="controls-subpanel">
+                  <span className="field-label">Trail details</span>
+                  <div className="controls-grid">
+                    <RangeControl
+                      id="trail-count"
+                      label="Trail segments"
+                      valueLabel={String(trailCount)}
+                      value={trailCount}
+                      min={1}
+                      max={12}
+                      step={1}
+                      onChange={setTrailCount}
+                    />
+                    <RangeControl
+                      id="trail-delay"
+                      label="Trail delay"
+                      valueLabel={`${trailDelay}ms`}
+                      value={trailDelay}
                       min={20}
                       max={400}
                       step={10}
-                      value={trailDelay}
-                      onChange={(e) => setTrailDelay(Number(e.target.value))}
+                      onChange={setTrailDelay}
                     />
-                  </label>
-                  <label className="control">
-                    <span className="field-label">
-                      Trail fade after <code>{trailFadeDelay}ms</code>
-                    </span>
-                    <input
-                      type="range"
+                    <RangeControl
+                      id="trail-fade"
+                      label="Trail fade after"
+                      valueLabel={`${trailFadeDelay}ms`}
+                      value={trailFadeDelay}
                       min={50}
                       max={2000}
                       step={50}
-                      value={trailFadeDelay}
-                      onChange={(e) => setTrailFadeDelay(Number(e.target.value))}
+                      onChange={setTrailFadeDelay}
                     />
-                  </label>
-                  <label className="control checkbox">
-                    <input
-                      type="checkbox"
+                    <SwitchControl
+                      id="trail-shrink"
+                      label="Shrink trail with depth"
                       checked={trailShrink}
-                      onChange={(e) => setTrailShrink(e.target.checked)}
+                      onCheckedChange={setTrailShrink}
                     />
-                    <span>Shrink trail with depth</span>
-                  </label>
-                </>
+                  </div>
+                </div>
               )}
 
-              <label className="control checkbox">
-                <input
-                  type="checkbox"
+              <div className="controls-options">
+                <SwitchControl
+                  id="hide-native"
+                  label="Hide native cursor"
                   checked={hideNative}
-                  onChange={(e) => setHideNative(e.target.checked)}
+                  onCheckedChange={setHideNative}
                 />
-                <span>Hide native cursor</span>
-              </label>
-            </div>
-          </>
-        )}
+              </div>
+            </section>
+          )}
 
-        <div className="snippet">
-          <span className="snippet-title">Code</span>
-          <pre>
-            <code>{snippet}</code>
-          </pre>
+          <section className="control-panel control-panel-output" aria-labelledby="panel-output">
+            <h3 className="panel-title" id="panel-output">
+              Output
+            </h3>
+            <CodeBlock code={snippet} label="Code" language="tsx" theme={theme} />
+          </section>
         </div>
       </section>
     </main>

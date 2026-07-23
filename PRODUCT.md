@@ -30,7 +30,7 @@ One small surface for native CSS, shipped presets, and arbitrary React render â€
 
 **Capabilities**
 
-- Native CSS cursors, built-in presets (dot, ring, spotlight, emoji, text, image, pulse), and custom `render` escape hatch
+- Native CSS cursors, built-in presets (dot, ring, spotlight, emoji, text, image, pulse, arrow, hand, crosshair, wand, comet, trump), and custom `render` escape hatch
 - Global cursor via `useCursor`; element-scoped overrides via `CursorZone` (innermost hovered zone wins)
 - Optional lerp smoothing, velocity stretch, and trail segments
 - Touch-only devices skip custom cursors; reduced-motion disables smoothing/trails/velocity effects

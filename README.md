@@ -117,6 +117,12 @@ useCursor({ preset: "emoji", content: "👆", size: 28 });
 useCursor({ preset: "text", content: "View", color: "#fff" });
 useCursor({ preset: "image", content: "/cursor.png", size: 32 });
 useCursor({ preset: "pulse", size: 40, color: "#7c3aed" });
+useCursor({ preset: "arrow", size: 24, color: "#111" });
+useCursor({ preset: "hand", color: "#111" });
+useCursor({ preset: "crosshair", color: "#111" });
+useCursor({ preset: "wand", size: 28, color: "#c084fc" });
+useCursor({ preset: "comet", size: 32, color: "#a78bfa", trail: { count: 6 } });
+useCursor({ preset: "trump", size: 36, color: "#f5d76e" });
 ```
 
 | Preset | Renders | `size` default | `color` default | `content` |
@@ -128,10 +134,16 @@ useCursor({ preset: "pulse", size: 40, color: "#7c3aed" });
 | `text` | A text label | `14` | `#000` | The label string |
 | `image` | An `<img>` | `32` | — | The image URL |
 | `pulse` | Dot with an animated expanding ripple ring | `32` | `#000` | — |
+| `arrow` | Classic OS arrow (tip on the pointer) | `24` | `#000` | — |
+| `hand` | Pointing hand (fingertip on the pointer) | `28` | `#000` | — |
+| `crosshair` | Game-style FPS reticle | `28` | `#000` | — |
+| `wand` | Magic wand with a twinkling star tip | `28` | `#c084fc` | — |
+| `comet` | Soft bloom orb (great with trails / velocity) | `28` | `#a78bfa` | — |
+| `trump` | Presidential caricature (`color` tints the hair) | `32` | `#f5d76e` | — |
 
-All presets are centered on the mouse position and also accept `smoothing` and `hideNativeCursor` (see below).
+Most presets are centered on the mouse position; `arrow`, `hand`, and `wand` use a tip hotspot like native cursors. All also accept `smoothing` and `hideNativeCursor` (see below).
 
-The `pulse` preset's ripple animation is pure CSS and pauses automatically when `prefers-reduced-motion: reduce` is active (the ring stays visible, statically).
+The `pulse`, `wand`, and `comet` animations are pure CSS and pause automatically when `prefers-reduced-motion: reduce` is active.
 
 ### 3. Render (escape hatch)
 
@@ -322,7 +334,8 @@ import type {
   NativeCursor,         // { native: CSSProperties["cursor"] }
   PresetCursor,         // { preset: PresetName; size?; color?; content?; ...motion options }
   RenderCursor,         // { render: ReactNode; ...motion options }
-  PresetName,           // "dot" | "ring" | "spotlight" | "emoji" | "image" | "text" | "pulse"
+  PresetName,           // "dot" | "ring" | "spotlight" | "emoji" | "image" | "text" | "pulse" | "arrow" | "hand" | "crosshair" | "wand" | "comet" | "trump"
+  PresetVisual,         // render a preset visual without the cursor layer (e.g. previews)
   NativeCursorValue,    // CSSProperties["cursor"]
   VelocityEffectConfig, // { stretch? }
   TrailConfig,          // { count?; delay?; fadeDelay?; shrink? }

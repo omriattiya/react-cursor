@@ -3,7 +3,20 @@ import type { CSSProperties, ReactNode } from "react";
 /** All values accepted by the CSS `cursor` property. */
 export type NativeCursorValue = CSSProperties["cursor"];
 
-export type PresetName = "dot" | "ring" | "spotlight" | "emoji" | "image" | "text" | "pulse";
+export type PresetName =
+  | "dot"
+  | "ring"
+  | "spotlight"
+  | "emoji"
+  | "image"
+  | "text"
+  | "pulse"
+  | "arrow"
+  | "hand"
+  | "crosshair"
+  | "wand"
+  | "comet"
+  | "trump";
 
 /** A cursor rendered by the browser via the CSS `cursor` property. */
 export interface NativeCursor {
