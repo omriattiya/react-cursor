@@ -1,0 +1,38 @@
+---
+description: Update playground and Getting Started when adding library features
+alwaysApply: true
+---
+
+# New Feature Checklist
+
+When adding or changing a user-facing library feature, update both demo surfaces before considering the work complete.
+
+## 1. Playground — interactive demo
+
+**File:** `playground/src/pages/PlaygroundPage.tsx`
+
+- Add controls or a demo section so the feature can be toggled and visually verified
+- Wire the feature into the live cursor config and code snippet output
+- Run `pnpm playground` and confirm the feature works in the browser
+
+## 2. Getting Started — usage docs
+
+**File:** `playground/src/pages/GettingStartedPage.tsx`
+
+- Add a code example (`CodeBlock`) showing how to use the feature
+- Update the presets table, feature list, or relevant section if the feature affects documented API surface
+
+## Examples
+
+```typescript
+// ❌ BAD — ships spring physics in src/ but playground/docs unchanged
+
+// ✅ GOOD — feature PR includes:
+//   src/core/spring.ts          (implementation)
+//   playground/src/pages/PlaygroundPage.tsx   (physics sliders + demo)
+//   playground/src/pages/GettingStartedPage.tsx (physics code example)
+```
+
+## Scope
+
+Applies to new presets, hooks, components, config options, and behavior changes visible to consumers. Pure internal refactors with no API or UX change are exempt.

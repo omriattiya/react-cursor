@@ -120,24 +120,25 @@ function GlobalCursor({ input }: { input: CursorInput }) {
   return null;
 }
 
+function formatValue(v: unknown): string {
+  if (typeof v === "string") return JSON.stringify(v);
+  if (typeof v === "object" && v !== null) {
+    return JSON.stringify(v).replaceAll('"', "").replaceAll(",", ", ").replaceAll(":", ": ");
+  }
+  return String(v);
+}
+
 function buildSnippet(mode: Mode, input: CursorInput): string {
   if (mode === "native") {
     return `useCursor(${JSON.stringify(input)});`;
   }
-  if (mode === "render") {
-    const opts = input as { smoothing?: number; hideNativeCursor?: boolean };
-    return [
-      "useCursor({",
-      "  render: <Sparkle />,",
-      `  smoothing: ${opts.smoothing},`,
-      `  hideNativeCursor: ${opts.hideNativeCursor},`,
-      "});",
-    ].join("\n");
-  }
   const obj = input as unknown as Record<string, unknown>;
-  const lines = Object.entries(obj).map(
-    ([k, v]) => `  ${k}: ${typeof v === "string" ? JSON.stringify(v) : String(v)},`,
-  );
+  const lines = Object.entries(obj)
+    .filter(([k]) => k !== "render")
+    .map(([k, v]) => `  ${k}: ${formatValue(v)},`);
+  if (mode === "render") {
+    lines.unshift("  render: <Sparkle />,");
+  }
   return ["useCursor({", ...lines, "});"].join("\n");
 }
 
@@ -153,7 +154,16 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
     Partial<Record<PresetName, { size?: number; color?: string; content?: string }>>
   >({});
 
+  const [tracking, setTracking] = useState<"smoothing" | "physics">("smoothing");
   const [smoothing, setSmoothing] = useState(75);
+  const [stiffness, setStiffness] = useState(200);
+  const [damping, setDamping] = useState(20);
+  const [mass, setMass] = useState(1);
+  const [stretch, setStretch] = useState(1);
+  const [trailCount, setTrailCount] = useState(3);
+  const [trailDelay, setTrailDelay] = useState(100);
+  const [trailFadeDelay, setTrailFadeDelay] = useState(200);
+  const [trailShrink, setTrailShrink] = useState(true);
   const [hideNative, setHideNative] = useState(true);
 
   const meta = useMemo(() => {
@@ -188,18 +198,35 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
     [],
   );
 
+  const motionOptions = {
+    ...(tracking === "physics"
+      ? { physics: { stiffness, damping, mass } }
+      : { smoothing: smoothing / 100 }),
+    ...(stretch > 1 ? { velocity: { stretch } } : {}),
+    ...(trailCount > 0
+      ? {
+          trail: {
+            count: trailCount,
+            delay: trailDelay,
+            fadeDelay: trailFadeDelay,
+            ...(trailShrink ? {} : { shrink: false }),
+          },
+        }
+      : {}),
+    hideNativeCursor: hideNative,
+  };
+
   const cursorInput: CursorInput =
     mode === "native"
       ? nativeValue
       : mode === "render"
-        ? { render: sparkle, smoothing: smoothing / 100, hideNativeCursor: hideNative }
+        ? { render: sparkle, ...motionOptions }
         : {
             preset: presetName,
             size: current.size,
             ...(meta.hasColor && current.color ? { color: current.color } : {}),
             ...(meta.hasContent && current.content ? { content: current.content } : {}),
-            smoothing: smoothing / 100,
-            hideNativeCursor: hideNative,
+            ...motionOptions,
           };
 
   const snippet = buildSnippet(mode, cursorInput);
@@ -326,29 +353,158 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
         )}
 
         {mode !== "native" && (
-          <div className="controls-grid">
-            <label className="control">
-              <span className="field-label">
-                Smoothing <code>{smoothing}</code>
-              </span>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                step={1}
-                value={smoothing}
-                onChange={(e) => setSmoothing(Number(e.target.value))}
-              />
-            </label>
-            <label className="control checkbox">
-              <input
-                type="checkbox"
-                checked={hideNative}
-                onChange={(e) => setHideNative(e.target.checked)}
-              />
-              <span>Hide native cursor</span>
-            </label>
-          </div>
+          <>
+            <div className="field">
+              <span className="field-label">Tracking</span>
+              <div className="segmented">
+                {(["smoothing", "physics"] as const).map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    className={tracking === t ? "segment active" : "segment"}
+                    onClick={() => setTracking(t)}
+                  >
+                    {t === "smoothing" ? "Smoothing (lerp)" : "Physics (spring)"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="controls-grid">
+              {tracking === "smoothing" ? (
+                <label className="control">
+                  <span className="field-label">
+                    Smoothing <code>{smoothing}</code>
+                  </span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={smoothing}
+                    onChange={(e) => setSmoothing(Number(e.target.value))}
+                  />
+                </label>
+              ) : (
+                <>
+                  <label className="control">
+                    <span className="field-label">
+                      Stiffness <code>{stiffness}</code>
+                    </span>
+                    <input
+                      type="range"
+                      min={20}
+                      max={600}
+                      step={10}
+                      value={stiffness}
+                      onChange={(e) => setStiffness(Number(e.target.value))}
+                    />
+                  </label>
+                  <label className="control">
+                    <span className="field-label">
+                      Damping <code>{damping}</code>
+                    </span>
+                    <input
+                      type="range"
+                      min={2}
+                      max={60}
+                      step={1}
+                      value={damping}
+                      onChange={(e) => setDamping(Number(e.target.value))}
+                    />
+                  </label>
+                  <label className="control">
+                    <span className="field-label">
+                      Mass <code>{mass}</code>
+                    </span>
+                    <input
+                      type="range"
+                      min={0.2}
+                      max={4}
+                      step={0.1}
+                      value={mass}
+                      onChange={(e) => setMass(Number(e.target.value))}
+                    />
+                  </label>
+                </>
+              )}
+
+              <label className="control">
+                <span className="field-label">
+                  Velocity stretch <code>{stretch.toFixed(1)}x</code>
+                </span>
+                <input
+                  type="range"
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  value={stretch}
+                  onChange={(e) => setStretch(Number(e.target.value))}
+                />
+              </label>
+
+              <label className="control">
+                <span className="field-label">
+                  Trail segments <code>{trailCount === 0 ? "off" : trailCount}</code>
+                </span>
+                <input
+                  type="range"
+                  min={0}
+                  max={12}
+                  step={1}
+                  value={trailCount}
+                  onChange={(e) => setTrailCount(Number(e.target.value))}
+                />
+              </label>
+              {trailCount > 0 && (
+                <>
+                  <label className="control">
+                    <span className="field-label">
+                      Trail delay <code>{trailDelay}ms</code>
+                    </span>
+                    <input
+                      type="range"
+                      min={20}
+                      max={400}
+                      step={10}
+                      value={trailDelay}
+                      onChange={(e) => setTrailDelay(Number(e.target.value))}
+                    />
+                  </label>
+                  <label className="control">
+                    <span className="field-label">
+                      Trail fade after <code>{trailFadeDelay}ms</code>
+                    </span>
+                    <input
+                      type="range"
+                      min={50}
+                      max={2000}
+                      step={50}
+                      value={trailFadeDelay}
+                      onChange={(e) => setTrailFadeDelay(Number(e.target.value))}
+                    />
+                  </label>
+                  <label className="control checkbox">
+                    <input
+                      type="checkbox"
+                      checked={trailShrink}
+                      onChange={(e) => setTrailShrink(e.target.checked)}
+                    />
+                    <span>Shrink trail with depth</span>
+                  </label>
+                </>
+              )}
+
+              <label className="control checkbox">
+                <input
+                  type="checkbox"
+                  checked={hideNative}
+                  onChange={(e) => setHideNative(e.target.checked)}
+                />
+                <span>Hide native cursor</span>
+              </label>
+            </div>
+          </>
         )}
 
         <div className="snippet">

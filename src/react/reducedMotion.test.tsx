@@ -67,4 +67,34 @@ describe("prefers-reduced-motion", () => {
 
     expect(el.style.transform).toBe("translate3d(200px, 100px, 0)");
   });
+
+  test("physics and velocity effects are disabled when reduced motion is preferred", () => {
+    mockMatchMedia({ reducedMotion: true });
+
+    function PhysicsDot() {
+      useCursor({ preset: "dot", physics: { stiffness: 300, damping: 8 }, velocity: { stretch: 2 } });
+      return null;
+    }
+
+    render(
+      <CursorProvider>
+        <PhysicsDot />
+      </CursorProvider>,
+    );
+
+    fireEvent.mouseMove(window, { clientX: 100, clientY: 100 });
+    act(() => {
+      vi.advanceTimersToNextFrame();
+    });
+    fireEvent.mouseMove(window, { clientX: 400, clientY: 100 });
+    act(() => {
+      vi.advanceTimersToNextFrame();
+    });
+
+    const el = document.querySelector<HTMLElement>("[data-react-cursor]")!;
+    expect(el.style.transform).toBe("translate3d(400px, 100px, 0)");
+
+    const visual = document.querySelector<HTMLElement>("[data-react-cursor-visual]")!;
+    expect(visual.style.transform).toBe("");
+  });
 });

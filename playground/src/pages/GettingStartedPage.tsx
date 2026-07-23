@@ -114,6 +114,29 @@ const ZONES = `import { CursorZone } from "@omriattiya/react-cursor";
   </CursorZone>
 </CursorZone>`;
 
+const MOTION = `// Spring physics instead of lerp smoothing (mutually exclusive)
+useCursor({
+  preset: "ring",
+  physics: { stiffness: 200, damping: 15, mass: 0.8 },
+});
+
+// Stretch along the movement path as speed grows
+useCursor({
+  preset: "dot",
+  velocity: { stretch: 1.6 },
+});
+
+// A snake trail that retraces the exact mouse path
+useCursor({
+  preset: "dot",
+  trail: {
+    count: 5,       // segments (default 3)
+    delay: 100,     // lag (ms) per segment
+    fadeDelay: 200, // ms between per-segment fades once idle (deepest first)
+    shrink: false,  // keep segments full size (default true: smaller with depth)
+  },
+});`;
+
 const RENDER = `useCursor({
   render: (
     <div
@@ -182,7 +205,17 @@ export function GettingStartedPage() {
       </section>
 
       <section className="card">
-        <h2>5. Go fully custom</h2>
+        <h2>5. Add motion: physics, velocity, trails</h2>
+        <p>
+          Every custom cursor accepts spring <code>physics</code> (instead of <code>smoothing</code>),
+          speed-based <code>velocity</code> effects, and a <code>trail</code> of segments that snakes
+          behind the cursor and fades away when the mouse rests.
+        </p>
+        <CodeBlock code={MOTION} />
+      </section>
+
+      <section className="card">
+        <h2>6. Go fully custom</h2>
         <p>
           Pass any React element via <code>render</code>. It's placed in a fixed, pointer-events-none
           layer that tracks the mouse.
@@ -271,7 +304,8 @@ export function GettingStartedPage() {
         <ul className="feature-list">
           <li>Custom cursors are disabled on touch-only devices — check with <code>useHasCursor()</code>.</li>
           <li>
-            Smoothing is ignored when <code>prefers-reduced-motion</code> is active.
+            When <code>prefers-reduced-motion</code> is active, smoothing and physics snap, velocity
+            effects are skipped, and trails are not rendered.
           </li>
           <li>The cursor layer is <code>aria-hidden</code> and never intercepts clicks.</li>
           <li>SSR-safe: nothing touches <code>window</code> during render.</li>

@@ -10,4 +10,7 @@ export type {
   RenderCursor,
   PresetName,
   NativeCursorValue,
+  PhysicsConfig,
+  VelocityEffectConfig,
+  TrailConfig,
 } from "./core/types";

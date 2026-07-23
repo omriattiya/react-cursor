@@ -1,0 +1,238 @@
+import { act, fireEvent, render } from "@testing-library/react";
+import { CursorProvider, useCursor } from "../index";
+
+function TrailDot() {
+  useCursor({ preset: "dot", trail: { count: 3, delay: 100 } });
+  return null;
+}
+
+const getTrailElements = () => [...document.querySelectorAll<HTMLElement>("[data-react-cursor-trail]")];
+
+const transformX = (el: HTMLElement) => {
+  const match = /translate3d\((-?[\d.]+)px/.exec(el.style.transform)!;
+  return Number(match[1]);
+};
+
+function advanceFrames(count: number) {
+  act(() => {
+    for (let i = 0; i < count; i++) {
+      vi.advanceTimersToNextFrame();
+    }
+  });
+}
+
+describe("trail", () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["requestAnimationFrame", "cancelAnimationFrame", "performance"] });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  test("renders one segment element per configured count", () => {
+    render(
+      <CursorProvider>
+        <TrailDot />
+      </CursorProvider>,
+    );
+
+    expect(getTrailElements()).toHaveLength(3);
+  });
+
+  test("segments fade with depth", () => {
+    render(
+      <CursorProvider>
+        <TrailDot />
+      </CursorProvider>,
+    );
+
+    const opacities = getTrailElements().map((el) => Number(el.style.opacity));
+    expect(opacities[0]).toBeGreaterThan(opacities[1]!);
+    expect(opacities[1]).toBeGreaterThan(opacities[2]!);
+  });
+
+  test("segments trail behind the cursor in order while it moves", () => {
+    render(
+      <CursorProvider>
+        <TrailDot />
+      </CursorProvider>,
+    );
+
+    fireEvent.mouseMove(window, { clientX: 100, clientY: 100 });
+    advanceFrames(1);
+    // Continuous rightward movement so every segment has real path history to
+    // replay; sampled mid-flight, before anything converges back onto the head
+    for (let x = 110; x <= 400; x += 10) {
+      fireEvent.mouseMove(window, { clientX: x, clientY: 100 });
+      advanceFrames(1);
+    }
+
+    const head = document.querySelector<HTMLElement>("[data-react-cursor]")!;
+    const [first, second, third] = getTrailElements() as [HTMLElement, HTMLElement, HTMLElement];
+
+    expect(transformX(head)).toBeGreaterThan(transformX(first));
+    expect(transformX(first)).toBeGreaterThan(transformX(second));
+    expect(transformX(second)).toBeGreaterThan(transformX(third));
+  });
+
+  test("segments converge all the way onto the cursor after the mouse stops", () => {
+    render(
+      <CursorProvider>
+        <TrailDot />
+      </CursorProvider>,
+    );
+
+    fireEvent.mouseMove(window, { clientX: 100, clientY: 100 });
+    advanceFrames(1);
+    for (let x = 110; x <= 400; x += 10) {
+      fireEvent.mouseMove(window, { clientX: x, clientY: 100 });
+      advanceFrames(1);
+    }
+
+    // Mouse rests: within count * delay every segment slides back onto the
+    // head instead of parking spread out behind it
+    advanceFrames(40);
+
+    const head = document.querySelector<HTMLElement>("[data-react-cursor]")!;
+    for (const el of getTrailElements()) {
+      expect(transformX(el)).toBeCloseTo(transformX(head), 0);
+    }
+  });
+
+  test("segments shrink with depth by default", () => {
+    render(
+      <CursorProvider>
+        <TrailDot />
+      </CursorProvider>,
+    );
+
+    const scales = getTrailElements().map((el) => {
+      const inner = el.firstElementChild as HTMLElement;
+      return Number(/scale\(([\d.]+)\)/.exec(inner.style.transform)![1]);
+    });
+    expect(scales[0]).toBeLessThan(1);
+    expect(scales[1]).toBeLessThan(scales[0]!);
+    expect(scales[2]).toBeLessThan(scales[1]!);
+  });
+
+  test("shrink: false keeps every segment at the cursor's full size", () => {
+    function FullSizeTrail() {
+      useCursor({ preset: "dot", trail: { count: 3, shrink: false } });
+      return null;
+    }
+
+    render(
+      <CursorProvider>
+        <FullSizeTrail />
+      </CursorProvider>,
+    );
+
+    for (const el of getTrailElements()) {
+      const inner = el.firstElementChild as HTMLElement;
+      expect(inner.style.transform).toBe("scale(1)");
+    }
+    // Depth fade still applies — only the size is uniform
+    const opacities = getTrailElements().map((el) => Number(el.style.opacity));
+    expect(opacities[0]).toBeGreaterThan(opacities[1]!);
+  });
+
+  test("renders 3 segments by default when count is omitted", () => {
+    function DefaultTrail() {
+      useCursor({ preset: "dot", trail: {} });
+      return null;
+    }
+
+    render(
+      <CursorProvider>
+        <DefaultTrail />
+      </CursorProvider>,
+    );
+
+    expect(getTrailElements()).toHaveLength(3);
+  });
+
+  test("segments fade one by one from the tail end, not as a single block", () => {
+    render(
+      <CursorProvider>
+        <TrailDot />
+      </CursorProvider>,
+    );
+
+    fireEvent.mouseMove(window, { clientX: 100, clientY: 100 });
+    advanceFrames(1);
+    fireEvent.mouseMove(window, { clientX: 200, clientY: 100 });
+
+    // ~320ms idle at 16ms/frame: one 200ms fadeDelay elapsed, so only the
+    // deepest of the 3 segments has faded
+    advanceFrames(20);
+
+    const [nearest, middle, deepest] = getTrailElements() as [HTMLElement, HTMLElement, HTMLElement];
+    expect(deepest.style.opacity).toBe("0");
+    expect(deepest.style.transition).toContain("opacity"); // gradual, not a hard cut
+    expect(Number(middle.style.opacity)).toBeGreaterThan(0);
+    expect(Number(nearest.style.opacity)).toBeGreaterThan(0);
+
+    // ~720ms idle: all three fade intervals elapsed, whole tail gone
+    advanceFrames(25);
+    for (const el of getTrailElements()) {
+      expect(el.style.opacity).toBe("0");
+    }
+
+    // Mouse moves again: segments reappear at their depth opacity
+    fireEvent.mouseMove(window, { clientX: 210, clientY: 100 });
+    advanceFrames(1);
+
+    const opacities = getTrailElements().map((el) => Number(el.style.opacity));
+    expect(opacities[0]).toBeGreaterThan(0);
+    expect(opacities[0]).toBeGreaterThan(opacities[1]!);
+  });
+
+  test("a custom fadeDelay keeps the trail visible longer", () => {
+    function SlowFadeDot() {
+      useCursor({ preset: "dot", trail: { count: 2, fadeDelay: 1000 } });
+      return null;
+    }
+
+    render(
+      <CursorProvider>
+        <SlowFadeDot />
+      </CursorProvider>,
+    );
+
+    fireEvent.mouseMove(window, { clientX: 100, clientY: 100 });
+    advanceFrames(1);
+    fireEvent.mouseMove(window, { clientX: 200, clientY: 100 });
+
+    // ~320ms idle: past the default 200ms but well within fadeDelay 1000
+    advanceFrames(20);
+
+    for (const el of getTrailElements()) {
+      expect(Number(el.style.opacity)).toBeGreaterThan(0);
+    }
+  });
+
+  test("no trail is rendered when reduced motion is preferred", () => {
+    vi.stubGlobal(
+      "matchMedia",
+      (query: string) =>
+        ({
+          matches: query === "(prefers-reduced-motion: reduce)" || query === "(pointer: fine)",
+          media: query,
+          addEventListener: () => {},
+          removeEventListener: () => {},
+        }) as unknown as MediaQueryList,
+    );
+
+    render(
+      <CursorProvider>
+        <TrailDot />
+      </CursorProvider>,
+    );
+
+    expect(document.querySelector("[data-react-cursor]")).toBeInTheDocument();
+    expect(getTrailElements()).toHaveLength(0);
+
+    vi.unstubAllGlobals();
+  });
+});
