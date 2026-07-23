@@ -1,6 +1,5 @@
 import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import { nextPosition, type Point } from "../core/position";
-import { springStep } from "../core/spring";
 import { recordTrailPoint, sampleTrail, type TrailPathPoint } from "../core/trail";
 import type { PresetCursor, RenderCursor } from "../core/types";
 import { smoothVelocity, velocityTransform } from "../core/velocity";
@@ -34,7 +33,6 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
   const trailRefs = useRef<(HTMLDivElement | null)[]>([]);
   const reducedMotion = useReducedMotion();
   const smoothing = reducedMotion ? 0 : (style.smoothing ?? 0.75);
-  const physics = reducedMotion ? undefined : style.physics;
   const velocity = reducedMotion ? undefined : style.velocity;
   const trail = reducedMotion ? undefined : style.trail;
   const trailCount = trail === undefined ? 0 : (trail.count ?? 3);
@@ -46,7 +44,6 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
 
     let current = OFFSCREEN;
     let target = OFFSCREEN;
-    let springVelocity: Point = { x: 0, y: 0 };
     let effectVelocity: Point = { x: 0, y: 0 };
     let trailPath: TrailPathPoint[] = [];
     let lastSampled: Point[] = [];
@@ -63,21 +60,7 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
       lastTime = now;
 
       const previous = current;
-      if (physics !== undefined) {
-        const next = springStep({
-          position: current,
-          velocity: springVelocity,
-          target,
-          dt,
-          stiffness: physics.stiffness ?? 200,
-          damping: physics.damping ?? 20,
-          mass: physics.mass ?? 1,
-        });
-        current = next.position;
-        springVelocity = next.velocity;
-      } else {
-        current = nextPosition({ current, target, smoothing });
-      }
+      current = nextPosition({ current, target, smoothing });
       el.style.transform = `translate3d(${current.x}px, ${current.y}px, 0)`;
 
       let effectActive = false;
@@ -170,7 +153,7 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
         cancelAnimationFrame(frame);
       }
     };
-  }, [smoothing, physics, velocity, trail, trailCount]);
+  }, [smoothing, velocity, trail, trailCount]);
 
   const visualNode =
     "render" in style && style.render !== undefined ? style.render : <PresetVisual style={style as PresetCursor} />;

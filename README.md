@@ -43,7 +43,6 @@ function Page() {
 - **One API for everything** — native CSS cursors, shipped presets, and fully custom React elements all go through the same `useCursor` / `CursorZone` interface.
 - **Zones with sane priority** — hovered zones override the global cursor; nested zones resolve innermost-first; everything falls back cleanly on unmount.
 - **Smooth trailing** — optional lerp-based smoothing, driven by `requestAnimationFrame` and direct DOM transforms (no re-renders on mouse move).
-- **Spring physics** — configure `stiffness` / `damping` / `mass` per cursor for tracking with real momentum and overshoot.
 - **Velocity effects** — stretch the cursor along its movement path as speed grows.
 - **Trails** — a chain of segments that snakes behind the cursor, scaled and faded with depth.
 - **Accessible by default** — custom cursors are disabled on touch-only devices, smoothing is disabled when `prefers-reduced-motion` is active, and the cursor layer is `aria-hidden`.
@@ -162,10 +161,9 @@ useCursor({
 
 Both presets and render cursors accept:
 
-- **`smoothing?: number`** — the fraction of the remaining distance covered per frame, so smaller values trail more (e.g. `0.15` is a loose, floaty follow). Defaults to `0.75` (a quick catch-up); `0` snaps the cursor to the mouse every frame. Automatically forced to `0` when the user has `prefers-reduced-motion` enabled. Mutually exclusive with `physics`.
-- **`physics?: { stiffness?, damping?, mass? }`** — spring-based tracking instead of lerp; see [Motion](#motion-physics-velocity-effects-and-trails).
-- **`velocity?: { stretch? }`** — speed-based stretch; see [Motion](#motion-physics-velocity-effects-and-trails).
-- **`trail?: { count?, delay?, fadeDelay?, shrink? }`** — a segment chain behind the cursor; see [Motion](#motion-physics-velocity-effects-and-trails).
+- **`smoothing?: number`** — the fraction of the remaining distance covered per frame, so smaller values trail more (e.g. `0.15` is a loose, floaty follow). Defaults to `0.75` (a quick catch-up); `0` snaps the cursor to the mouse every frame. Automatically forced to `0` when the user has `prefers-reduced-motion` enabled.
+- **`velocity?: { stretch? }`** — speed-based stretch; see [Motion](#motion-velocity-effects-and-trails).
+- **`trail?: { count?, delay?, fadeDelay?, shrink? }`** — a segment chain behind the cursor; see [Motion](#motion-velocity-effects-and-trails).
 - **`hideNativeCursor?: boolean`** — `true` by default: the native cursor is hidden everywhere (including on buttons and links, which normally set their own) so only the custom cursor is visible. Set to `false` to show both.
 
 ```tsx
@@ -173,26 +171,11 @@ Both presets and render cursors accept:
 useCursor({ preset: "ring", smoothing: 0.3, hideNativeCursor: false });
 ```
 
-## Motion: physics, velocity effects, and trails
-
-### Spring physics
-
-Instead of lerp `smoothing`, give the cursor Newtonian tracking with `physics`. The cursor accelerates toward the mouse, overshoots, and settles — tune the feel with three knobs (`physics` and `smoothing` are mutually exclusive; TypeScript enforces it):
-
-```tsx
-useCursor({
-  preset: "ring",
-  physics: {
-    stiffness: 200, // higher = snappier (default 200)
-    damping: 15,    // lower = more overshoot and wobble (default 20)
-    mass: 0.8,      // heavier = more sluggish (default 1)
-  },
-});
-```
+## Motion: velocity effects and trails
 
 ### Velocity effects
 
-Make the cursor react to how fast it's moving. Works with snapping, `smoothing`, or `physics`:
+Make the cursor react to how fast it's moving. Works with snapping or `smoothing`:
 
 ```tsx
 useCursor({
@@ -283,7 +266,7 @@ Changing the input object also works — the hook re-registers when any of the c
 ## Touch devices and accessibility
 
 - **Touch-only devices:** custom cursors (presets and render) are only shown when the device reports a fine pointer (`(pointer: fine)` media query). On touch-only devices nothing is rendered and the native cursor is left alone. You can read the same signal yourself with `useHasCursor()`.
-- **Reduced motion:** when `prefers-reduced-motion: reduce` is active, `smoothing` and `physics` are ignored (the cursor snaps directly to the mouse), velocity effects are not applied, and trails are not rendered.
+- **Reduced motion:** when `prefers-reduced-motion: reduce` is active, `smoothing` is ignored (the cursor snaps directly to the mouse), velocity effects are not applied, and trails are not rendered.
 - **Screen readers:** the custom cursor layer is `aria-hidden` and `pointer-events: none`, so it never intercepts clicks or appears in the accessibility tree.
 
 ```tsx
@@ -341,19 +324,18 @@ import type {
   RenderCursor,         // { render: ReactNode; ...motion options }
   PresetName,           // "dot" | "ring" | "spotlight" | "emoji" | "image" | "text" | "pulse"
   NativeCursorValue,    // CSSProperties["cursor"]
-  PhysicsConfig,        // { stiffness?; damping?; mass? }
   VelocityEffectConfig, // { stretch? }
   TrailConfig,          // { count?; delay?; fadeDelay?; shrink? }
 } from "@omriattiya/react-cursor";
 ```
 
-Motion options (`smoothing` XOR `physics`, plus `velocity`, `trail`, `hideNativeCursor`) are accepted by both `PresetCursor` and `RenderCursor`.
+Motion options (`smoothing`, `velocity`, `trail`, `hideNativeCursor`) are accepted by both `PresetCursor` and `RenderCursor`.
 
 ## How it works
 
 - `CursorProvider` keeps a registry of global cursors and currently hovered zones, and resolves the active cursor as: innermost hovered zone → last-mounted global cursor → `auto`.
 - Native cursors are applied via `document.documentElement.style.cursor`. When a custom cursor hides the native one, a temporary `cursor: none !important` stylesheet is injected so UA styles on buttons/links can't leak through; it's removed as soon as the custom cursor deactivates.
-- The custom cursor layer tracks the mouse with a single `mousemove` listener and moves via `transform: translate3d(...)` inside `requestAnimationFrame` — React never re-renders on mouse move. Spring physics, velocity transforms, and trail chains all run inside that same frame loop as pure math over positions.
+- The custom cursor layer tracks the mouse with a single `mousemove` listener and moves via `transform: translate3d(...)` inside `requestAnimationFrame` — React never re-renders on mouse move. Velocity transforms and trail chains run inside that same frame loop as pure math over positions.
 
 ## Development
 

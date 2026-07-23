@@ -15,7 +15,6 @@ Position calculation, smoothing/lerp math, and detection logic are extracted int
 ### Unit Tests (pure functions)
 
 - Position math: lerp interpolation, snap behavior, smoothing at various factors
-- Spring physics: convergence, overshoot, mass response, large-dt stability
 - Velocity effects: speed-to-stretch mapping, stretch-axis alignment, velocity smoothing
 - Trail path: exact-path playback, corner fidelity, convergence onto the resting cursor, history pruning
 - Cursor state resolution: global vs zone priority, fallback on zone exit
@@ -32,10 +31,10 @@ Position calculation, smoothing/lerp math, and detection logic are extracted int
 - `hideNativeCursor: false` keeps native cursor visible
 - `useHasCursor()` returns correct value based on pointer capability
 - Unmounting components cleanly reverts cursor state
-- Spring tracking overshoots and settles; velocity stretch applies and relaxes
+- Velocity stretch applies and relaxes
 - Trail segments render per count, fade with depth, follow in order, shrink with depth unless `shrink: false`
 - Trail dissolves segment by segment (deepest first) when idle, reappears on movement
-- Reduced motion disables physics, velocity effects, and trails
+- Reduced motion disables velocity effects and trails
 
 ### What NOT to Test (in automated tests)
 

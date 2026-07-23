@@ -16,7 +16,7 @@ Primary users are frontend / React engineers building marketing sites, creative 
 
 ## Positioning
 
-One small surface for native CSS, shipped presets, and arbitrary React render â€” with zone priority, optional motion (smoothing, spring physics, velocity stretch, trails), and accessibility defaults (custom cursors off on touch-only devices, motion disabled under `prefers-reduced-motion`, SSR-safe) â€” and zero runtime dependencies beyond React.
+One small surface for native CSS, shipped presets, and arbitrary React render â€” with zone priority, optional motion (smoothing, velocity stretch, trails), and accessibility defaults (custom cursors off on touch-only devices, motion disabled under `prefers-reduced-motion`, SSR-safe) â€” and zero runtime dependencies beyond React.
 
 ## Operating Context
 
@@ -24,7 +24,7 @@ One small surface for native CSS, shipped presets, and arbitrary React render â€
 - Evaluated and demonstrated via the Vite playground (`pnpm playground`) with Playground + Getting Started pages
 - Live demo: https://react-cursor-xi.vercel.app/
 - Source / issues: https://github.com/omriattiya/react-cursor
-- Domain terminology lives in `CONTEXT.md` (Cursor, Native/Custom Cursor, Preset, Provider, Cursor Zone, Global Cursor, Smoothing, Physics, Trail, Velocity Effect)
+- Domain terminology lives in `CONTEXT.md` (Cursor, Native/Custom Cursor, Preset, Provider, Cursor Zone, Global Cursor, Smoothing, Trail, Velocity Effect)
 
 ## Capabilities and Constraints
 
@@ -32,8 +32,8 @@ One small surface for native CSS, shipped presets, and arbitrary React render â€
 
 - Native CSS cursors, built-in presets (dot, ring, spotlight, emoji, text, image, pulse), and custom `render` escape hatch
 - Global cursor via `useCursor`; element-scoped overrides via `CursorZone` (innermost hovered zone wins)
-- Optional lerp smoothing, spring physics, velocity stretch, and trail segments (physics mutually exclusive with smoothing)
-- Touch-only devices skip custom cursors; reduced-motion disables smoothing/physics/trails/velocity effects
+- Optional lerp smoothing, velocity stretch, and trail segments
+- Touch-only devices skip custom cursors; reduced-motion disables smoothing/trails/velocity effects
 
 **Constraints**
 
@@ -74,6 +74,6 @@ One small surface for native CSS, shipped presets, and arbitrary React render â€
 ## Accessibility & Inclusion
 
 - Custom cursors disabled on touch-only / coarse-pointer devices
-- Smoothing, physics, trails, and velocity effects disabled when `prefers-reduced-motion: reduce`
+- Smoothing, trails, and velocity effects disabled when `prefers-reduced-motion: reduce`
 - Custom cursor layer is `aria-hidden`
 - SSR-safe: no window access during render; server assumes no fine pointer until hydration

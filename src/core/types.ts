@@ -12,16 +12,6 @@ export interface NativeCursor {
   render?: never;
 }
 
-/** Spring-based tracking: the cursor follows the mouse with momentum. */
-export interface PhysicsConfig {
-  /** Spring stiffness. Higher = snappier. Default 200. */
-  stiffness?: number;
-  /** Velocity damping. Lower = more overshoot/wobble. Default 20. */
-  damping?: number;
-  /** Cursor weight. Heavier = more sluggish. Default 1. */
-  mass?: number;
-}
-
 /** Visual response to cursor speed. */
 export interface VelocityEffectConfig {
   /** Maximum elongation along the movement axis (1 = no stretch). */
@@ -43,23 +33,10 @@ export interface TrailConfig {
   fadeDelay?: number;
 }
 
-/**
- * Physics (springs) and Smoothing (lerp) are mutually exclusive tracking
- * models — a cursor style declares at most one of them.
- */
-type Tracking =
-  | {
-      /** 0 = snap; (0, 1] = fraction of remaining distance per frame (default 0.75). */
-      smoothing?: number;
-      physics?: never;
-    }
-  | {
-      physics?: PhysicsConfig;
-      smoothing?: never;
-    };
-
 /** Options shared by all custom cursors (presets and render). */
 interface CustomCursorOptions {
+  /** 0 = snap; (0, 1] = fraction of remaining distance per frame (default 0.75). */
+  smoothing?: number;
   velocity?: VelocityEffectConfig;
   trail?: TrailConfig;
   /** Set false to keep the native cursor visible alongside the custom one. */
@@ -75,15 +52,13 @@ export type PresetCursor = {
   color?: string;
   /** Content for the emoji / image / text presets. */
   content?: string;
-} & CustomCursorOptions &
-  Tracking;
+} & CustomCursorOptions;
 
 /** A fully custom-rendered cursor (escape hatch). */
 export type RenderCursor = {
   render: ReactNode;
   native?: never;
   preset?: never;
-} & CustomCursorOptions &
-  Tracking;
+} & CustomCursorOptions;
 
 export type CursorStyle = NativeCursor | PresetCursor | RenderCursor;

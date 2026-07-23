@@ -68,17 +68,17 @@ describe("prefers-reduced-motion", () => {
     expect(el.style.transform).toBe("translate3d(200px, 100px, 0)");
   });
 
-  test("physics and velocity effects are disabled when reduced motion is preferred", () => {
+  test("velocity effects are disabled when reduced motion is preferred", () => {
     mockMatchMedia({ reducedMotion: true });
 
-    function PhysicsDot() {
-      useCursor({ preset: "dot", physics: { stiffness: 300, damping: 8 }, velocity: { stretch: 2 } });
+    function StretchDot() {
+      useCursor({ preset: "dot", velocity: { stretch: 2 } });
       return null;
     }
 
     render(
       <CursorProvider>
-        <PhysicsDot />
+        <StretchDot />
       </CursorProvider>,
     );
 

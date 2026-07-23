@@ -154,11 +154,7 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
     Partial<Record<PresetName, { size?: number; color?: string; content?: string }>>
   >({});
 
-  const [tracking, setTracking] = useState<"smoothing" | "physics">("smoothing");
   const [smoothing, setSmoothing] = useState(75);
-  const [stiffness, setStiffness] = useState(200);
-  const [damping, setDamping] = useState(20);
-  const [mass, setMass] = useState(1);
   const [stretch, setStretch] = useState(1);
   const [trailCount, setTrailCount] = useState(3);
   const [trailDelay, setTrailDelay] = useState(100);
@@ -199,9 +195,7 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
   );
 
   const motionOptions = {
-    ...(tracking === "physics"
-      ? { physics: { stiffness, damping, mass } }
-      : { smoothing: smoothing / 100 }),
+    smoothing: smoothing / 100,
     ...(stretch > 1 ? { velocity: { stretch } } : {}),
     ...(trailCount > 0
       ? {
@@ -354,80 +348,20 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
 
         {mode !== "native" && (
           <>
-            <div className="field">
-              <span className="field-label">Tracking</span>
-              <div className="segmented">
-                {(["smoothing", "physics"] as const).map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    className={tracking === t ? "segment active" : "segment"}
-                    onClick={() => setTracking(t)}
-                  >
-                    {t === "smoothing" ? "Smoothing (lerp)" : "Physics (spring)"}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             <div className="controls-grid">
-              {tracking === "smoothing" ? (
-                <label className="control">
-                  <span className="field-label">
-                    Smoothing <code>{smoothing}</code>
-                  </span>
-                  <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    step={1}
-                    value={smoothing}
-                    onChange={(e) => setSmoothing(Number(e.target.value))}
-                  />
-                </label>
-              ) : (
-                <>
-                  <label className="control">
-                    <span className="field-label">
-                      Stiffness <code>{stiffness}</code>
-                    </span>
-                    <input
-                      type="range"
-                      min={20}
-                      max={600}
-                      step={10}
-                      value={stiffness}
-                      onChange={(e) => setStiffness(Number(e.target.value))}
-                    />
-                  </label>
-                  <label className="control">
-                    <span className="field-label">
-                      Damping <code>{damping}</code>
-                    </span>
-                    <input
-                      type="range"
-                      min={2}
-                      max={60}
-                      step={1}
-                      value={damping}
-                      onChange={(e) => setDamping(Number(e.target.value))}
-                    />
-                  </label>
-                  <label className="control">
-                    <span className="field-label">
-                      Mass <code>{mass}</code>
-                    </span>
-                    <input
-                      type="range"
-                      min={0.2}
-                      max={4}
-                      step={0.1}
-                      value={mass}
-                      onChange={(e) => setMass(Number(e.target.value))}
-                    />
-                  </label>
-                </>
-              )}
+              <label className="control">
+                <span className="field-label">
+                  Smoothing <code>{smoothing}</code>
+                </span>
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={1}
+                  value={smoothing}
+                  onChange={(e) => setSmoothing(Number(e.target.value))}
+                />
+              </label>
 
               <label className="control">
                 <span className="field-label">

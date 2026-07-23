@@ -25,12 +25,12 @@ When adding or changing a user-facing library feature, update both demo surfaces
 ## Examples
 
 ```typescript
-// ❌ BAD — ships spring physics in src/ but playground/docs unchanged
+// ❌ BAD — ships velocity stretch in src/ but playground/docs unchanged
 
 // ✅ GOOD — feature PR includes:
-//   src/core/spring.ts          (implementation)
-//   playground/src/pages/PlaygroundPage.tsx   (physics sliders + demo)
-//   playground/src/pages/GettingStartedPage.tsx (physics code example)
+//   src/core/velocity.ts          (implementation)
+//   playground/src/pages/PlaygroundPage.tsx   (stretch slider + demo)
+//   playground/src/pages/GettingStartedPage.tsx (velocity code example)
 ```
 
 ## Scope

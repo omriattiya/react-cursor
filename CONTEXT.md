@@ -33,17 +33,13 @@ The cursor active across the entire page, set via `useCursor()`. Acts as the fal
 _Avoid_: Default cursor, base cursor
 
 **Smoothing**:
-Optional lerp-based easing that makes the custom cursor trail behind the actual mouse position. Defaults to 0.75 (a quick catch-up); 0 means snap. Automatically disabled when `prefers-reduced-motion` is active. Mutually exclusive with Physics on a given cursor style.
-_Avoid_: Lerp, easing, animation (too generic)
-
-**Physics**:
-Optional spring-based tracking (stiffness, damping, mass) that makes the custom cursor follow the mouse with momentum and overshoot. Configured per cursor style, not globally. Mutually exclusive with Smoothing. Automatically disabled when `prefers-reduced-motion` is active.
-_Avoid_: Spring, trailing (ambiguous with Trail)
+Optional lerp-based easing that makes the custom cursor trail behind the actual mouse position. Defaults to 0.75 (a quick catch-up); 0 means snap. Automatically disabled when `prefers-reduced-motion` is active.
+_Avoid_: Lerp, easing, animation (too generic), Physics, Spring
 
 **Trail**:
 An optional per-style chain of segments behind the custom cursor (snake effect). Segments replay the mouse's recorded path exactly: each one sits where the head was one more delay ago. The trail emerges from the cursor as it moves and slides back onto it when it stops — at rest all segments stack on the cursor position. Segments are clones of the cursor visual, faded with depth and scaled down with depth unless `shrink: false`. Once the mouse is idle, the tail dissolves segment by segment (deepest first, one fade delay apart); it reappears on the next movement. Configured as `trail: { count, delay, fadeDelay, shrink }` (count defaults to 3). Not rendered under `prefers-reduced-motion`.
 _Avoid_: Trailing (ambiguous with tracking lag), tail, ghost
 
 **Velocity Effect**:
-Optional per-style visual response to cursor speed: stretching (elongation along the movement axis, with the cross axis squashed to preserve apparent area). Independent of the tracking model — works with Smoothing, Physics, or direct snapping. Automatically disabled when `prefers-reduced-motion` is active.
+Optional per-style visual response to cursor speed: stretching (elongation along the movement axis, with the cross axis squashed to preserve apparent area). Independent of tracking — works with Smoothing or direct snapping. Automatically disabled when `prefers-reduced-motion` is active.
 _Avoid_: Distortion
