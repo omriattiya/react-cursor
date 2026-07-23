@@ -420,38 +420,6 @@ code {
   font-size: inherit;
 }
 
-/* ---------- Zones ---------- */
-
-.zones {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-}
-
-.zone {
-  border: 1px dashed var(--border-strong);
-  border-radius: 12px;
-  padding: 28px 16px;
-  text-align: center;
-  color: var(--text-soft);
-  transition: border-color 0.15s;
-}
-
-.zone:hover {
-  border-color: var(--accent-2);
-}
-
-.nested-outer {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.nested-inner {
-  background: var(--bg-inset);
-}
-
 /* ---------- Getting started extras ---------- */
 
 .presets-table {

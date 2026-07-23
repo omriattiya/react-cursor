@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import {
-  CursorZone,
   useCursor,
   useHasCursor,
   type CursorInput,
@@ -446,34 +445,6 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
           <pre>
             <code>{snippet}</code>
           </pre>
-        </div>
-      </section>
-
-      <section className="card">
-        <h2>Cursor Zones</h2>
-        <p>Hovering a zone overrides the global cursor; leaving falls back.</p>
-        <div className="zones">
-          <CursorZone cursor="pointer" className="zone">
-            Native pointer
-          </CursorZone>
-          <CursorZone cursor={{ preset: "emoji", content: "🔥", size: 32 }} className="zone">
-            Emoji zone
-          </CursorZone>
-          <CursorZone cursor={{ preset: "text", content: "VIEW", color: "#fbbf24" }} className="zone">
-            Text zone
-          </CursorZone>
-          <CursorZone
-            cursor={{ preset: "dot", color: "#22d3ee", size: 16 }}
-            className="zone nested-outer"
-          >
-            Outer zone (dot)
-            <CursorZone
-              cursor={{ preset: "ring", color: "#f472b6", size: 44 }}
-              className="zone nested-inner"
-            >
-              Inner zone wins (ring)
-            </CursorZone>
-          </CursorZone>
         </div>
       </section>
     </main>
