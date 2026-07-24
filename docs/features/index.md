@@ -3,6 +3,7 @@
 Short feature notes for future playground docs.
 
 - [Provider](./provider.md)
+- [Click Effect](./click-effect.md)
 - [Global Cursor](./global-cursor.md)
 - [Cursor Zone](./cursor-zone.md)
 - [Native Cursors](./native-cursors.md)

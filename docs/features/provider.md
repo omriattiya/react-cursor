@@ -1,6 +1,6 @@
 # Provider
 
-`CursorProvider` owns cursor state and renders the custom cursor layer.
+`CursorProvider` owns cursor state, renders the custom cursor layer, and optionally a Click Effect layer.
 
 Use one provider around the app or subtree that needs managed cursors.
 
@@ -9,7 +9,7 @@ import { CursorProvider } from "@omriattiya/react-cursor";
 
 export function App() {
   return (
-    <CursorProvider>
+    <CursorProvider clickEffect={{ variant: "ripple" }}>
       <YourApp />
     </CursorProvider>
   );
@@ -21,6 +21,7 @@ export function App() {
 ```ts
 interface CursorProviderProps {
   children?: React.ReactNode;
+  clickEffect?: false | ClickEffectConfig;
 }
 ```
 
@@ -29,4 +30,4 @@ interface CursorProviderProps {
 - `useCursor` and `CursorZone` must be used under this provider.
 - Native cursors are applied to the document.
 - Custom cursors render in a fixed, click-through layer.
-
+- `clickEffect` is Provider-scoped (see [Click Effect](./click-effect.md)); omit or pass `false` to disable.

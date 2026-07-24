@@ -25,5 +25,6 @@ function useHasCursor(): boolean;
 - Returns `false` during SSR.
 - Returns `true` for mouse or trackpad devices.
 - Custom cursor layer is `aria-hidden`.
-- Custom cursor layer uses `pointer-events: none`, so it never blocks clicks.
+- Custom cursor and click-effect layers use `pointer-events: none`, so they never block clicks.
+- Click effects are disabled when `prefers-reduced-motion: reduce` is active.
 

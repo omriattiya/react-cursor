@@ -7,10 +7,11 @@ import {
   PresetVisual,
   useCursor,
   useHasCursor,
+  type ClickEffectVariant,
   type CursorInput,
   type PresetName,
 } from "@omriattiya/react-cursor";
-import type { Theme } from "../App";
+import type { PlaygroundClickEffect, Theme } from "../App";
 import { CodeBlock } from "../components/CodeBlock";
 
 function spotlightColor(theme: Theme) {
@@ -199,6 +200,23 @@ function buildSnippet(mode: Mode, input: CursorInput): string {
   return ["useCursor({", ...lines, "});"].join("\n");
 }
 
+function buildClickEffectSnippet(clickEffect: PlaygroundClickEffect): string {
+  if (!clickEffect.enabled) {
+    return `<CursorProvider>\n  <App />\n</CursorProvider>`;
+  }
+  return [
+    "<CursorProvider",
+    "  clickEffect={{",
+    `    variant: "${clickEffect.variant}",`,
+    `    color: "${clickEffect.color}",`,
+    `    size: ${clickEffect.size},`,
+    "  }}",
+    ">",
+    "  <App />",
+    "</CursorProvider>",
+  ].join("\n");
+}
+
 function RangeControl({
   id,
   label,
@@ -274,7 +292,15 @@ function SwitchControl({
   );
 }
 
-export function PlaygroundPage({ theme }: { theme: Theme }) {
+export function PlaygroundPage({
+  theme,
+  clickEffect,
+  onClickEffectChange,
+}: {
+  theme: Theme;
+  clickEffect: PlaygroundClickEffect;
+  onClickEffectChange: (next: PlaygroundClickEffect) => void;
+}) {
   const hasCursor = useHasCursor();
 
   const [mode, setMode] = useState<Mode>("preset");
@@ -356,6 +382,10 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
           };
 
   const snippet = buildSnippet(mode, cursorInput);
+  const clickEffectSnippet = buildClickEffectSnippet(clickEffect);
+
+  const patchClickEffect = (patch: Partial<PlaygroundClickEffect>) =>
+    onClickEffectChange({ ...clickEffect, ...patch });
 
   return (
     <main className="page">
@@ -617,11 +647,90 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
             </section>
           )}
 
+          <section className="control-panel" aria-labelledby="panel-click">
+            <h3 className="panel-title" id="panel-click">
+              Click Effect
+            </h3>
+            <p>
+              Provider-level press feedback at the click point — works with native and custom
+              cursors. Click anywhere to preview.
+            </p>
+            <div className="controls-options">
+              <SwitchControl
+                id="click-effect-enabled"
+                label="Click Effect"
+                checked={clickEffect.enabled}
+                onCheckedChange={(enabled) => patchClickEffect({ enabled })}
+              />
+            </div>
+
+            {clickEffect.enabled && (
+              <div className="controls-subpanel">
+                <div className="control control-span">
+                  <span className="field-label" id="click-variant-label">
+                    Variant
+                  </span>
+                  <ToggleGroup.Root
+                    type="single"
+                    className="chips"
+                    value={clickEffect.variant}
+                    onValueChange={(value) => {
+                      if (value) patchClickEffect({ variant: value as ClickEffectVariant });
+                    }}
+                    aria-labelledby="click-variant-label"
+                  >
+                    <ToggleGroup.Item className="chip" value="ripple">
+                      Ripple
+                    </ToggleGroup.Item>
+                    <ToggleGroup.Item className="chip" value="rays">
+                      Rays
+                    </ToggleGroup.Item>
+                  </ToggleGroup.Root>
+                </div>
+                <div className="controls-grid">
+                  <div className="control">
+                    <Label.Root htmlFor="click-color-text" className="field-label">
+                      Color
+                    </Label.Root>
+                    <div className="color-row">
+                      <input
+                        id="click-color-swatch"
+                        type="color"
+                        aria-label="Click effect color swatch"
+                        value={colorPickerValue(clickEffect.color)}
+                        onChange={(e) => patchClickEffect({ color: e.target.value })}
+                      />
+                      <input
+                        id="click-color-text"
+                        type="text"
+                        className="text-input"
+                        value={clickEffect.color}
+                        onChange={(e) => patchClickEffect({ color: e.target.value })}
+                        spellCheck={false}
+                      />
+                    </div>
+                  </div>
+                  <RangeControl
+                    id="click-size"
+                    label="Size"
+                    valueLabel={`${clickEffect.size}px`}
+                    value={clickEffect.size}
+                    min={24}
+                    max={120}
+                    step={4}
+                    onChange={(size) => patchClickEffect({ size })}
+                  />
+                </div>
+              </div>
+            )}
+          </section>
+
           <section className="control-panel control-panel-output" aria-labelledby="panel-output">
             <h3 className="panel-title" id="panel-output">
               Output
             </h3>
-            <CodeBlock code={snippet} label="Code" language="tsx" theme={theme} />
+            <CodeBlock code={snippet} label="Cursor" language="tsx" theme={theme} />
+            <CodeBlock code={clickEffectSnippet} label="Provider" language="tsx" theme={theme} />
           </section>
         </div>
       </section>

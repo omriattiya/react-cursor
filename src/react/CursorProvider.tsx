@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { resolveCursor } from "../core/resolve";
-import type { CursorStyle, PresetCursor, RenderCursor } from "../core/types";
+import type { ClickEffectConfig, CursorStyle, PresetCursor, RenderCursor } from "../core/types";
+import { ClickEffectLayer } from "./ClickEffectLayer";
 import { CursorContext, type CursorRegistry } from "./context";
 import { CustomCursorLayer } from "./CustomCursorLayer";
 import { useHasCursor } from "./useHasCursor";
@@ -12,9 +13,14 @@ interface Entry {
 
 export interface CursorProviderProps {
   children?: ReactNode;
+  /**
+   * Optional press feedback at the pointer coordinates. Independent of the
+   * active Cursor (including Native Cursor). Pass `false` or omit to disable.
+   */
+  clickEffect?: false | ClickEffectConfig;
 }
 
-export function CursorProvider({ children }: CursorProviderProps) {
+export function CursorProvider({ children, clickEffect }: CursorProviderProps) {
   const [globals, setGlobals] = useState<Entry[]>([]);
   const [hoveredZones, setHoveredZones] = useState<Entry[]>([]);
 
@@ -61,6 +67,7 @@ export function CursorProvider({ children }: CursorProviderProps) {
     <CursorContext.Provider value={registry}>
       {children}
       {isCustom && <CustomCursorLayer style={active as PresetCursor | RenderCursor} />}
+      {clickEffect ? <ClickEffectLayer config={clickEffect} /> : null}
     </CursorContext.Provider>
   );
 }

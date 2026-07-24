@@ -13,4 +13,6 @@ export type {
   NativeCursorValue,
   VelocityEffectConfig,
   TrailConfig,
+  ClickEffectConfig,
+  ClickEffectVariant,
 } from "./core/types";

@@ -15,6 +15,22 @@ export function App() {
   );
 }`;
 
+const CLICK_EFFECT = `import { CursorProvider } from "@omriattiya/react-cursor";
+
+export function App() {
+  return (
+    <CursorProvider
+      clickEffect={{
+        variant: "ripple", // or "rays"
+        color: "#ff7a59",  // optional — default rgba(0,0,0,0.35)
+        size: 48,          // optional — max radius / ray length
+      }}
+    >
+      <YourApp />
+    </CursorProvider>
+  );
+}`;
+
 const GLOBAL = `import { useCursor } from "@omriattiya/react-cursor";
 
 function Page() {
@@ -107,7 +123,17 @@ export function GettingStartedPage({ theme }: { theme: Theme }) {
       </section>
 
       <section className="card">
-        <h2>3. Set a global cursor</h2>
+        <h2>3. Add a click effect (optional)</h2>
+        <p>
+          Pass <code>clickEffect</code> on the Provider for press feedback at the pointer —{" "}
+          <code>ripple</code> or <code>rays</code>. Independent of the active cursor (including
+          native). Disabled under <code>prefers-reduced-motion</code>.
+        </p>
+        <CodeBlock code={CLICK_EFFECT} theme={theme} />
+      </section>
+
+      <section className="card">
+        <h2>4. Set a global cursor</h2>
         <p>
           <code>useCursor</code> applies a page-wide cursor while the calling component is mounted,
           and cleans up on unmount. Pass a CSS cursor string, a preset, or a custom render.
@@ -116,7 +142,7 @@ export function GettingStartedPage({ theme }: { theme: Theme }) {
       </section>
 
       <section className="card">
-        <h2>4. Override per region with zones</h2>
+        <h2>5. Override per region with zones</h2>
         <p>
           <code>CursorZone</code> swaps in its cursor while hovered, then falls back to the
           enclosing zone, the global cursor, or the browser default.
@@ -125,7 +151,7 @@ export function GettingStartedPage({ theme }: { theme: Theme }) {
       </section>
 
       <section className="card">
-        <h2>5. Add motion: velocity, trails</h2>
+        <h2>6. Add motion: velocity, trails</h2>
         <p>
           Presets accept speed-based <code>velocity</code> stretch. Both presets and custom{" "}
           <code>render</code> cursors accept a <code>trail</code> of segments that snakes behind the
@@ -135,7 +161,7 @@ export function GettingStartedPage({ theme }: { theme: Theme }) {
       </section>
 
       <section className="card">
-        <h2>6. Go fully custom</h2>
+        <h2>7. Go fully custom</h2>
         <p>
           Pass any React element via <code>render</code>. It's placed in a fixed, pointer-events-none
           layer that tracks the mouse. Trails work here too; velocity stretch does not (own your
@@ -290,7 +316,7 @@ export function GettingStartedPage({ theme }: { theme: Theme }) {
           </li>
           <li>
             When <code>prefers-reduced-motion</code> is active, smoothing snaps, velocity effects are
-            skipped, and trails are not rendered.
+            skipped, trails are not rendered, and click effects are disabled.
           </li>
           <li>
             The cursor layer is <code>aria-hidden</code> and never intercepts clicks.

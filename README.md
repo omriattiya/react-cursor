@@ -47,7 +47,8 @@ function Page() {
 - **Smooth trailing** — optional lerp-based smoothing, driven by `requestAnimationFrame` and direct DOM transforms (no re-renders on mouse move).
 - **Velocity effects** — stretch the cursor along its movement path as speed grows.
 - **Trails** — a chain of segments that snakes behind the cursor, scaled and faded with depth.
-- **Accessible by default** — custom cursors are disabled on touch-only devices, smoothing is disabled when `prefers-reduced-motion` is active, and the cursor layer is `aria-hidden`.
+- **Click effects** — Provider-level ripple or rays at the press point (works with native cursors too).
+- **Accessible by default** — custom cursors are disabled on touch-only devices; smoothing, trails, velocity, and click effects respect `prefers-reduced-motion`; layers are `aria-hidden`.
 - **SSR-safe** — no window access during render; server snapshots assume no fine pointer, so nothing custom is rendered until hydration.
 - **Tiny surface** — two components, two hooks, zero dependencies beyond React.
 
@@ -65,14 +66,14 @@ Requires React 19 or later (`react` and `react-dom` are peer dependencies).
 
 ## Setup
 
-Wrap your app (or the subtree that should use managed cursors) in a single `CursorProvider`. It owns all cursor state and renders the custom cursor element when one is active.
+Wrap your app (or the subtree that should use managed cursors) in a single `CursorProvider`. It owns all cursor state and renders the custom cursor element when one is active. Optionally pass `clickEffect` for press feedback at the pointer.
 
 ```tsx
 import { CursorProvider } from "@omriattiya/react-cursor";
 
 export function App() {
   return (
-    <CursorProvider>
+    <CursorProvider clickEffect={{ variant: "ripple", color: "#ff7a59" }}>
       <YourApp />
     </CursorProvider>
   );
@@ -281,8 +282,8 @@ Changing the input object also works — the hook re-registers when any of the c
 ## Touch devices and accessibility
 
 - **Touch-only devices:** custom cursors (presets and render) are only shown when the device reports a fine pointer (`(pointer: fine)` media query). On touch-only devices nothing is rendered and the native cursor is left alone. You can read the same signal yourself with `useHasCursor()`.
-- **Reduced motion:** when `prefers-reduced-motion: reduce` is active, `smoothing` is ignored (the cursor snaps directly to the mouse), velocity effects are not applied, and trails are not rendered.
-- **Screen readers:** the custom cursor layer is `aria-hidden` and `pointer-events: none`, so it never intercepts clicks or appears in the accessibility tree.
+- **Reduced motion:** when `prefers-reduced-motion: reduce` is active, `smoothing` is ignored (the cursor snaps directly to the mouse), velocity effects are not applied, trails are not rendered, and click effects are disabled.
+- **Screen readers:** the custom cursor and click-effect layers are `aria-hidden` and `pointer-events: none`, so they never intercept clicks or appear in the accessibility tree.
 
 ```tsx
 import { useHasCursor } from "@omriattiya/react-cursor";
@@ -301,11 +302,12 @@ The library is SSR-safe: nothing touches `window` during render, and on the serv
 
 ### `<CursorProvider>`
 
-Wraps the app, owns cursor state, applies the native CSS cursor to `document.documentElement`, and renders the custom cursor layer when the active cursor is a preset or render cursor.
+Wraps the app, owns cursor state, applies the native CSS cursor to `document.documentElement`, and renders the custom cursor layer when the active cursor is a preset or render cursor. Optionally mounts a Click Effect layer for press feedback.
 
 | Prop | Type | Description |
 |---|---|---|
 | `children` | `ReactNode` | Your app. |
+| `clickEffect` | `false \| ClickEffectConfig` | Optional press feedback at the pointer (`ripple` or `rays`). Omit or `false` to disable. |
 
 ### `useCursor(input)`
 
@@ -342,10 +344,12 @@ import type {
   NativeCursorValue,    // CSSProperties["cursor"]
   VelocityEffectConfig, // { stretch? }
   TrailConfig,          // { count?; delay?; fadeDelay?; shrink? }
+  ClickEffectConfig,    // { variant: "ripple" | "rays"; color?; size? }
+  ClickEffectVariant,   // "ripple" | "rays"
 } from "@omriattiya/react-cursor";
 ```
 
-`smoothing`, `trail`, and `hideNativeCursor` are accepted by both `PresetCursor` and `RenderCursor`. `velocity` is preset-only.
+`smoothing`, `trail`, and `hideNativeCursor` are accepted by both `PresetCursor` and `RenderCursor`. `velocity` is preset-only. `clickEffect` is a `CursorProvider` prop.
 
 ## How it works
 

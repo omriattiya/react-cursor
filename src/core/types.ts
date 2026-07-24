@@ -45,6 +45,18 @@ export interface TrailConfig {
   fadeDelay?: number;
 }
 
+/** Visual variant for a Click Effect spawned at the press point. */
+export type ClickEffectVariant = "ripple" | "rays";
+
+/** Provider-level press feedback at the pointer coordinates. */
+export interface ClickEffectConfig {
+  variant: ClickEffectVariant;
+  /** Fill/stroke color. Default `rgba(0,0,0,0.35)`. */
+  color?: string;
+  /** Max radius (ripple) or ray length in px. Default 48. */
+  size?: number;
+}
+
 /** Options shared by all custom cursors (presets and render). */
 interface CustomCursorOptions {
   /** 0 = snap; (0, 1] = fraction of remaining distance per frame (default 0.75). */

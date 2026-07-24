@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import * as Tabs from "@radix-ui/react-tabs";
 import { Moon, Package, Sun } from "lucide-react";
+import {
+  CursorProvider,
+  type ClickEffectConfig,
+  type ClickEffectVariant,
+} from "@omriattiya/react-cursor";
 import { GettingStartedPage } from "./pages/GettingStartedPage";
 import { PlaygroundPage } from "./pages/PlaygroundPage";
 
@@ -10,10 +15,26 @@ export const NPM_URL = "https://www.npmjs.com/package/@omriattiya/react-cursor";
 type Page = "playground" | "getting-started";
 export type Theme = "dark" | "light";
 
+export type PlaygroundClickEffect = {
+  enabled: boolean;
+  variant: ClickEffectVariant;
+  color: string;
+  size: number;
+};
+
 function getInitialTheme(): Theme {
   const stored = localStorage.getItem("playground-theme");
   if (stored === "dark" || stored === "light") return stored;
   return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+}
+
+function toClickEffectConfig(state: PlaygroundClickEffect): false | ClickEffectConfig {
+  if (!state.enabled) return false;
+  return {
+    variant: state.variant,
+    color: state.color,
+    size: state.size,
+  };
 }
 
 function GitHubIcon() {
@@ -27,6 +48,12 @@ function GitHubIcon() {
 export function App() {
   const [page, setPage] = useState<Page>("playground");
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
+  const [clickEffect, setClickEffect] = useState<PlaygroundClickEffect>({
+    enabled: false,
+    variant: "ripple",
+    color: "#ff7a59",
+    size: 48,
+  });
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -34,77 +61,87 @@ export function App() {
   }, [theme]);
 
   return (
-    <div className="app">
-      <header className="navbar">
-        <div className="navbar-inner">
-          <div className="brand">
-            <span className="brand-mark" aria-hidden="true" />
-            <span className="brand-name">react-cursor</span>
+    <CursorProvider clickEffect={toClickEffectConfig(clickEffect)}>
+      <div className="app">
+        <header className="navbar">
+          <div className="navbar-inner">
+            <div className="brand">
+              <span className="brand-mark" aria-hidden="true" />
+              <span className="brand-name">react-cursor</span>
+            </div>
+
+            <Tabs.Root
+              value={page}
+              onValueChange={(value) => setPage(value as Page)}
+              className="tabs-root"
+            >
+              <Tabs.List className="tabs" aria-label="Pages">
+                <Tabs.Trigger value="playground" className="tab">
+                  Playground
+                </Tabs.Trigger>
+                <Tabs.Trigger value="getting-started" className="tab">
+                  Getting Started
+                </Tabs.Trigger>
+              </Tabs.List>
+            </Tabs.Root>
+
+            <div className="navbar-actions">
+              <a
+                className="icon-button"
+                href={GITHUB_URL}
+                target="_blank"
+                rel="noreferrer"
+                title="GitHub repository"
+                aria-label="GitHub repository"
+              >
+                <GitHubIcon />
+              </a>
+              <a
+                className="icon-button"
+                href={NPM_URL}
+                target="_blank"
+                rel="noreferrer"
+                title="npm package"
+                aria-label="npm package"
+              >
+                <Package size={18} strokeWidth={1.75} aria-hidden="true" />
+              </a>
+              <button
+                type="button"
+                className="icon-button"
+                onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+                title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+                aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+              >
+                <span className="theme-icon" aria-hidden="true">
+                  {theme === "dark" ? (
+                    <Sun size={18} strokeWidth={1.75} />
+                  ) : (
+                    <Moon size={18} strokeWidth={1.75} />
+                  )}
+                </span>
+              </button>
+            </div>
           </div>
+        </header>
 
-          <Tabs.Root
-            value={page}
-            onValueChange={(value) => setPage(value as Page)}
-            className="tabs-root"
-          >
-            <Tabs.List className="tabs" aria-label="Pages">
-              <Tabs.Trigger value="playground" className="tab">
-                Playground
-              </Tabs.Trigger>
-              <Tabs.Trigger value="getting-started" className="tab">
-                Getting Started
-              </Tabs.Trigger>
-            </Tabs.List>
-          </Tabs.Root>
+        {page === "playground" ? (
+          <PlaygroundPage
+            theme={theme}
+            clickEffect={clickEffect}
+            onClickEffectChange={setClickEffect}
+          />
+        ) : (
+          <GettingStartedPage theme={theme} />
+        )}
 
-          <div className="navbar-actions">
-            <a
-              className="icon-button"
-              href={GITHUB_URL}
-              target="_blank"
-              rel="noreferrer"
-              title="GitHub repository"
-              aria-label="GitHub repository"
-            >
-              <GitHubIcon />
-            </a>
-            <a
-              className="icon-button"
-              href={NPM_URL}
-              target="_blank"
-              rel="noreferrer"
-              title="npm package"
-              aria-label="npm package"
-            >
-              <Package size={18} strokeWidth={1.75} aria-hidden="true" />
-            </a>
-            <button
-              type="button"
-              className="icon-button"
-              onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
-              title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-              aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-            >
-              <span className="theme-icon" aria-hidden="true">
-                {theme === "dark" ? (
-                  <Sun size={18} strokeWidth={1.75} />
-                ) : (
-                  <Moon size={18} strokeWidth={1.75} />
-                )}
-              </span>
-            </button>
+        <footer className="footer">
+          <div className="footer-inner">
+            <span className="footer-package">@omriattiya/react-cursor</span>
+            <span className="footer-credit">Open source · by Omri Attiya</span>
           </div>
-        </div>
-      </header>
-
-      {page === "playground" ? <PlaygroundPage theme={theme} /> : <GettingStartedPage theme={theme} />}
-
-      <footer className="footer">
-        <div className="footer-inner">
-          <span className="footer-package">@omriattiya/react-cursor</span>
-          <span className="footer-credit">Open source · by Omri Attiya</span>
-        </div>
-      </footer>
-    </div>
+        </footer>
+      </div>
+    </CursorProvider>
   );
 }
