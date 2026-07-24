@@ -174,9 +174,12 @@ useCursor({
 Both presets and render cursors accept:
 
 - **`smoothing?: number`** — the fraction of the remaining distance covered per frame, so smaller values trail more (e.g. `0.15` is a loose, floaty follow). Defaults to `0.75` (a quick catch-up); `0` snaps the cursor to the mouse every frame. Automatically forced to `0` when the user has `prefers-reduced-motion` enabled.
-- **`velocity?: { stretch? }`** — speed-based stretch; see [Motion](#motion-velocity-effects-and-trails).
 - **`trail?: { count?, delay?, fadeDelay?, shrink? }`** — a segment chain behind the cursor; see [Motion](#motion-velocity-effects-and-trails).
 - **`hideNativeCursor?: boolean`** — `true` by default: the native cursor is hidden everywhere (including on buttons and links, which normally set their own) so only the custom cursor is visible. Set to `false` to show both.
+
+Presets additionally accept:
+
+- **`velocity?: { stretch? }`** — speed-based stretch; see [Motion](#motion-velocity-effects-and-trails). Not available on custom `render` cursors (own motion inside your element).
 
 ```tsx
 // Ring accent alongside the normal OS cursor
@@ -187,7 +190,7 @@ useCursor({ preset: "ring", smoothing: 0.3, hideNativeCursor: false });
 
 ### Velocity effects
 
-Make the cursor react to how fast it's moving. Works with snapping or `smoothing`:
+Make a **preset** cursor react to how fast it's moving. Works with snapping or `smoothing`:
 
 ```tsx
 useCursor({
@@ -332,8 +335,8 @@ import type {
   CursorInput,          // string | CursorStyle — what useCursor/CursorZone accept
   CursorStyle,          // NativeCursor | PresetCursor | RenderCursor
   NativeCursor,         // { native: CSSProperties["cursor"] }
-  PresetCursor,         // { preset: PresetName; size?; color?; content?; ...motion options }
-  RenderCursor,         // { render: ReactNode; ...motion options }
+  PresetCursor,         // { preset: PresetName; size?; color?; content?; velocity?; ... }
+  RenderCursor,         // { render: ReactNode; smoothing?; trail?; hideNativeCursor? }
   PresetName,           // "dot" | "ring" | "spotlight" | "emoji" | "image" | "text" | "pulse" | "arrow" | "hand" | "crosshair" | "wand" | "comet"
   PresetVisual,         // render a preset visual without the cursor layer (e.g. previews)
   NativeCursorValue,    // CSSProperties["cursor"]
@@ -342,7 +345,7 @@ import type {
 } from "@omriattiya/react-cursor";
 ```
 
-Motion options (`smoothing`, `velocity`, `trail`, `hideNativeCursor`) are accepted by both `PresetCursor` and `RenderCursor`.
+`smoothing`, `trail`, and `hideNativeCursor` are accepted by both `PresetCursor` and `RenderCursor`. `velocity` is preset-only.
 
 ## How it works
 

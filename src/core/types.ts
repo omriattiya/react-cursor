@@ -49,7 +49,6 @@ export interface TrailConfig {
 interface CustomCursorOptions {
   /** 0 = snap; (0, 1] = fraction of remaining distance per frame (default 0.75). */
   smoothing?: number;
-  velocity?: VelocityEffectConfig;
   trail?: TrailConfig;
   /** Set false to keep the native cursor visible alongside the custom one. */
   hideNativeCursor?: boolean;
@@ -64,6 +63,8 @@ export type PresetCursor = {
   color?: string;
   /** Content for the emoji / image / text presets. */
   content?: string;
+  /** Speed-based stretch — presets only (not available on custom `render` cursors). */
+  velocity?: VelocityEffectConfig;
 } & CustomCursorOptions;
 
 /** A fully custom-rendered cursor (escape hatch). */

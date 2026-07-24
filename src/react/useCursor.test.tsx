@@ -64,6 +64,37 @@ describe("useCursor with a native cursor", () => {
     expect(document.documentElement.style.cursor).toBe("auto");
   });
 
+  test("picks up trail changes on a render cursor with a stable node", () => {
+    const stableNode = <span>custom</span>;
+    const getTrailElements = () => document.querySelectorAll("[data-react-cursor-trail]");
+
+    function Cursor({ trail }: { trail?: { count: number } }) {
+      useCursor({ render: stableNode, trail });
+      return null;
+    }
+
+    const { rerender } = render(
+      <CursorProvider>
+        <Cursor trail={{ count: 3 }} />
+      </CursorProvider>,
+    );
+    expect(getTrailElements()).toHaveLength(3);
+
+    rerender(
+      <CursorProvider>
+        <Cursor />
+      </CursorProvider>,
+    );
+    expect(getTrailElements()).toHaveLength(0);
+
+    rerender(
+      <CursorProvider>
+        <Cursor trail={{ count: 5 }} />
+      </CursorProvider>,
+    );
+    expect(getTrailElements()).toHaveLength(5);
+  });
+
   test("last writer wins when two components set the global cursor", () => {
     function WaitCursor() {
       useCursor("wait");

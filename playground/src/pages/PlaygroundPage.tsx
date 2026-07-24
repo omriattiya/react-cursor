@@ -125,25 +125,25 @@ const PRESETS: Record<PresetName, PresetMeta> = {
 
 const PRESET_NAMES = Object.keys(PRESETS) as PresetName[];
 
-/** Compact sizes so each chip shows a recognizable glyph. */
+/** Card-preview sizes — large enough to read as the primary glyph. */
 const PREVIEW_SIZE: Record<PresetName, number> = {
-  dot: 10,
-  ring: 14,
-  pulse: 14,
-  arrow: 16,
-  hand: 16,
-  crosshair: 14,
-  wand: 16,
-  comet: 12,
-  spotlight: 18,
-  emoji: 14,
-  text: 9,
-  image: 14,
+  dot: 22,
+  ring: 36,
+  pulse: 36,
+  arrow: 32,
+  hand: 34,
+  crosshair: 32,
+  wand: 34,
+  comet: 28,
+  spotlight: 40,
+  emoji: 32,
+  text: 16,
+  image: 32,
 };
 
 const TIP_HOTSPOT = new Set<PresetName>(["arrow", "hand", "wand"]);
 
-function PresetChipPreview({ name, theme }: { name: PresetName; theme: Theme }) {
+function PresetCardPreview({ name, theme }: { name: PresetName; theme: Theme }) {
   const meta = PRESETS[name];
   const color = name === "spotlight" ? spotlightColor(theme) : meta.defaultColor;
   const content = name === "text" ? "Aa" : meta.defaultContent;
@@ -160,14 +160,14 @@ function PresetChipPreview({ name, theme }: { name: PresetName; theme: Theme }) 
   // Tip-hotspot presets aren't centered via translate(-50%), so box-center them instead.
   if (TIP_HOTSPOT.has(name)) {
     return (
-      <span className="chip-preview chip-preview-tip" aria-hidden>
+      <span className="preset-card-icon preset-card-icon-tip" aria-hidden>
         {visual}
       </span>
     );
   }
   return (
-    <span className="chip-preview" aria-hidden>
-      <span className="chip-preview-origin">{visual}</span>
+    <span className="preset-card-icon" aria-hidden>
+      <span className="preset-card-icon-origin">{visual}</span>
     </span>
   );
 }
@@ -328,7 +328,6 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
 
   const motionOptions = {
     smoothing: smoothing / 100,
-    ...(stretch > 1 ? { velocity: { stretch } } : {}),
     ...(trailEnabled
       ? {
           trail: {
@@ -352,6 +351,7 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
             size: current.size,
             ...(meta.hasColor && current.color ? { color: current.color } : {}),
             ...(meta.hasContent && current.content ? { content: current.content } : {}),
+            ...(stretch > 1 ? { velocity: { stretch } } : {}),
             ...motionOptions,
           };
 
@@ -437,7 +437,7 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
                 </span>
                 <ToggleGroup.Root
                   type="single"
-                  className="chips"
+                  className="preset-cards"
                   value={presetName}
                   onValueChange={(value) => {
                     if (value) setPresetName(value as PresetName);
@@ -445,9 +445,9 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
                   aria-labelledby="preset-label"
                 >
                   {PRESET_NAMES.map((name) => (
-                    <ToggleGroup.Item key={name} value={name} className="chip">
-                      <PresetChipPreview name={name} theme={theme} />
-                      {name}
+                    <ToggleGroup.Item key={name} value={name} className="preset-card">
+                      <PresetCardPreview name={name} theme={theme} />
+                      <span className="preset-card-name">{name}</span>
                     </ToggleGroup.Item>
                   ))}
                 </ToggleGroup.Root>
@@ -539,17 +539,18 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
                   onChange={setSmoothing}
                 />
 
-                <RangeControl
-                  id="stretch"
-                  label="Velocity stretch"
-                  valueLabel={`${stretch.toFixed(1)}x`}
-                  value={stretch}
-                  min={1}
-                  max={3}
-                  step={0.1}
-                  onChange={setStretch}
-                />
-
+                {mode === "preset" && (
+                  <RangeControl
+                    id="stretch"
+                    label="Velocity stretch"
+                    valueLabel={`${stretch.toFixed(1)}x`}
+                    value={stretch}
+                    min={1}
+                    max={3}
+                    step={0.1}
+                    onChange={setStretch}
+                  />
+                )}
               </div>
 
               <div className="controls-options">

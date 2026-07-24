@@ -34,7 +34,9 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
   const trailRefs = useRef<(HTMLDivElement | null)[]>([]);
   const reducedMotion = useReducedMotion();
   const smoothing = reducedMotion ? 0 : (style.smoothing ?? 0.75);
-  const velocity = reducedMotion ? undefined : style.velocity;
+  // Velocity stretch is preset-only — custom render cursors own their own motion.
+  const velocity =
+    reducedMotion || "render" in style ? undefined : (style as PresetCursor).velocity;
   const trail = reducedMotion ? undefined : style.trail;
   const trailCount = trail === undefined ? 0 : (trail.count ?? 3);
 

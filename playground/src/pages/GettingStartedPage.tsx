@@ -70,6 +70,7 @@ const RENDER = `useCursor({
     />
   ),
   smoothing: 0.15,
+  trail: { count: 4, delay: 80 },
 });`;
 
 export function GettingStartedPage({ theme }: { theme: Theme }) {
@@ -126,9 +127,9 @@ export function GettingStartedPage({ theme }: { theme: Theme }) {
       <section className="card">
         <h2>5. Add motion: velocity, trails</h2>
         <p>
-          Every custom cursor accepts speed-based <code>velocity</code> effects and a{" "}
-          <code>trail</code> of segments that snakes behind the cursor and fades away after it
-          settles.
+          Presets accept speed-based <code>velocity</code> stretch. Both presets and custom{" "}
+          <code>render</code> cursors accept a <code>trail</code> of segments that snakes behind the
+          cursor and fades away after it settles.
         </p>
         <CodeBlock code={MOTION} theme={theme} />
       </section>
@@ -137,7 +138,8 @@ export function GettingStartedPage({ theme }: { theme: Theme }) {
         <h2>6. Go fully custom</h2>
         <p>
           Pass any React element via <code>render</code>. It's placed in a fixed, pointer-events-none
-          layer that tracks the mouse.
+          layer that tracks the mouse. Trails work here too; velocity stretch does not (own your
+          motion inside the element).
         </p>
         <CodeBlock code={RENDER} theme={theme} />
       </section>

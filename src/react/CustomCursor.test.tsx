@@ -139,4 +139,30 @@ describe("custom cursor", () => {
 
     expect(getCursorElement()).toHaveTextContent("sparkle");
   });
+
+  test("velocity stretch is ignored on custom render cursors", () => {
+    function StretchyRender() {
+      // @ts-expect-error velocity is preset-only
+      useCursor({ render: <span data-testid="custom">x</span>, velocity: { stretch: 3 } });
+      return null;
+    }
+
+    render(
+      <CursorProvider>
+        <StretchyRender />
+      </CursorProvider>,
+    );
+
+    fireEvent.mouseMove(window, { clientX: 0, clientY: 0 });
+    act(() => {
+      vi.advanceTimersToNextFrame();
+    });
+    fireEvent.mouseMove(window, { clientX: 400, clientY: 0 });
+    act(() => {
+      for (let i = 0; i < 10; i++) vi.advanceTimersToNextFrame();
+    });
+
+    const visual = document.querySelector<HTMLElement>("[data-react-cursor-visual]")!;
+    expect(visual.style.transform).toBe("");
+  });
 });

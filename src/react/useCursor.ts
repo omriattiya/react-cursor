@@ -19,7 +19,11 @@ export function useCursor(input: CursorInput): void {
   // instead, and track the remaining (serializable) properties separately.
   const renderKey = isRenderCursor(input) ? input.render : null;
   const styleKey = isRenderCursor(input)
-    ? JSON.stringify({ smoothing: input.smoothing, hideNativeCursor: input.hideNativeCursor })
+    ? JSON.stringify({
+        smoothing: input.smoothing,
+        trail: input.trail,
+        hideNativeCursor: input.hideNativeCursor,
+      })
     : JSON.stringify(input);
 
   useEffect(() => {
