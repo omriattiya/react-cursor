@@ -51,7 +51,7 @@ useCursor({
   trail: {
     count: 5,       // segments (default 3)
     delay: 100,     // lag (ms) per segment
-    fadeDelay: 200, // ms between per-segment fades once idle (deepest first)
+    fadeDelay: 200, // ms between per-segment fades after trail settles (deepest first)
     shrink: false,  // keep segments full size (default true: smaller with depth)
   },
 });`;
@@ -127,8 +127,8 @@ export function GettingStartedPage({ theme }: { theme: Theme }) {
         <h2>5. Add motion: velocity, trails</h2>
         <p>
           Every custom cursor accepts speed-based <code>velocity</code> effects and a{" "}
-          <code>trail</code> of segments that snakes behind the cursor and fades away when the mouse
-          rests.
+          <code>trail</code> of segments that snakes behind the cursor and fades away after it
+          settles.
         </p>
         <CodeBlock code={MOTION} theme={theme} />
       </section>

@@ -152,6 +152,29 @@ describe("trail", () => {
     expect(getTrailElements()).toHaveLength(3);
   });
 
+  test("fade waits until the trail has settled, not just until the mouse stops", () => {
+    render(
+      <CursorProvider>
+        <TrailDot />
+      </CursorProvider>,
+    );
+
+    fireEvent.mouseMove(window, { clientX: 100, clientY: 100 });
+    advanceFrames(1);
+    // Build real path history so segments stay in motion after the mouse rests
+    for (let x = 110; x <= 400; x += 10) {
+      fireEvent.mouseMove(window, { clientX: x, clientY: 100 });
+      advanceFrames(1);
+    }
+
+    // ~240ms after mouse stop: past fadeDelay (200) but still within
+    // count * delay (300) settling window — nothing should have faded yet
+    advanceFrames(15);
+    for (const el of getTrailElements()) {
+      expect(Number(el.style.opacity)).toBeGreaterThan(0);
+    }
+  });
+
   test("segments fade one by one from the tail end, not as a single block", () => {
     render(
       <CursorProvider>
@@ -161,11 +184,13 @@ describe("trail", () => {
 
     fireEvent.mouseMove(window, { clientX: 100, clientY: 100 });
     advanceFrames(1);
-    fireEvent.mouseMove(window, { clientX: 200, clientY: 100 });
+    for (let x = 110; x <= 400; x += 10) {
+      fireEvent.mouseMove(window, { clientX: x, clientY: 100 });
+      advanceFrames(1);
+    }
 
-    // ~320ms idle at 16ms/frame: one 200ms fadeDelay elapsed, so only the
-    // deepest of the 3 segments has faded
-    advanceFrames(20);
+    // Settle (~count*delay) + one fadeDelay → deepest gone only
+    advanceFrames(35);
 
     const [nearest, middle, deepest] = getTrailElements() as [HTMLElement, HTMLElement, HTMLElement];
     expect(deepest.style.opacity).toBe("0");
@@ -173,14 +198,14 @@ describe("trail", () => {
     expect(Number(middle.style.opacity)).toBeGreaterThan(0);
     expect(Number(nearest.style.opacity)).toBeGreaterThan(0);
 
-    // ~720ms idle: all three fade intervals elapsed, whole tail gone
-    advanceFrames(25);
+    // Two more fade intervals → whole tail gone
+    advanceFrames(26);
     for (const el of getTrailElements()) {
       expect(el.style.opacity).toBe("0");
     }
 
     // Mouse moves again: segments reappear at their depth opacity
-    fireEvent.mouseMove(window, { clientX: 210, clientY: 100 });
+    fireEvent.mouseMove(window, { clientX: 410, clientY: 100 });
     advanceFrames(1);
 
     const opacities = getTrailElements().map((el) => Number(el.style.opacity));
@@ -204,8 +229,8 @@ describe("trail", () => {
     advanceFrames(1);
     fireEvent.mouseMove(window, { clientX: 200, clientY: 100 });
 
-    // ~320ms idle: past the default 200ms but well within fadeDelay 1000
-    advanceFrames(20);
+    // Past settle + default 200ms, but well within fadeDelay 1000
+    advanceFrames(40);
 
     for (const el of getTrailElements()) {
       expect(Number(el.style.opacity)).toBeGreaterThan(0);

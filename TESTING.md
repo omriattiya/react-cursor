@@ -33,7 +33,7 @@ Position calculation, smoothing/lerp math, and detection logic are extracted int
 - Unmounting components cleanly reverts cursor state
 - Velocity stretch applies and relaxes
 - Trail segments render per count, fade with depth, follow in order, shrink with depth unless `shrink: false`
-- Trail dissolves segment by segment (deepest first) when idle, reappears on movement
+- Trail dissolves segment by segment (deepest first) after it settles, reappears on movement
 - Reduced motion disables velocity effects and trails
 
 ### What NOT to Test (in automated tests)

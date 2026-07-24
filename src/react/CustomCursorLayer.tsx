@@ -95,9 +95,9 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
           if (node) node.style.transform = `translate3d(${seg.x}px, ${seg.y}px, 0)`;
         });
 
-        // Leaving the segments on screen after the mouse rests looks abandoned;
-        // dissolve the tail one segment per fadeDelay, deepest first.
-        if (movedSinceTick) {
+        // Leave the trail alone until it has finished catching up; only then
+        // dissolve one segment per fadeDelay, deepest first.
+        if (movedSinceTick || trailMoving) {
           idleSince = now;
           movedSinceTick = false;
         }
@@ -117,7 +117,7 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
       const awaitingFade = trail !== undefined && fadedCount < trailCount;
 
       // Keep ticking until the position rests, effects relax, the tail settles,
-      // and (if a trail is shown) its idle fade has kicked in
+      // and (if a trail is shown) its post-settle fade has finished
       if (current.x !== target.x || current.y !== target.y || effectActive || trailMoving || awaitingFade) {
         frame = requestAnimationFrame(tick);
       } else {

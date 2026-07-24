@@ -210,7 +210,7 @@ useCursor({
   trail: {
     count: 5,       // number of segments (default 3)
     delay: 100,     // lag (ms) each segment trails the one before it on the path
-    fadeDelay: 200, // ms between per-segment fades once the mouse stops
+    fadeDelay: 200, // ms between per-segment fades after the trail settles
     shrink: false,  // keep every segment full size (default true: smaller with depth)
   },
 });

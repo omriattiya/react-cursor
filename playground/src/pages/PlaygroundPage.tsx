@@ -587,7 +587,7 @@ export function PlaygroundPage({ theme }: { theme: Theme }) {
                     />
                     <RangeControl
                       id="trail-fade"
-                      label="Trail fade after"
+                      label="Trail fade after settle"
                       valueLabel={`${trailFadeDelay}ms`}
                       value={trailFadeDelay}
                       min={50}
