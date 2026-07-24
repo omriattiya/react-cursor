@@ -8,6 +8,8 @@ A unified API for native CSS cursors and custom-rendered cursors in React.
 
 **[Live playground →](https://react-cursor-xi.vercel.app/)**
 
+Detailed feature notes live in [`docs/features`](./docs/features/) for future playground docs.
+
 Declare what the cursor should look like — a native CSS value, a built-in preset, or any React element — and the library takes care of the rest: mouse tracking, zone hovering, priority resolution, touch-device detection, and reduced-motion support.
 
 ```tsx
