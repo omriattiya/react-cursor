@@ -1,27 +1,10 @@
-import { useId, type CSSProperties, type ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import type { PresetCursor } from "../core/types";
 
 const center: CSSProperties = { transform: "translate(-50%, -50%)", display: "block" };
 
-/** Lighten/darken a `#rrggbb` color; non-hex values are returned unchanged. */
-function shadeHex(color: string, amount: number): string {
-  const hex = /^#([0-9a-f]{6})$/i.exec(color.trim())?.[1];
-  if (!hex) return color;
-  const n = Number.parseInt(hex, 16);
-  const channel = (shift: number) => {
-    const value = (n >> shift) & 0xff;
-    return Math.max(0, Math.min(255, Math.round(value + 255 * amount)));
-  };
-  const r = channel(16);
-  const g = channel(8);
-  const b = channel(0);
-  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
-}
-
 /** Renders the visual for a built-in preset (also used for playground chip previews). */
 export function PresetVisual({ style }: { style: PresetCursor }): ReactNode {
-  const uid = useId().replaceAll(":", "");
-
   switch (style.preset) {
     case "dot": {
       const size = style.size ?? 10;
@@ -231,126 +214,6 @@ export function PresetVisual({ style }: { style: PresetCursor }): ReactNode {
         >
           <style>{COMET_CSS}</style>
         </span>
-      );
-    }
-    case "trump": {
-      const size = style.size ?? 32;
-      const hair = style.color ?? "#f5d76e";
-      const hairDeep = shadeHex(hair, -0.22);
-      const hairLite = shadeHex(hair, 0.28);
-      const skinId = `trump-skin-${uid}`;
-      const suitId = `trump-suit-${uid}`;
-      return (
-        <svg
-          className="react-cursor-trump"
-          width={size}
-          height={size}
-          viewBox="0 0 40 44"
-          style={{ ...center, overflow: "visible" }}
-          aria-hidden
-        >
-          <defs>
-            <radialGradient id={skinId} cx="35%" cy="30%" r="70%">
-              <stop offset="0%" stopColor="#ffc9a0" />
-              <stop offset="55%" stopColor="#f0a06a" />
-              <stop offset="100%" stopColor="#d9844f" />
-            </radialGradient>
-            <linearGradient id={suitId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#1e293b" />
-              <stop offset="100%" stopColor="#0f172a" />
-            </linearGradient>
-          </defs>
-
-          {/* Suit shoulders */}
-          <path
-            d="M8 38 C12 34.5 16 33.5 20 33.5 C24 33.5 28 34.5 32 38 L34 44 H6 Z"
-            fill={`url(#${suitId})`}
-            stroke="#fff"
-            strokeWidth="0.9"
-            strokeLinejoin="round"
-          />
-          {/* Collar */}
-          <path d="M14.5 34.5 L20 38.5 L25.5 34.5 L23.5 33.2 L20 35.8 L16.5 33.2 Z" fill="#f8fafc" />
-          {/* Tie */}
-          <path d="M18.6 35.5 L20 37.2 L21.4 35.5 L22.2 42.5 L20 44 L17.8 42.5 Z" fill="#dc2626" />
-          <path d="M18.6 35.5 L20 37.2 L21.4 35.5 L20 34.6 Z" fill="#ef4444" />
-
-          {/* Ears */}
-          <ellipse cx="8.2" cy="22" rx="2.2" ry="3.1" fill="#e89560" stroke="#fff" strokeWidth="0.7" />
-          <ellipse cx="31.8" cy="22" rx="2.2" ry="3.1" fill="#e89560" stroke="#fff" strokeWidth="0.7" />
-
-          {/* Head */}
-          <path
-            d="M10 20
-               C9.2 12.5 12.5 7.5 20 7.2
-               C27.5 7 31 12.2 30.2 20
-               C30.8 24.5 29.5 29.5 26.5 32.2
-               C24.2 34.2 21.5 35.2 20 35.2
-               C18.5 35.2 15.8 34.2 13.5 32.2
-               C10.5 29.5 9.2 24.5 10 20 Z"
-            fill={`url(#${skinId})`}
-            stroke="#fff"
-            strokeWidth="1.1"
-            strokeLinejoin="round"
-          />
-
-          {/* Hair base / combover volume */}
-          <path
-            className="react-cursor-trump-hair"
-            d="M9.5 18.5
-               C8.2 11 12 5.2 20 4.6
-               C28.2 4 33 9.5 32.2 17.5
-               C33.8 14.5 34 11 31.5 8
-               C27.5 3.2 21.5 2.4 16 3.6
-               C11.2 4.8 8 9.5 9.5 18.5 Z"
-            fill={hair}
-            stroke="#fff"
-            strokeWidth="1"
-            strokeLinejoin="round"
-          />
-          {/* Hair depth / shadow sweep */}
-          <path d="M11 16 C12.5 10 17 7.5 22 7.2 C26.5 7 30 10 30.5 14.5 C28 10.5 24 9 20 9.2 C15.5 9.5 12.5 12 11 16 Z" fill={hairDeep} opacity="0.55" />
-          {/* Forehead fringe */}
-          <path
-            d="M10.5 17.5
-               C13 13.5 16.5 12.2 20.2 12
-               C24.5 11.8 28.2 13.5 30 17.2
-               C27.5 14.2 24 13.5 20.2 13.6
-               C16 13.8 12.8 15 10.5 17.5 Z"
-            fill={hair}
-          />
-          {/* Hair highlight streaks */}
-          <path d="M14 8.2 C16.5 6.8 20 6.5 23.5 7.2" stroke={hairLite} strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.9" />
-          <path d="M12.5 11.5 C16 9.2 21 8.8 26 10.5" stroke={hairLite} strokeWidth="0.9" strokeLinecap="round" fill="none" opacity="0.7" />
-
-          {/* Brows */}
-          <path d="M12.2 18.2 Q15.2 16.8 17.6 18.4" stroke="#6b4423" strokeWidth="1.35" strokeLinecap="round" fill="none" />
-          <path d="M22.4 18.4 Q25 16.8 27.8 18.2" stroke="#6b4423" strokeWidth="1.35" strokeLinecap="round" fill="none" />
-
-          {/* Eyes */}
-          <ellipse cx="14.8" cy="20.6" rx="2.15" ry="1.7" fill="#fff" />
-          <ellipse cx="25.2" cy="20.6" rx="2.15" ry="1.7" fill="#fff" />
-          <ellipse cx="15.1" cy="20.7" rx="1.05" ry="1.15" fill="#3d2914" />
-          <ellipse cx="25.5" cy="20.7" rx="1.05" ry="1.15" fill="#3d2914" />
-          <circle cx="15.4" cy="20.35" r="0.35" fill="#fff" />
-          <circle cx="25.8" cy="20.35" r="0.35" fill="#fff" />
-
-          {/* Nose */}
-          <path
-            d="M20 21.2 C18.6 23.8 18.4 25.6 19.2 26.6 C19.7 27.2 20.8 27.3 21.4 26.6 C22.2 25.6 21.8 23.8 20.6 21.2"
-            fill="#e09058"
-            opacity="0.95"
-          />
-          <path d="M19.1 26.3 Q20.3 27.1 21.5 26.3" stroke="#c56f42" strokeWidth="0.7" strokeLinecap="round" fill="none" />
-
-          {/* Mouth — pursed smirk */}
-          <ellipse cx="20" cy="29.6" rx="3.6" ry="1.35" fill="#c45c54" />
-          <path d="M16.8 29.3 Q20 30.6 23.2 29.3" stroke="#9a3d38" strokeWidth="0.7" strokeLinecap="round" fill="none" />
-          <path d="M17.4 29.1 Q20 28.2 22.6 29.1" stroke="#e8a090" strokeWidth="0.65" strokeLinecap="round" fill="none" opacity="0.8" />
-
-          {/* Chin shade */}
-          <path d="M15.5 32.2 Q20 33.6 24.5 32.2" stroke="#d07a4a" strokeWidth="1.1" strokeLinecap="round" fill="none" opacity="0.45" />
-        </svg>
       );
     }
   }

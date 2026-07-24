@@ -108,24 +108,6 @@ describe("custom cursor", () => {
     expect(star!.getAttribute("fill")).toBe("orchid");
   });
 
-  test("the trump preset renders a presidential caricature", () => {
-    function TrumpCursor() {
-      useCursor({ preset: "trump", color: "gold" });
-      return null;
-    }
-
-    render(
-      <CursorProvider>
-        <TrumpCursor />
-      </CursorProvider>,
-    );
-
-    const face = getCursorElement()!.querySelector(".react-cursor-trump");
-    expect(face).toBeInTheDocument();
-    const hair = face!.querySelector(".react-cursor-trump-hair");
-    expect(hair!.getAttribute("fill")).toBe("gold");
-  });
-
   test("the comet preset renders a bloom orb", () => {
     function CometCursor() {
       useCursor({ preset: "comet", color: "violet" });

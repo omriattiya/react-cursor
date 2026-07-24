@@ -15,8 +15,7 @@ export type PresetName =
   | "hand"
   | "crosshair"
   | "wand"
-  | "comet"
-  | "trump";
+  | "comet";
 
 /** A cursor rendered by the browser via the CSS `cursor` property. */
 export interface NativeCursor {

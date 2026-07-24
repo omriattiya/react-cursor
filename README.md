@@ -122,7 +122,6 @@ useCursor({ preset: "hand", color: "#111" });
 useCursor({ preset: "crosshair", color: "#111" });
 useCursor({ preset: "wand", size: 28, color: "#c084fc" });
 useCursor({ preset: "comet", size: 32, color: "#a78bfa", trail: { count: 6 } });
-useCursor({ preset: "trump", size: 36, color: "#f5d76e" });
 ```
 
 | Preset | Renders | `size` default | `color` default | `content` |
@@ -139,7 +138,6 @@ useCursor({ preset: "trump", size: 36, color: "#f5d76e" });
 | `crosshair` | Game-style FPS reticle | `28` | `#000` | — |
 | `wand` | Magic wand with a twinkling star tip | `28` | `#c084fc` | — |
 | `comet` | Soft bloom orb (great with trails / velocity) | `28` | `#a78bfa` | — |
-| `trump` | Presidential caricature (`color` tints the hair) | `32` | `#f5d76e` | — |
 
 Most presets are centered on the mouse position; `arrow`, `hand`, and `wand` use a tip hotspot like native cursors. All also accept `smoothing` and `hideNativeCursor` (see below).
 
@@ -334,7 +332,7 @@ import type {
   NativeCursor,         // { native: CSSProperties["cursor"] }
   PresetCursor,         // { preset: PresetName; size?; color?; content?; ...motion options }
   RenderCursor,         // { render: ReactNode; ...motion options }
-  PresetName,           // "dot" | "ring" | "spotlight" | "emoji" | "image" | "text" | "pulse" | "arrow" | "hand" | "crosshair" | "wand" | "comet" | "trump"
+  PresetName,           // "dot" | "ring" | "spotlight" | "emoji" | "image" | "text" | "pulse" | "arrow" | "hand" | "crosshair" | "wand" | "comet"
   PresetVisual,         // render a preset visual without the cursor layer (e.g. previews)
   NativeCursorValue,    // CSSProperties["cursor"]
   VelocityEffectConfig, // { stretch? }

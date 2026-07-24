@@ -97,7 +97,6 @@ const PRESETS: Record<PresetName, PresetMeta> = {
   crosshair: { defaultSize: 32, defaultColor: "#a3e635", hasColor: true, hasContent: false, sizeMax: 64 },
   wand: { defaultSize: 28, defaultColor: "#c084fc", hasColor: true, hasContent: false, sizeMax: 64 },
   comet: { defaultSize: 32, defaultColor: "#a78bfa", hasColor: true, hasContent: false, sizeMax: 96 },
-  trump: { defaultSize: 44, defaultColor: "#f0d060", hasColor: true, hasContent: false, sizeMax: 80 },
   spotlight: {
     defaultSize: 320,
     hasColor: true,
@@ -136,7 +135,6 @@ const PREVIEW_SIZE: Record<PresetName, number> = {
   crosshair: 14,
   wand: 16,
   comet: 12,
-  trump: 20,
   spotlight: 18,
   emoji: 14,
   text: 9,

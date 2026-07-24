@@ -270,15 +270,6 @@ export function GettingStartedPage({ theme }: { theme: Theme }) {
                 <td>#a78bfa</td>
                 <td>—</td>
               </tr>
-              <tr>
-                <td>
-                  <code>trump</code>
-                </td>
-                <td>Presidential caricature (color = hair)</td>
-                <td>32</td>
-                <td>#f5d76e</td>
-                <td>—</td>
-              </tr>
             </tbody>
           </table>
         </div>
