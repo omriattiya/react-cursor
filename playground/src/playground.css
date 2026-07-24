@@ -234,12 +234,52 @@ code {
   outline-offset: 1px;
 }
 
+/* ---------- Footer ---------- */
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app > .page {
+  flex: 1;
+}
+
+.footer {
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+}
+
+.footer-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.footer-package {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.8rem;
+  color: var(--text-soft);
+}
+
+.footer-credit {
+  text-align: right;
+  white-space: nowrap;
+}
+
 /* ---------- Page layout ---------- */
 
 .page {
   max-width: 960px;
   margin: 0 auto;
-  padding: 40px 24px 96px;
+  padding: 40px 24px 48px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -996,7 +1036,17 @@ code {
   }
 
   .page {
-    padding: 28px 16px 72px;
+    padding: 28px 16px 40px;
+  }
+
+  .footer-inner {
+    padding: 14px 16px;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+  }
+
+  .footer-credit {
+    white-space: normal;
   }
 
   .card {

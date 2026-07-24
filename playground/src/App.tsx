@@ -98,6 +98,13 @@ export function App() {
       </header>
 
       {page === "playground" ? <PlaygroundPage theme={theme} /> : <GettingStartedPage theme={theme} />}
+
+      <footer className="footer">
+        <div className="footer-inner">
+          <span className="footer-package">@omriattiya/react-cursor</span>
+          <span className="footer-credit">Open source · by Omri Attiya</span>
+        </div>
+      </footer>
     </div>
   );
 }
