@@ -6,18 +6,22 @@ const MAX_INSTANCES = 10;
 const DEFAULT_DURATION_MS = 450;
 const DEFAULT_COLOR = "#000";
 const DEFAULT_SIZE = 48;
-const RAY_COUNT = 8;
+const RAY_COUNT = 10;
 
-const KEYFRAMES_ID = "react-cursor-click-keyframes-v2";
+const KEYFRAMES_ID = "react-cursor-click-keyframes-v3";
 
+/** Expand → hold → shrink. No opacity fade — color alpha alone controls transparency. */
 const KEYFRAMES = `
 @keyframes react-cursor-click-ripple {
-  from { transform: translate(-50%, -50%) scale(0.15); opacity: 1; }
-  to { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+  0% { transform: translate(-50%, -50%) scale(0.2); }
+  40% { transform: translate(-50%, -50%) scale(1); }
+  100% { transform: translate(-50%, -50%) scale(0); }
 }
 @keyframes react-cursor-click-ray {
-  from { transform: scaleY(0.2); opacity: 1; }
-  to { transform: scaleY(1); opacity: 0; }
+  0% { transform: scaleY(0); }
+  22% { transform: scaleY(1); }
+  55% { transform: scaleY(1); }
+  100% { transform: scaleY(0); }
 }
 `;
 
@@ -73,7 +77,7 @@ function RippleVisual({
         borderRadius: "50%",
         border: `2px solid ${color}`,
         boxSizing: "border-box",
-        animation: `react-cursor-click-ripple ${duration}ms ease-out forwards`,
+        animation: `react-cursor-click-ripple ${duration}ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards`,
         pointerEvents: "none",
       }}
     />
@@ -93,8 +97,9 @@ function RaysVisual({
   size: number;
   duration: number;
 }) {
-  const rayLength = size / 2;
-  const rayWidth = Math.max(1.5, size / 24);
+  // Short firework sparks — about a third of the configured size.
+  const rayLength = Math.max(10, size * 0.32);
+  const rayWidth = Math.max(1, size / 36);
 
   return (
     <span
@@ -130,10 +135,11 @@ function RaysVisual({
               height: rayLength,
               marginLeft: -rayWidth / 2,
               marginTop: -rayLength,
-              borderRadius: rayWidth,
+              borderRadius: rayWidth / 2,
               background: color,
+              // Grow/shrink from the click point so tips retract inward.
               transformOrigin: "50% 100%",
-              animation: `react-cursor-click-ray ${duration}ms ease-out forwards`,
+              animation: `react-cursor-click-ray ${duration}ms linear forwards`,
               pointerEvents: "none",
             }}
           />

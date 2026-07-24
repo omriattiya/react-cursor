@@ -2,7 +2,7 @@
 
 Provider-level press feedback spawned at the pointer coordinates.
 
-Independent of the active Cursor — works with Native Cursor and Custom Cursor. Variants: `ripple` (expanding ring) and `rays` (short lines radiating outward).
+Independent of the active Cursor — works with Native Cursor and Custom Cursor. Variants: `ripple` (ring that expands then shrinks) and `rays` (short firework sparks that burst out then retract). No opacity fade — transparency comes only from `color` alpha.
 
 ```tsx
 <CursorProvider

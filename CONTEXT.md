@@ -49,5 +49,5 @@ Optional per-style visual response to cursor speed: stretching (elongation along
 _Avoid_: Distortion
 
 **Click Effect**:
-An optional family of transient visuals spawned at the primary press point when the user presses — not a reaction of the Custom Cursor visual itself. Configured on the Provider and active regardless of which Cursor is showing (including Native Cursor). v1 variants: `ripple` (expanding ring) and `rays` (short lines radiating outward). Distinct from the `pulse` Preset's ambient ring animation. Automatically disabled when `prefers-reduced-motion` is active.
+An optional family of transient visuals spawned at the primary press point when the user presses — not a reaction of the Custom Cursor visual itself. Configured on the Provider and active regardless of which Cursor is showing (including Native Cursor). v1 variants: `ripple` (expanding then shrinking ring) and `rays` (short firework sparks that burst out then retract). Distinct from the `pulse` Preset's ambient ring animation. Automatically disabled when `prefers-reduced-motion` is active.
 _Avoid_: Ripple (as umbrella — ambiguous with `pulse`), Burst (as umbrella), Impact, Click feedback, Particle effect
