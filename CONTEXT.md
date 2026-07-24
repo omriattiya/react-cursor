@@ -17,8 +17,12 @@ A React element rendered by the library that visually replaces the native cursor
 _Avoid_: Fake cursor, overlay cursor, virtual cursor
 
 **Preset**:
-A built-in custom cursor style shipped with the library (Dot, Ring, Spotlight, Emoji, Image, Text).
+A built-in custom cursor shipped with the library (Dot, Ring, Spotlight, Emoji, Image, Text, Magnifier, …). Usually a decorative look; Magnifier additionally samples live page content under the pointer.
 _Avoid_: Template, theme, skin
+
+**Magnifier**:
+A Preset that shows a circular loupe: the live page under the pointer, zoomed inside a ring-like frame.
+_Avoid_: Loupe, glass, zoom, magnifier glass, magnifying glass
 
 **Provider**:
 The `<CursorProvider>` component that wraps the application, owns cursor state, and renders the custom cursor element.

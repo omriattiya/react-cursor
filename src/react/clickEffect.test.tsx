@@ -176,6 +176,29 @@ describe("click effect", () => {
     });
 
     expect(getClickEffects()).toHaveLength(0);
-    vi.useRealTimers();
+  });
+
+  test("respects a custom duration", () => {
+    vi.useFakeTimers();
+    mockMatchMedia({ reducedMotion: false });
+
+    render(
+      <CursorProvider clickEffect={{ variant: "ripple", duration: 200 }}>
+        <div />
+      </CursorProvider>,
+    );
+
+    press();
+    expect(getClickEffects()).toHaveLength(1);
+
+    act(() => {
+      vi.advanceTimersByTime(199);
+    });
+    expect(getClickEffects()).toHaveLength(1);
+
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+    expect(getClickEffects()).toHaveLength(0);
   });
 });

@@ -22,8 +22,9 @@ export function App() {
     <CursorProvider
       clickEffect={{
         variant: "ripple", // or "rays"
-        color: "#ff7a59",  // optional — default rgba(0,0,0,0.35)
+        color: "rgba(255, 122, 89, 0.75)",  // optional — any CSS color incl. alpha; default #000
         size: 48,          // optional — max radius / ray length
+        duration: 450,     // optional — animation ms
       }}
     >
       <YourApp />

@@ -73,7 +73,7 @@ import { CursorProvider } from "@omriattiya/react-cursor";
 
 export function App() {
   return (
-    <CursorProvider clickEffect={{ variant: "ripple", color: "#ff7a59" }}>
+    <CursorProvider clickEffect={{ variant: "ripple", color: "rgba(255, 122, 89, 0.75)" }}>
       <YourApp />
     </CursorProvider>
   );
@@ -344,7 +344,7 @@ import type {
   NativeCursorValue,    // CSSProperties["cursor"]
   VelocityEffectConfig, // { stretch? }
   TrailConfig,          // { count?; delay?; fadeDelay?; shrink? }
-  ClickEffectConfig,    // { variant: "ripple" | "rays"; color?; size? }
+  ClickEffectConfig,    // { variant: "ripple" | "rays"; color?; size?; duration? }
   ClickEffectVariant,   // "ripple" | "rays"
 } from "@omriattiya/react-cursor";
 ```

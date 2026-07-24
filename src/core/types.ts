@@ -51,10 +51,12 @@ export type ClickEffectVariant = "ripple" | "rays";
 /** Provider-level press feedback at the pointer coordinates. */
 export interface ClickEffectConfig {
   variant: ClickEffectVariant;
-  /** Fill/stroke color. Default `rgba(0,0,0,0.35)`. */
+  /** Fill/stroke color (any CSS color, including alpha). Default `#000`. */
   color?: string;
   /** Max radius (ripple) or ray length in px. Default 48. */
   size?: number;
+  /** Animation duration in ms. Default 450. */
+  duration?: number;
 }
 
 /** Options shared by all custom cursors (presets and render). */

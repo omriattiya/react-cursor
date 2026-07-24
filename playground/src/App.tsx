@@ -20,6 +20,7 @@ export type PlaygroundClickEffect = {
   variant: ClickEffectVariant;
   color: string;
   size: number;
+  duration: number;
 };
 
 function getInitialTheme(): Theme {
@@ -34,6 +35,7 @@ function toClickEffectConfig(state: PlaygroundClickEffect): false | ClickEffectC
     variant: state.variant,
     color: state.color,
     size: state.size,
+    duration: state.duration,
   };
 }
 
@@ -51,8 +53,9 @@ export function App() {
   const [clickEffect, setClickEffect] = useState<PlaygroundClickEffect>({
     enabled: false,
     variant: "ripple",
-    color: "#ff7a59",
+    color: "rgba(255, 122, 89, 0.75)",
     size: 48,
+    duration: 450,
   });
 
   useEffect(() => {

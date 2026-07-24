@@ -3,20 +3,20 @@ import type { ClickEffectConfig } from "../core/types";
 import { useReducedMotion } from "./useReducedMotion";
 
 const MAX_INSTANCES = 10;
-const DURATION_MS = 450;
-const DEFAULT_COLOR = "rgba(0,0,0,0.35)";
+const DEFAULT_DURATION_MS = 450;
+const DEFAULT_COLOR = "#000";
 const DEFAULT_SIZE = 48;
 const RAY_COUNT = 8;
 
-const KEYFRAMES_ID = "react-cursor-click-keyframes";
+const KEYFRAMES_ID = "react-cursor-click-keyframes-v2";
 
 const KEYFRAMES = `
 @keyframes react-cursor-click-ripple {
-  from { transform: translate(-50%, -50%) scale(0.15); opacity: 0.85; }
+  from { transform: translate(-50%, -50%) scale(0.15); opacity: 1; }
   to { transform: translate(-50%, -50%) scale(1); opacity: 0; }
 }
 @keyframes react-cursor-click-ray {
-  from { transform: scaleY(0.2); opacity: 0.9; }
+  from { transform: scaleY(0.2); opacity: 1; }
   to { transform: scaleY(1); opacity: 0; }
 }
 `;
@@ -34,6 +34,10 @@ interface Instance {
   id: number;
   x: number;
   y: number;
+  duration: number;
+  color: string;
+  size: number;
+  variant: ClickEffectConfig["variant"];
 }
 
 const layerStyle: CSSProperties = {
@@ -44,7 +48,19 @@ const layerStyle: CSSProperties = {
   overflow: "hidden",
 };
 
-function RippleVisual({ x, y, color, size }: { x: number; y: number; color: string; size: number }) {
+function RippleVisual({
+  x,
+  y,
+  color,
+  size,
+  duration,
+}: {
+  x: number;
+  y: number;
+  color: string;
+  size: number;
+  duration: number;
+}) {
   return (
     <span
       data-react-cursor-click="ripple"
@@ -57,14 +73,26 @@ function RippleVisual({ x, y, color, size }: { x: number; y: number; color: stri
         borderRadius: "50%",
         border: `2px solid ${color}`,
         boxSizing: "border-box",
-        animation: `react-cursor-click-ripple ${DURATION_MS}ms ease-out forwards`,
+        animation: `react-cursor-click-ripple ${duration}ms ease-out forwards`,
         pointerEvents: "none",
       }}
     />
   );
 }
 
-function RaysVisual({ x, y, color, size }: { x: number; y: number; color: string; size: number }) {
+function RaysVisual({
+  x,
+  y,
+  color,
+  size,
+  duration,
+}: {
+  x: number;
+  y: number;
+  color: string;
+  size: number;
+  duration: number;
+}) {
   const rayLength = size / 2;
   const rayWidth = Math.max(1.5, size / 24);
 
@@ -105,7 +133,7 @@ function RaysVisual({ x, y, color, size }: { x: number; y: number; color: string
               borderRadius: rayWidth,
               background: color,
               transformOrigin: "50% 100%",
-              animation: `react-cursor-click-ray ${DURATION_MS}ms ease-out forwards`,
+              animation: `react-cursor-click-ray ${duration}ms ease-out forwards`,
               pointerEvents: "none",
             }}
           />
@@ -121,10 +149,8 @@ export function ClickEffectLayer({ config }: { config: ClickEffectConfig }) {
   const nextId = useRef(0);
   const timers = useRef(new Map<number, ReturnType<typeof setTimeout>>());
   const layerId = useId();
-
-  const color = config.color ?? DEFAULT_COLOR;
-  const size = config.size ?? DEFAULT_SIZE;
-  const variant = config.variant;
+  const configRef = useRef(config);
+  configRef.current = config;
 
   useEffect(() => {
     ensureKeyframes();
@@ -141,8 +167,18 @@ export function ClickEffectLayer({ config }: { config: ClickEffectConfig }) {
     const onPointerDown = (event: PointerEvent) => {
       if (!event.isPrimary || event.button !== 0) return;
 
+      const current = configRef.current;
+      const duration = current.duration ?? DEFAULT_DURATION_MS;
       const id = ++nextId.current;
-      const point = { id, x: event.clientX, y: event.clientY };
+      const point: Instance = {
+        id,
+        x: event.clientX,
+        y: event.clientY,
+        duration,
+        color: current.color ?? DEFAULT_COLOR,
+        size: current.size ?? DEFAULT_SIZE,
+        variant: current.variant,
+      };
       setInstances((prev) => {
         const next = [...prev, point];
         if (next.length <= MAX_INSTANCES) return next;
@@ -160,7 +196,7 @@ export function ClickEffectLayer({ config }: { config: ClickEffectConfig }) {
       const timer = setTimeout(() => {
         timers.current.delete(id);
         setInstances((prev) => prev.filter((item) => item.id !== id));
-      }, DURATION_MS);
+      }, duration);
       timers.current.set(id, timer);
     };
 
@@ -177,10 +213,24 @@ export function ClickEffectLayer({ config }: { config: ClickEffectConfig }) {
   return (
     <div aria-hidden data-react-cursor-click-layer={layerId} style={layerStyle}>
       {instances.map((item) =>
-        variant === "ripple" ? (
-          <RippleVisual key={item.id} x={item.x} y={item.y} color={color} size={size} />
+        item.variant === "ripple" ? (
+          <RippleVisual
+            key={item.id}
+            x={item.x}
+            y={item.y}
+            color={item.color}
+            size={item.size}
+            duration={item.duration}
+          />
         ) : (
-          <RaysVisual key={item.id} x={item.x} y={item.y} color={color} size={size} />
+          <RaysVisual
+            key={item.id}
+            x={item.x}
+            y={item.y}
+            color={item.color}
+            size={item.size}
+            duration={item.duration}
+          />
         ),
       )}
     </div>

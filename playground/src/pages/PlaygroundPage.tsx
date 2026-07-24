@@ -24,18 +24,42 @@ function parseHex6(color: string): string | null {
   return /^#[0-9a-fA-F]{6}$/.test(color) ? color : null;
 }
 
-function rgbaToHex(color: string): string | null {
-  const match = /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(color);
+function parseHex8(color: string): { hex6: string; alpha: number } | null {
+  const match = /^#([0-9a-fA-F]{6})([0-9a-fA-F]{2})$/.exec(color);
+  if (!match?.[1] || !match[2]) return null;
+  return { hex6: `#${match[1]}`, alpha: parseInt(match[2], 16) / 255 };
+}
+
+function rgbaParts(color: string): { hex6: string; alpha: number } | null {
+  const match = /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\s*\)$/.exec(color);
   if (!match) return null;
   const r = Number(match[1]);
   const g = Number(match[2]);
   const b = Number(match[3]);
-  return `#${[r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+  const alpha = match[4] === undefined ? 1 : Number(match[4]);
+  return {
+    hex6: `#${[r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("")}`,
+    alpha,
+  };
+}
+
+function rgbaToHex(color: string): string | null {
+  return rgbaParts(color)?.hex6 ?? null;
 }
 
 function colorPickerValue(color: string | undefined): string {
   if (!color) return "#ff7a59";
-  return parseHex6(color) ?? rgbaToHex(color) ?? "#ff7a59";
+  return (
+    parseHex6(color) ??
+    parseHex8(color)?.hex6 ??
+    rgbaToHex(color) ??
+    "#ff7a59"
+  );
+}
+
+/** Read alpha from a CSS color; opaque when unspecified. */
+function colorAlpha(color: string): number {
+  return parseHex8(color)?.alpha ?? rgbaParts(color)?.alpha ?? 1;
 }
 
 function hexToRgba(hex: string, alpha: number): string {
@@ -45,7 +69,14 @@ function hexToRgba(hex: string, alpha: number): string {
   const r = (n >> 16) & 255;
   const g = (n >> 8) & 255;
   const b = n & 255;
-  return `rgba(${r},${g},${b},${alpha})`;
+  if (alpha >= 1) return `#${match[1]}`;
+  const a = Math.round(alpha * 1000) / 1000;
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+/** Swatch pick: keep existing alpha from the current color string. */
+function clickColorFromPicker(hex: string, current: string): string {
+  return hexToRgba(hex, colorAlpha(current));
 }
 
 function colorFromPicker(hex: string, preset: PresetName): string {
@@ -210,6 +241,7 @@ function buildClickEffectSnippet(clickEffect: PlaygroundClickEffect): string {
     `    variant: "${clickEffect.variant}",`,
     `    color: "${clickEffect.color}",`,
     `    size: ${clickEffect.size},`,
+    `    duration: ${clickEffect.duration},`,
     "  }}",
     ">",
     "  <App />",
@@ -666,29 +698,29 @@ export function PlaygroundPage({
 
             {clickEffect.enabled && (
               <div className="controls-subpanel">
-                <div className="control control-span">
-                  <span className="field-label" id="click-variant-label">
-                    Variant
-                  </span>
-                  <ToggleGroup.Root
-                    type="single"
-                    className="chips"
-                    value={clickEffect.variant}
-                    onValueChange={(value) => {
-                      if (value) patchClickEffect({ variant: value as ClickEffectVariant });
-                    }}
-                    aria-labelledby="click-variant-label"
-                  >
-                    <ToggleGroup.Item className="chip" value="ripple">
-                      Ripple
-                    </ToggleGroup.Item>
-                    <ToggleGroup.Item className="chip" value="rays">
-                      Rays
-                    </ToggleGroup.Item>
-                  </ToggleGroup.Root>
-                </div>
                 <div className="controls-grid">
-                  <div className="control">
+                  <div className="control control-span">
+                    <span className="field-label" id="click-variant-label">
+                      Variant
+                    </span>
+                    <ToggleGroup.Root
+                      type="single"
+                      className="chips"
+                      value={clickEffect.variant}
+                      onValueChange={(value) => {
+                        if (value) patchClickEffect({ variant: value as ClickEffectVariant });
+                      }}
+                      aria-labelledby="click-variant-label"
+                    >
+                      <ToggleGroup.Item className="chip" value="ripple">
+                        Ripple
+                      </ToggleGroup.Item>
+                      <ToggleGroup.Item className="chip" value="rays">
+                        Rays
+                      </ToggleGroup.Item>
+                    </ToggleGroup.Root>
+                  </div>
+                  <div className="control control-span">
                     <Label.Root htmlFor="click-color-text" className="field-label">
                       Color
                     </Label.Root>
@@ -698,7 +730,11 @@ export function PlaygroundPage({
                         type="color"
                         aria-label="Click effect color swatch"
                         value={colorPickerValue(clickEffect.color)}
-                        onChange={(e) => patchClickEffect({ color: e.target.value })}
+                        onChange={(e) =>
+                          patchClickEffect({
+                            color: clickColorFromPicker(e.target.value, clickEffect.color),
+                          })
+                        }
                       />
                       <input
                         id="click-color-text"
@@ -719,6 +755,16 @@ export function PlaygroundPage({
                     max={120}
                     step={4}
                     onChange={(size) => patchClickEffect({ size })}
+                  />
+                  <RangeControl
+                    id="click-duration"
+                    label="Duration"
+                    valueLabel={`${clickEffect.duration}ms`}
+                    value={clickEffect.duration}
+                    min={150}
+                    max={1000}
+                    step={50}
+                    onChange={(duration) => patchClickEffect({ duration })}
                   />
                 </div>
               </div>

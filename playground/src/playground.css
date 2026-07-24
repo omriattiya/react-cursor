@@ -395,6 +395,9 @@ code {
 }
 
 .controls-subpanel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
   margin-top: 16px;
   padding: 14px 16px;
   border-radius: 12px;
@@ -408,17 +411,17 @@ code {
 }
 
 .controls-subpanel > .field-label {
-  margin-bottom: 12px;
+  margin-bottom: 0;
 }
 
 .controls-options {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
   margin-top: 16px;
   padding-top: 14px;
   border-top: 1px dashed color-mix(in srgb, var(--border) 85%, transparent);
-  max-width: 320px;
 }
 
 /* ---------- Controls ---------- */
@@ -639,7 +642,7 @@ code {
 .control {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
   font-size: 0.9rem;
   color: var(--text-soft);
   min-width: 0;
@@ -650,9 +653,13 @@ code {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  align-self: end;
+  width: 100%;
   min-height: 40px;
   padding: 4px 0;
+}
+
+.controls-grid > .switch-control {
+  align-self: end;
 }
 
 .switch-label {
