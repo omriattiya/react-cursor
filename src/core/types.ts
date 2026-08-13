@@ -39,8 +39,8 @@ export interface TrailConfig {
   /** Scale segments down with depth. Default true; set false to keep every segment the cursor's full size. */
   shrink?: boolean;
   /**
-   * Once the trail settles after the mouse stops, segments fade away one by
-   * one — deepest first — this many ms apart. Default 200.
+   * Once the mouse stops, segments fade away one by one — nearest first —
+   * this many ms apart, without waiting for the tail to catch up. Default 200.
    */
   fadeDelay?: number;
 }

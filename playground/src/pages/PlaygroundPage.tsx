@@ -650,7 +650,7 @@ export function PlaygroundPage({
                     />
                     <RangeControl
                       id="trail-fade"
-                      label="Trail fade after settle"
+                      label="Trail fade after stop"
                       valueLabel={`${trailFadeDelay}ms`}
                       value={trailFadeDelay}
                       min={50}

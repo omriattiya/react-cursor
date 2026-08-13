@@ -54,7 +54,7 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
     let frame: number | null = null;
     let movedSinceTick = false;
     let idleSince: number | null = null;
-    let fadedCount = 0; // segments faded so far, counted from the deepest end
+    let fadedCount = 0; // segments faded so far, counted from the nearest end
     let trailSettled = false;
     let strokeStart: number | null = null;
     const revealed = Array.from({ length: trailCount }, () => false);
@@ -104,9 +104,9 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
         const headMoving = movedSinceTick || current.x !== target.x || current.y !== target.y;
 
         if (headMoving) {
-          // New stroke after rest: hide everyone, then peel nearest-first as
-          // each segment's delay elapses — never pop the whole tail at once.
-          if (trailSettled) {
+          // New stroke after rest (or mid-fade): hide everyone, then peel
+          // nearest-first as each segment's delay elapses.
+          if (trailSettled || fadedCount > 0) {
             for (const node of trailRefs.current) {
               if (node) {
                 node.style.transition = "";
@@ -131,19 +131,17 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
           }
           idleSince = now;
           movedSinceTick = false;
-        } else if (trailMoving) {
-          // Retracting onto the cursor: keep already-revealed segments visible
-          idleSince = now;
-          movedSinceTick = false;
         } else {
-          // Settled: collapse history so the next stroke emerges from here,
-          // then dissolve one segment per fadeDelay, deepest first.
-          trailSettled = true;
-          trailPath = [{ x: current.x, y: current.y, t: now }];
+          // Mouse stopped: fade nearest-first from this moment, even while the
+          // tail is still sliding back. Collapse history once it has caught up.
+          if (!trailMoving) {
+            trailSettled = true;
+            trailPath = [{ x: current.x, y: current.y, t: now }];
+          }
           if (idleSince !== null) {
             const dueToFade = Math.min(trailCount, Math.floor((now - idleSince) / fadeDelay));
             while (fadedCount < dueToFade) {
-              const node = trailRefs.current[trailCount - 1 - fadedCount];
+              const node = trailRefs.current[fadedCount];
               if (node) {
                 node.style.transition = `opacity ${TRAIL_FADE_MS}ms ease-out`;
                 node.style.opacity = "0";
@@ -151,6 +149,7 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
               fadedCount++;
             }
           }
+          movedSinceTick = false;
         }
       }
 

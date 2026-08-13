@@ -157,7 +157,7 @@ describe("trail", () => {
     expect(getTrailElements()).toHaveLength(3);
   });
 
-  test("fade waits until the trail has settled, not just until the mouse stops", () => {
+  test("fade starts when the mouse stops, nearest first, without waiting for the tail", () => {
     render(
       <CursorProvider>
         <TrailDot />
@@ -173,14 +173,16 @@ describe("trail", () => {
     }
 
     // ~240ms after mouse stop: past fadeDelay (200) but still within
-    // count * delay (300) settling window — nothing should have faded yet
+    // count * delay (300) settling window — nearest should already be fading
     advanceFrames(15);
-    for (const el of getTrailElements()) {
-      expect(Number(el.style.opacity)).toBeGreaterThan(0);
-    }
+    const [nearest, middle, deepest] = getTrailElements() as [HTMLElement, HTMLElement, HTMLElement];
+    expect(nearest.style.opacity).toBe("0");
+    expect(nearest.style.transition).toContain("opacity");
+    expect(Number(middle.style.opacity)).toBeGreaterThan(0);
+    expect(Number(deepest.style.opacity)).toBeGreaterThan(0);
   });
 
-  test("segments fade one by one from the tail end, not as a single block", () => {
+  test("segments fade one by one from the nearest end, not as a single block", () => {
     render(
       <CursorProvider>
         <TrailDot />
@@ -194,14 +196,14 @@ describe("trail", () => {
       advanceFrames(1);
     }
 
-    // Settle (~count*delay) + one fadeDelay → deepest gone only
-    advanceFrames(35);
+    // One fadeDelay after mouse stop → nearest gone only (tail may still be moving)
+    advanceFrames(15);
 
     const [nearest, middle, deepest] = getTrailElements() as [HTMLElement, HTMLElement, HTMLElement];
-    expect(deepest.style.opacity).toBe("0");
-    expect(deepest.style.transition).toContain("opacity"); // gradual, not a hard cut
+    expect(nearest.style.opacity).toBe("0");
+    expect(nearest.style.transition).toContain("opacity"); // gradual, not a hard cut
     expect(Number(middle.style.opacity)).toBeGreaterThan(0);
-    expect(Number(nearest.style.opacity)).toBeGreaterThan(0);
+    expect(Number(deepest.style.opacity)).toBeGreaterThan(0);
 
     // Two more fade intervals → whole tail gone
     advanceFrames(26);
@@ -257,7 +259,7 @@ describe("trail", () => {
       advanceFrames(1);
     }
 
-    // Past settle + default 200ms, but well within fadeDelay 1000
+    // Past default 200ms, but well within fadeDelay 1000
     advanceFrames(40);
 
     for (const el of getTrailElements()) {
