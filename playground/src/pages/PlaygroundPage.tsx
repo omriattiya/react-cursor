@@ -634,7 +634,7 @@ export function PlaygroundPage({
                       valueLabel={String(trailCount)}
                       value={trailCount}
                       min={1}
-                      max={12}
+                      max={20}
                       step={1}
                       onChange={setTrailCount}
                     />
@@ -650,7 +650,7 @@ export function PlaygroundPage({
                     />
                     <RangeControl
                       id="trail-fade"
-                      label="Trail fade after stop"
+                      label="Fade after each segment stops"
                       valueLabel={`${trailFadeDelay}ms`}
                       value={trailFadeDelay}
                       min={50}

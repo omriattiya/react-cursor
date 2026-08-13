@@ -216,13 +216,13 @@ useCursor({
   trail: {
     count: 5,       // number of segments (default 3)
     delay: 100,     // lag (ms) each segment trails the one before it on the path
-    fadeDelay: 200, // ms between per-segment fades after the mouse stops (nearest first)
+    fadeDelay: 200, // ms after each segment stops before that segment fades
     shrink: false,  // keep every segment full size (default true: smaller with depth)
   },
 });
 ```
 
-The trail emerges from the cursor: at rest all segments sit stacked on the cursor position, spread out only as far as the mouse actually travels, and slide back onto the cursor along the recorded path when it stops. As soon as the mouse stops, segments dissolve nearest first — the closest fades after `fadeDelay` ms, the next one `fadeDelay` ms later, and so on outward, without waiting for the tail to catch up. The trail peels off the cursor again one segment at a time when the mouse moves.
+The trail emerges from the cursor: at rest all segments sit stacked on the cursor position, spread out only as far as the mouse actually travels, and slide back onto the cursor along the recorded path when it stops. Each segment fades on its own clock — `fadeDelay` ms after that segment stops moving (nearest settles first, so it fades first). The trail peels off the cursor again one segment at a time when the mouse moves.
 
 ## Cursor Zones
 

@@ -157,7 +157,7 @@ describe("trail", () => {
     expect(getTrailElements()).toHaveLength(3);
   });
 
-  test("fade starts when the mouse stops, nearest first, without waiting for the tail", () => {
+  test("each segment fades fadeDelay after it stops, not after the mouse stops", () => {
     render(
       <CursorProvider>
         <TrailDot />
@@ -166,15 +166,20 @@ describe("trail", () => {
 
     fireEvent.mouseMove(window, { clientX: 100, clientY: 100 });
     advanceFrames(1);
-    // Build real path history so segments stay in motion after the mouse rests
     for (let x = 110; x <= 400; x += 10) {
       fireEvent.mouseMove(window, { clientX: x, clientY: 100 });
       advanceFrames(1);
     }
 
-    // ~240ms after mouse stop: past fadeDelay (200) but still within
-    // count * delay (300) settling window — nearest should already be fading
+    // ~240ms after mouse stop: past fadeDelay (200) from the mouse, but the
+    // nearest segment itself only stopped ~100ms ago — none should be fading
     advanceFrames(15);
+    for (const el of getTrailElements()) {
+      expect(Number(el.style.opacity)).toBeGreaterThan(0);
+    }
+
+    // Nearest stop (~100ms) + fadeDelay (200) ≈ 300ms → nearest gone only
+    advanceFrames(8);
     const [nearest, middle, deepest] = getTrailElements() as [HTMLElement, HTMLElement, HTMLElement];
     expect(nearest.style.opacity).toBe("0");
     expect(nearest.style.transition).toContain("opacity");
@@ -196,8 +201,8 @@ describe("trail", () => {
       advanceFrames(1);
     }
 
-    // One fadeDelay after mouse stop → nearest gone only (tail may still be moving)
-    advanceFrames(15);
+    // Nearest stop + fadeDelay ≈ 300ms → nearest gone only
+    advanceFrames(22);
 
     const [nearest, middle, deepest] = getTrailElements() as [HTMLElement, HTMLElement, HTMLElement];
     expect(nearest.style.opacity).toBe("0");
@@ -205,7 +210,7 @@ describe("trail", () => {
     expect(Number(middle.style.opacity)).toBeGreaterThan(0);
     expect(Number(deepest.style.opacity)).toBeGreaterThan(0);
 
-    // Two more fade intervals → whole tail gone
+    // Deepest stop (~300ms) + fadeDelay → whole tail gone
     advanceFrames(26);
     for (const el of getTrailElements()) {
       expect(el.style.opacity).toBe("0");
@@ -238,6 +243,39 @@ describe("trail", () => {
     expect(afterSecondDelay[1]).toBeGreaterThan(0);
     expect(afterSecondDelay[2]).toBe(0);
     expect(afterSecondDelay[0]).toBeGreaterThan(afterSecondDelay[1]!);
+  });
+
+  test("resuming before the trail finishes keeps continuous motion", () => {
+    render(
+      <CursorProvider>
+        <TrailDot />
+      </CursorProvider>,
+    );
+
+    fireEvent.mouseMove(window, { clientX: 100, clientY: 100 });
+    advanceFrames(1);
+    for (let x = 110; x <= 400; x += 10) {
+      fireEvent.mouseMove(window, { clientX: x, clientY: 100 });
+      advanceFrames(1);
+    }
+
+    const [nearest, middle, deepest] = getTrailElements() as [HTMLElement, HTMLElement, HTMLElement];
+    expect(Number(deepest.style.opacity)).toBeGreaterThan(0);
+
+    // Brief pause: tail is still catching up, nearest may even have started fading
+    advanceFrames(5);
+
+    fireEvent.mouseMove(window, { clientX: 450, clientY: 100 });
+    advanceFrames(1);
+    for (let x = 460; x <= 500; x += 10) {
+      fireEvent.mouseMove(window, { clientX: x, clientY: 100 });
+      advanceFrames(1);
+    }
+
+    // Must not hide-and-re-peel: already-visible segments stay up
+    expect(Number(nearest.style.opacity)).toBeGreaterThan(0);
+    expect(Number(middle.style.opacity)).toBeGreaterThan(0);
+    expect(Number(deepest.style.opacity)).toBeGreaterThan(0);
   });
 
   test("a custom fadeDelay keeps the trail visible longer", () => {

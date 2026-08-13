@@ -68,7 +68,7 @@ useCursor({
   trail: {
     count: 5,       // segments (default 3)
     delay: 100,     // lag (ms) per segment
-    fadeDelay: 200, // ms between per-segment fades after mouse stops (nearest first)
+    fadeDelay: 200, // ms after each segment stops before that segment fades
     shrink: false,  // keep segments full size (default true: smaller with depth)
   },
 });`;
@@ -156,7 +156,7 @@ export function GettingStartedPage({ theme }: { theme: Theme }) {
         <p>
           Presets accept speed-based <code>velocity</code> stretch. Both presets and custom{" "}
           <code>render</code> cursors accept a <code>trail</code> of segments that snakes behind the
-          cursor and fades away from the nearest segment when the mouse stops.
+          cursor and fades away per segment once that segment stops.
         </p>
         <CodeBlock code={MOTION} theme={theme} />
       </section>

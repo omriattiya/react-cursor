@@ -39,8 +39,8 @@ export interface TrailConfig {
   /** Scale segments down with depth. Default true; set false to keep every segment the cursor's full size. */
   shrink?: boolean;
   /**
-   * Once the mouse stops, segments fade away one by one — nearest first —
-   * this many ms apart, without waiting for the tail to catch up. Default 200.
+   * After each segment stops moving, wait this many ms before that segment
+   * fades. Nearest settles first so it fades first. Default 200.
    */
   fadeDelay?: number;
 }
