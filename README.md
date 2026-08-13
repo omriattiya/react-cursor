@@ -203,7 +203,7 @@ useCursor({
 });
 ```
 
-`stretch` preserves apparent area (the cross axis squashes as the movement axis stretches), so fast dots become comet-like slivers.
+`stretch` preserves apparent area (the cross axis squashes as the movement axis stretches), so fast dots become comet-like slivers. Trail segments use the same stretch, each along its own path motion.
 
 ### Trails
 

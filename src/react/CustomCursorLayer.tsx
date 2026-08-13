@@ -32,6 +32,7 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
   const ref = useRef<HTMLDivElement>(null);
   const visualRef = useRef<HTMLDivElement>(null);
   const trailRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const trailVisualRefs = useRef<(HTMLDivElement | null)[]>([]);
   const reducedMotion = useReducedMotion();
   const smoothing = reducedMotion ? 0 : (style.smoothing ?? 0.75);
   // Velocity stretch is preset-only — custom render cursors own their own motion.
@@ -48,6 +49,8 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
     let current = OFFSCREEN;
     let target = OFFSCREEN;
     let effectVelocity: Point = { x: 0, y: 0 };
+    const trailVelocities = Array.from({ length: trailCount }, (): Point => ({ x: 0, y: 0 }));
+    let lastTrailPos: Point[] = [];
     let trailPath: TrailPathPoint[] = [];
     let lastTime: number | null = null;
     let frame: number | null = null;
@@ -67,6 +70,15 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
       current = nextPosition({ current, target, smoothing });
       el.style.transform = `translate3d(${current.x}px, ${current.y}px, 0)`;
 
+      const stretchAmount = velocity?.stretch ?? 1;
+      const stretchCss = (vel: Point) => {
+        const t = velocityTransform({ velocity: vel, stretch: stretchAmount });
+        return {
+          css: `rotate(${t.angle}rad) scale(${t.scaleX}, ${t.scaleY}) rotate(${-t.angle}rad)`,
+          active: Math.abs(t.scaleX - 1) > 0.001,
+        };
+      };
+
       let effectActive = false;
       if (velocity !== undefined && visual !== null) {
         // Raw per-frame velocity is noisy (settle snaps, event jitter); smooth it
@@ -76,11 +88,11 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
           { x: (current.x - previous.x) / dt, y: (current.y - previous.y) / dt },
           dt,
         );
-        const t = velocityTransform({ velocity: effectVelocity, stretch: velocity.stretch ?? 1 });
         // The counter-rotation keeps the visual upright: only the stretch axis
         // aligns to the movement direction, the shape itself never spins
-        visual.style.transform = `rotate(${t.angle}rad) scale(${t.scaleX}, ${t.scaleY}) rotate(${-t.angle}rad)`;
-        effectActive = Math.abs(t.scaleX - 1) > 0.001;
+        const stretch = stretchCss(effectVelocity);
+        visual.style.transform = stretch.css;
+        effectActive = stretch.active;
       }
 
       let trailMoving = false;
@@ -96,7 +108,21 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
         sampled.forEach((seg, i) => {
           const node = trailRefs.current[i];
           if (node) node.style.transform = `translate3d(${seg.x}px, ${seg.y}px, 0)`;
+
+          if (velocity !== undefined) {
+            const prev = lastTrailPos[i] ?? seg;
+            trailVelocities[i] = smoothVelocity(
+              trailVelocities[i]!,
+              { x: (seg.x - prev.x) / dt, y: (seg.y - prev.y) / dt },
+              dt,
+            );
+            const stretch = stretchCss(trailVelocities[i]!);
+            const visualNode = trailVisualRefs.current[i];
+            if (visualNode) visualNode.style.transform = stretch.css;
+            if (stretch.active) effectActive = true;
+          }
         });
+        lastTrailPos = sampled;
 
         const headMoving = movedSinceTick || current.x !== target.x || current.y !== target.y;
         const fullyFaded = revealed.some(Boolean) && revealed.every((on, i) => !on || faded[i]);
@@ -220,7 +246,16 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
             aria-hidden
             style={{ ...layerStyle, zIndex: 2147483646, opacity: depth }}
           >
-            <div style={{ transform: `scale(${scale})`, transformOrigin: "0 0" }}>{visualNode}</div>
+            <div style={{ transform: `scale(${scale})`, transformOrigin: "0 0" }}>
+              <div
+                ref={(node) => {
+                  trailVisualRefs.current[i] = node;
+                }}
+                data-react-cursor-trail-visual=""
+              >
+                {visualNode}
+              </div>
+            </div>
           </div>
         );
       })}

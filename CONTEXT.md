@@ -41,7 +41,7 @@ An optional per-style chain of segments behind the custom cursor (snake effect).
 _Avoid_: Trailing (ambiguous with tracking lag), tail, ghost
 
 **Velocity Effect**:
-Optional per-style visual response to cursor speed: stretching (elongation along the movement axis, with the cross axis squashed to preserve apparent area). Independent of tracking — works with Smoothing or direct snapping. Automatically disabled when `prefers-reduced-motion` is active.
+Optional per-style visual response to cursor speed: stretching (elongation along the movement axis, with the cross axis squashed to preserve apparent area). Independent of tracking — works with Smoothing or direct snapping. When a Trail is also configured, each segment stretches along its own path motion, not the head's. Automatically disabled when `prefers-reduced-motion` is active.
 _Avoid_: Distortion
 
 **Click Effect**:

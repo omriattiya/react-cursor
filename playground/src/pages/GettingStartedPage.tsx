@@ -59,18 +59,7 @@ useCursor({
   preset: "comet",
   color: "#a78bfa",
   velocity: { stretch: 1.8 },
-});
-
-// A snake trail that retraces the exact mouse path
-useCursor({
-  preset: "wand",
-  color: "#c084fc",
-  trail: {
-    count: 5,       // segments (default 3)
-    delay: 100,     // lag (ms) per segment
-    fadeDelay: 200, // ms after each segment stops before that segment fades
-    shrink: false,  // keep segments full size (default true: smaller with depth)
-  },
+  trail: { count: 5, delay: 100 }, // segments stretch along the path too
 });`;
 
 const RENDER = `useCursor({
@@ -154,7 +143,8 @@ export function GettingStartedPage({ theme }: { theme: Theme }) {
       <section className="card">
         <h2>6. Add motion: velocity, trails</h2>
         <p>
-          Presets accept speed-based <code>velocity</code> stretch. Both presets and custom{" "}
+          Presets accept speed-based <code>velocity</code> stretch. Trail segments stretch along
+          their own path too. Both presets and custom{" "}
           <code>render</code> cursors accept a <code>trail</code> of segments that snakes behind the
           cursor and fades away per segment once that segment stops.
         </p>
