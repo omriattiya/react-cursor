@@ -49,11 +49,9 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
     let target = OFFSCREEN;
     let effectVelocity: Point = { x: 0, y: 0 };
     let trailPath: TrailPathPoint[] = [];
-    let lastSampled: Point[] = [];
     let lastTime: number | null = null;
     let frame: number | null = null;
     let movedSinceTick = false;
-    let trailSettled = false;
     let strokeStart: number | null = null;
     const revealed = Array.from({ length: trailCount }, () => false);
     const faded = Array.from({ length: trailCount }, () => false);
@@ -91,22 +89,21 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
         const opts = { count: trailCount, delay };
         trailPath = recordTrailPoint(trailPath, current, now, opts);
         const sampled = sampleTrail(trailPath, now, opts);
-        const segMoving = sampled.map((seg, i) => {
-          const before = lastSampled[i];
-          return before === undefined || Math.hypot(seg.x - before.x, seg.y - before.y) > TRAIL_SETTLE;
-        });
-        trailMoving = segMoving.some(Boolean);
-        lastSampled = sampled;
+        const onHead = sampled.map(
+          (seg) => Math.hypot(seg.x - current.x, seg.y - current.y) <= TRAIL_SETTLE,
+        );
+        trailMoving = onHead.some((atRest) => !atRest);
         sampled.forEach((seg, i) => {
           const node = trailRefs.current[i];
           if (node) node.style.transform = `translate3d(${seg.x}px, ${seg.y}px, 0)`;
         });
 
         const headMoving = movedSinceTick || current.x !== target.x || current.y !== target.y;
+        const fullyFaded = revealed.some(Boolean) && revealed.every((on, i) => !on || faded[i]);
 
         if (headMoving) {
-          if (trailSettled) {
-            // Fully at rest: peel a fresh trail off the cursor one by one.
+          if (fullyFaded) {
+            // Trail had fully dissolved: peel a fresh one off the cursor.
             for (const node of trailRefs.current) {
               if (node) {
                 node.style.transition = "";
@@ -116,11 +113,10 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
             revealed.fill(false);
             faded.fill(false);
             stoppedAt.fill(null);
-            trailSettled = false;
             strokeStart = now;
           } else {
-            // Still catching up: keep the snake going. Cancel in-progress fades
-            // so a pause-and-go doesn't hide and re-peel the tail.
+            // Pause-and-go: keep the snake on its path. Never hide a tail that
+            // is still out, even if some segments had started fading.
             faded.fill(false);
             stoppedAt.fill(null);
             for (const node of trailRefs.current) {
@@ -139,14 +135,13 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
           }
           movedSinceTick = false;
         } else {
-          // Mouse stopped: each segment starts its own fadeDelay the moment
-          // it stops moving — nearest settles first, so it fades first.
+          // Mouse stopped: a segment starts its fadeDelay only once it has
+          // arrived on the cursor — not when its per-frame step gets small.
           if (!trailMoving) {
-            trailSettled = true;
             trailPath = [{ x: current.x, y: current.y, t: now }];
           }
           for (let i = 0; i < trailCount; i++) {
-            if (segMoving[i]) {
+            if (!onHead[i]) {
               stoppedAt[i] = null;
             } else if (stoppedAt[i] === null) {
               stoppedAt[i] = now;

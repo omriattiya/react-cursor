@@ -260,22 +260,29 @@ describe("trail", () => {
     }
 
     const [nearest, middle, deepest] = getTrailElements() as [HTMLElement, HTMLElement, HTMLElement];
+    const head = document.querySelector<HTMLElement>("[data-react-cursor]")!;
     expect(Number(deepest.style.opacity)).toBeGreaterThan(0);
 
-    // Brief pause: tail is still catching up, nearest may even have started fading
-    advanceFrames(5);
+    // Pause long enough that per-frame steps get small, but the tail is still
+    // behind the cursor — must not snap/hide the snake
+    advanceFrames(8);
+    const afterPause = transformX(deepest);
+    expect(afterPause).toBeLessThan(transformX(head) - 5);
 
     fireEvent.mouseMove(window, { clientX: 450, clientY: 100 });
     advanceFrames(1);
+
+    // Resume must not teleport the tail onto the cursor
+    expect(Number(nearest.style.opacity)).toBeGreaterThan(0);
+    expect(Number(middle.style.opacity)).toBeGreaterThan(0);
+    expect(Number(deepest.style.opacity)).toBeGreaterThan(0);
+    expect(Math.abs(transformX(deepest) - afterPause)).toBeLessThan(40);
+
     for (let x = 460; x <= 500; x += 10) {
       fireEvent.mouseMove(window, { clientX: x, clientY: 100 });
       advanceFrames(1);
     }
-
-    // Must not hide-and-re-peel: already-visible segments stay up
-    expect(Number(nearest.style.opacity)).toBeGreaterThan(0);
-    expect(Number(middle.style.opacity)).toBeGreaterThan(0);
-    expect(Number(deepest.style.opacity)).toBeGreaterThan(0);
+    expect(transformX(deepest)).toBeLessThan(transformX(head));
   });
 
   test("a custom fadeDelay keeps the trail visible longer", () => {
