@@ -55,6 +55,9 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
     let movedSinceTick = false;
     let idleSince: number | null = null;
     let fadedCount = 0; // segments faded so far, counted from the deepest end
+    let trailSettled = false;
+    let strokeStart: number | null = null;
+    const revealed = Array.from({ length: trailCount }, () => false);
     const fadeDelay = trail?.fadeDelay ?? 200;
 
     const tick = (now: number) => {
@@ -84,7 +87,8 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
 
       let trailMoving = false;
       if (trail !== undefined && trailCount > 0) {
-        const opts = { count: trailCount, delay: trail.delay ?? 100 };
+        const delay = trail.delay ?? 100;
+        const opts = { count: trailCount, delay };
         trailPath = recordTrailPoint(trailPath, current, now, opts);
         const sampled = sampleTrail(trailPath, now, opts);
         trailMoving = sampled.some((seg, i) => {
@@ -97,21 +101,55 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
           if (node) node.style.transform = `translate3d(${seg.x}px, ${seg.y}px, 0)`;
         });
 
-        // Leave the trail alone until it has finished catching up; only then
-        // dissolve one segment per fadeDelay, deepest first.
-        if (movedSinceTick || trailMoving) {
+        const headMoving = movedSinceTick || current.x !== target.x || current.y !== target.y;
+
+        if (headMoving) {
+          // New stroke after rest: hide everyone, then peel nearest-first as
+          // each segment's delay elapses — never pop the whole tail at once.
+          if (trailSettled) {
+            for (const node of trailRefs.current) {
+              if (node) {
+                node.style.transition = "";
+                node.style.opacity = "0";
+              }
+            }
+            revealed.fill(false);
+            fadedCount = 0;
+            trailSettled = false;
+            strokeStart = now;
+          } else if (strokeStart === null) {
+            strokeStart = now;
+          }
+          for (let i = 0; i < trailCount; i++) {
+            if (now - strokeStart! >= (i + 1) * delay) {
+              revealed[i] = true;
+            }
+            const node = trailRefs.current[i];
+            if (node) {
+              node.style.opacity = revealed[i] ? String(trailOpacity(i, trailCount)) : "0";
+            }
+          }
           idleSince = now;
           movedSinceTick = false;
-        }
-        if (idleSince !== null) {
-          const dueToFade = Math.min(trailCount, Math.floor((now - idleSince) / fadeDelay));
-          while (fadedCount < dueToFade) {
-            const node = trailRefs.current[trailCount - 1 - fadedCount];
-            if (node) {
-              node.style.transition = `opacity ${TRAIL_FADE_MS}ms ease-out`;
-              node.style.opacity = "0";
+        } else if (trailMoving) {
+          // Retracting onto the cursor: keep already-revealed segments visible
+          idleSince = now;
+          movedSinceTick = false;
+        } else {
+          // Settled: collapse history so the next stroke emerges from here,
+          // then dissolve one segment per fadeDelay, deepest first.
+          trailSettled = true;
+          trailPath = [{ x: current.x, y: current.y, t: now }];
+          if (idleSince !== null) {
+            const dueToFade = Math.min(trailCount, Math.floor((now - idleSince) / fadeDelay));
+            while (fadedCount < dueToFade) {
+              const node = trailRefs.current[trailCount - 1 - fadedCount];
+              if (node) {
+                node.style.transition = `opacity ${TRAIL_FADE_MS}ms ease-out`;
+                node.style.opacity = "0";
+              }
+              fadedCount++;
             }
-            fadedCount++;
           }
         }
       }
@@ -134,16 +172,6 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
       }
       target = { x: e.clientX, y: e.clientY };
       movedSinceTick = true;
-      if (fadedCount > 0) {
-        // Reappear instantly — the fade transition only applies on the way out
-        trailRefs.current.forEach((node, i) => {
-          if (node) {
-            node.style.transition = "";
-            node.style.opacity = String(trailOpacity(i, trailCount));
-          }
-        });
-        fadedCount = 0;
-      }
       if (frame === null) {
         frame = requestAnimationFrame(tick);
       }
@@ -182,7 +210,7 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
             aria-hidden
             style={{ ...layerStyle, zIndex: 2147483646, opacity: depth }}
           >
-            <div style={{ transform: `scale(${scale})` }}>{visualNode}</div>
+            <div style={{ transform: `scale(${scale})`, transformOrigin: "0 0" }}>{visualNode}</div>
           </div>
         );
       })}

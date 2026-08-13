@@ -114,6 +114,11 @@ describe("trail", () => {
     expect(scales[0]).toBeLessThan(1);
     expect(scales[1]).toBeLessThan(scales[0]!);
     expect(scales[2]).toBeLessThan(scales[1]!);
+    // Scale around the hotspot so shrunk clones sit on the mouse, not offset
+    for (const el of getTrailElements()) {
+      const inner = el.firstElementChild as HTMLElement;
+      expect(inner.style.transformOrigin).toMatch(/^0(px)? 0(px)?$/);
+    }
   });
 
   test("shrink: false keeps every segment at the cursor's full size", () => {
@@ -204,13 +209,33 @@ describe("trail", () => {
       expect(el.style.opacity).toBe("0");
     }
 
-    // Mouse moves again: segments reappear at their depth opacity
+    // A twitch must not pop the whole trail back at once
     fireEvent.mouseMove(window, { clientX: 410, clientY: 100 });
     advanceFrames(1);
+    for (const el of getTrailElements()) {
+      expect(Number(el.style.opacity)).toBe(0);
+    }
 
-    const opacities = getTrailElements().map((el) => Number(el.style.opacity));
-    expect(opacities[0]).toBeGreaterThan(0);
-    expect(opacities[0]).toBeGreaterThan(opacities[1]!);
+    // Keep moving: nearest appears first, then the rest one delay apart
+    for (let x = 420; x <= 520; x += 10) {
+      fireEvent.mouseMove(window, { clientX: x, clientY: 100 });
+      advanceFrames(1);
+    }
+    const afterFirstDelay = getTrailElements().map((el) => Number(el.style.opacity));
+    expect(afterFirstDelay[0]).toBeGreaterThan(0);
+    expect(afterFirstDelay[1]).toBe(0);
+    expect(afterFirstDelay[2]).toBe(0);
+
+    // ~6 more frames: second delay elapsed, third not yet
+    for (let x = 530; x <= 580; x += 10) {
+      fireEvent.mouseMove(window, { clientX: x, clientY: 100 });
+      advanceFrames(1);
+    }
+    const afterSecondDelay = getTrailElements().map((el) => Number(el.style.opacity));
+    expect(afterSecondDelay[0]).toBeGreaterThan(0);
+    expect(afterSecondDelay[1]).toBeGreaterThan(0);
+    expect(afterSecondDelay[2]).toBe(0);
+    expect(afterSecondDelay[0]).toBeGreaterThan(afterSecondDelay[1]!);
   });
 
   test("a custom fadeDelay keeps the trail visible longer", () => {
@@ -227,7 +252,10 @@ describe("trail", () => {
 
     fireEvent.mouseMove(window, { clientX: 100, clientY: 100 });
     advanceFrames(1);
-    fireEvent.mouseMove(window, { clientX: 200, clientY: 100 });
+    for (let x = 110; x <= 400; x += 10) {
+      fireEvent.mouseMove(window, { clientX: x, clientY: 100 });
+      advanceFrames(1);
+    }
 
     // Past settle + default 200ms, but well within fadeDelay 1000
     advanceFrames(40);

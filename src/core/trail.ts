@@ -30,7 +30,14 @@ export function recordTrailPoint(
     return path;
   }
 
-  const next = [...path, { x: head.x, y: head.y, t }];
+  // Pause longer than the trail's settle window: start a new stroke from the
+  // rest position so a twitch doesn't replay the previous swipe.
+  const prefix =
+    last !== undefined && t - last.t > count * delay
+      ? [{ x: last.x, y: last.y, t: t - 1 }]
+      : path;
+
+  const next = [...prefix, { x: head.x, y: head.y, t }];
 
   // A point is dead once the point after it is already older than the deepest
   // sample; interpolating any live sample time then never needs it.
@@ -53,7 +60,9 @@ function pointAtTime(path: readonly TrailPathPoint[], t: number): Point {
     const a = path[i]!;
     const b = path[i + 1]!;
     if (t >= a.t) {
-      const f = (t - a.t) / (b.t - a.t);
+      const span = b.t - a.t;
+      if (span === 0) return { x: b.x, y: b.y };
+      const f = (t - a.t) / span;
       return { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f };
     }
   }

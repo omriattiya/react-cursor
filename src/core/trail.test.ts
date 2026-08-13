@@ -98,6 +98,19 @@ describe("recordTrailPoint", () => {
     expect(path.length).toBe(before);
   });
 
+  test("a pause then a twitch starts a new trail instead of replaying the last swipe", () => {
+    const path = buildPath(L_SHAPE); // ends at (100, 100) at t=320
+    const pausedAt = (L_SHAPE.length - 1) * 16;
+    const twitched = recordTrailPoint(path, { x: 102, y: 100 }, pausedAt + 1000, OPTS);
+    const segments = sampleTrail(twitched, pausedAt + 1000, { count: 5, delay: 80 });
+
+    for (const seg of segments) {
+      expect(seg.x).toBeGreaterThanOrEqual(100);
+      expect(seg.x).toBeLessThanOrEqual(102);
+      expect(seg.y).toBe(100); // not still on the L-shape from the previous swipe
+    }
+  });
+
   test("prunes history that is too old to ever be sampled", () => {
     let path: TrailPathPoint[] = [];
     // A long steady movement: 1000 points, 10px apart
