@@ -1,6 +1,8 @@
 # react-cursor
 
 [![npm version](https://img.shields.io/npm/v/%40omriattiya%2Freact-cursor)](https://www.npmjs.com/package/@omriattiya/react-cursor)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/%40omriattiya%2Freact-cursor)](https://bundlephobia.com/package/@omriattiya/react-cursor)
+[![dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](https://www.npmjs.com/package/@omriattiya/react-cursor?activeTab=dependencies)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/omriattiya/react-cursor?style=social)](https://github.com/omriattiya/react-cursor/stargazers)
 
@@ -50,7 +52,7 @@ function Page() {
 - **Click effects** — Provider-level ripple or rays at the press point (works with native cursors too).
 - **Accessible by default** — custom cursors are disabled on touch-only devices; smoothing, trails, velocity, and click effects respect `prefers-reduced-motion`; layers are `aria-hidden`.
 - **SSR-safe** — no window access during render; server snapshots assume no fine pointer, so nothing custom is rendered until hydration.
-- **Tiny surface** — two components, two hooks, zero dependencies beyond React.
+- **Lightweight** — < 10 kb gzip, two components, two hooks, zero dependencies beyond React.
 
 ## Installation
 
