@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-14T13:46:00.000Z",
+  "title": "Design System: react-cursor",
+  "extensions": {
+    "colorMeta": {
+      "ember": { "role": "primary", "displayName": "Ember", "canonical": "#ff7a59", "tonalRamp": ["#3a1610", "#6b2a1c", "#a33d28", "#e0452b", "#ff7a59", "#ff9a80", "#ffc4b4", "#ffe8e1"] },
+      "ember-deep": { "role": "primary", "displayName": "Ember Deep", "canonical": "#e0452b", "tonalRamp": ["#3a1610", "#6b2a1c", "#a33d28", "#e0452b", "#ff7a59", "#ff9a80", "#ffc4b4", "#ffe8e1"] },
+      "ember-contrast-dark": { "role": "neutral", "displayName": "Ember Contrast", "canonical": "#1c100c", "tonalRamp": ["#1c100c", "#3a241c", "#5c4338", "#8a6e62", "#b49a8e", "#d4c4ba", "#ebe3de", "#f7f3ef"] },
+      "gold": { "role": "secondary", "displayName": "Gold", "canonical": "#f0b429", "tonalRamp": ["#3a2c08", "#6b520e", "#9a7612", "#c9850c", "#f0b429", "#f6cc62", "#fbe3a8", "#fef6dd"] },
+      "gold-deep": { "role": "secondary", "displayName": "Gold Deep", "canonical": "#c9850c", "tonalRamp": ["#3a2c08", "#6b520e", "#9a7612", "#c9850c", "#f0b429", "#f6cc62", "#fbe3a8", "#fef6dd"] },
+      "stone": { "role": "neutral", "displayName": "Stone", "canonical": "#12100e", "tonalRamp": ["#0c0a09", "#12100e", "#1c1917", "#3f3a36", "#57534e", "#a8a29e", "#d6d3d1", "#f5f0eb"] },
+      "stone-soft": { "role": "neutral", "displayName": "Stone Soft", "canonical": "#1c1917", "tonalRamp": ["#0c0a09", "#12100e", "#1c1917", "#3f3a36", "#57534e", "#a8a29e", "#d6d3d1", "#f5f0eb"] },
+      "stone-inset": { "role": "neutral", "displayName": "Stone Inset", "canonical": "#0c0a09", "tonalRamp": ["#0c0a09", "#12100e", "#1c1917", "#3f3a36", "#57534e", "#a8a29e", "#d6d3d1", "#f5f0eb"] },
+      "parchment": { "role": "neutral", "displayName": "Parchment", "canonical": "#f7f3ef", "tonalRamp": ["#1c1917", "#44403c", "#78716c", "#a8a29e", "#d4c6b8", "#e7ddd3", "#efe9e3", "#f7f3ef"] },
+      "parchment-soft": { "role": "neutral", "displayName": "Parchment Soft", "canonical": "#fffdfb", "tonalRamp": ["#1c1917", "#44403c", "#78716c", "#a8a29e", "#d4c6b8", "#e7ddd3", "#fffdfb", "#ffffff"] },
+      "parchment-inset": { "role": "neutral", "displayName": "Parchment Inset", "canonical": "#efe9e3", "tonalRamp": ["#1c1917", "#44403c", "#78716c", "#a8a29e", "#d4c6b8", "#e7ddd3", "#efe9e3", "#f7f3ef"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#1c1917", "tonalRamp": ["#0c0a09", "#1c1917", "#44403c", "#78716c", "#a8a29e", "#d6d3d1", "#f5f0eb", "#f7f3ef"] },
+      "cream": { "role": "neutral", "displayName": "Cream", "canonical": "#f5f0eb", "tonalRamp": ["#1c1917", "#44403c", "#78716c", "#a8a29e", "#d6d3d1", "#e7ddd3", "#f5f0eb", "#fffdfb"] },
+      "mute-dark": { "role": "neutral", "displayName": "Mute Dark", "canonical": "#a8a29e", "tonalRamp": ["#1c1917", "#44403c", "#57534e", "#78716c", "#a8a29e", "#d6d3d1", "#e7ddd3", "#f5f0eb"] },
+      "mute-light": { "role": "neutral", "displayName": "Mute Light", "canonical": "#78716c", "tonalRamp": ["#1c1917", "#44403c", "#57534e", "#78716c", "#a8a29e", "#d6d3d1", "#e7ddd3", "#f5f0eb"] },
+      "border-dark": { "role": "neutral", "displayName": "Border Dark", "canonical": "#3f3a36", "tonalRamp": ["#1c1917", "#3f3a36", "#57534e", "#78716c", "#a8a29e", "#d4c6b8", "#e7ddd3", "#f5f0eb"] },
+      "border-light": { "role": "neutral", "displayName": "Border Light", "canonical": "#e7ddd3", "tonalRamp": ["#3f3a36", "#57534e", "#d4c6b8", "#e7ddd3", "#efe9e3", "#f5f0eb", "#f7f3ef", "#fffdfb"] },
+      "success-dark": { "role": "success", "displayName": "Success", "canonical": "#4ade80", "tonalRamp": ["#052e16", "#14532d", "#166534", "#16a34a", "#4ade80", "#86efac", "#bbf7d0", "#dcfce7"] },
+      "warning-dark": { "role": "warning", "displayName": "Warning", "canonical": "#fbbf24", "tonalRamp": ["#451a03", "#78350f", "#b45309", "#d97706", "#fbbf24", "#fcd34d", "#fde68a", "#fef3c7"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page titles. Homepage may scale up in the same family." },
+      "headline": { "displayName": "Headline", "purpose": "Card and section titles." },
+      "body": { "displayName": "Body", "purpose": "Ledes and explanations, max ~65ch." },
+      "label": { "displayName": "Label", "purpose": "Uppercase field labels and panel titles." },
+      "mono": { "displayName": "Mono", "purpose": "Code, install commands, package name." }
+    },
+    "shadows": [
+      { "name": "rest", "value": "0 1px 2px rgba(0, 0, 0, 0.4)", "purpose": "Cards and slider thumbs at rest." },
+      { "name": "mark", "value": "0 1px 8px color-mix(in srgb, #ff7a59 45%, transparent)", "purpose": "12px brand dot only." }
+    ],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "State transitions." },
+      { "name": "dur-fast", "value": "140ms", "purpose": "Hover and control feedback." },
+      { "name": "dur", "value": "200ms", "purpose": "Theme and page transitions." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Filled ember CTA for Get Started and primary actions.",
+      "html": "<button class=\"ds-btn-primary\">Get Started</button>",
+      "css": ".ds-btn-primary { background: #ff7a59; color: #1c100c; padding: 10px 18px; border: none; border-radius: 8px; font-weight: 600; font-family: ui-sans-serif, system-ui, sans-serif; cursor: pointer; } .ds-btn-primary:hover { background: #f0b429; } .ds-btn-primary:focus-visible { outline: 2px solid #ff7a59; outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Outlined secondary action (Playground, external links).",
+      "html": "<a class=\"ds-btn-ghost\">Playground</a>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; padding: 10px 18px; border-radius: 8px; border: 1px solid #57534e; background: #0c0a09; color: #f5f0eb; text-decoration: none; font-size: 0.9rem; font-weight: 500; font-family: ui-sans-serif, system-ui, sans-serif; } .ds-btn-ghost:hover { border-color: #ff7a59; color: #ff7a59; } .ds-btn-ghost:focus-visible { outline: 2px solid #ff7a59; outline-offset: 2px; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Tonal stone panel with 1px border.",
+      "html": "<section class=\"ds-card\"><h2>Install</h2><p>Requires React 19 or later.</p></section>",
+      "css": ".ds-card { background: linear-gradient(165deg, color-mix(in srgb, #1c1917 92%, #ff7a59) 0%, #1c1917 42%, #1c1917 100%); border: 1px solid #3f3a36; border-radius: 16px; padding: 24px; color: #f5f0eb; font-family: ui-sans-serif, system-ui, sans-serif; box-shadow: 0 1px 2px rgba(0,0,0,0.4); } .ds-card h2 { margin: 0 0 8px; font-size: 1.15rem; } .ds-card p { margin: 0; color: #a8a29e; line-height: 1.6; }"
+    },
+    {
+      "name": "Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Pill filter; on-state uses the ember–gold gradient.",
+      "html": "<button class=\"ds-chip ds-chip-on\">ring</button>",
+      "css": ".ds-chip { display: inline-flex; padding: 7px 14px; border-radius: 999px; border: 1px solid #57534e; background: transparent; color: #d6d3d1; font-size: 0.9rem; font-family: ui-sans-serif, system-ui, sans-serif; } .ds-chip-on { background: linear-gradient(135deg, #ff7a59 0%, #f0b429 100%); border-color: transparent; color: #1c100c; font-weight: 600; }"
+    },
+    {
+      "name": "Nav tab",
+      "kind": "nav",
+      "refersTo": "nav-tab",
+      "description": "Sticky playground page tabs.",
+      "html": "<nav class=\"ds-nav\"><button class=\"ds-tab\">Home</button><button class=\"ds-tab ds-tab-on\">Playground</button></nav>",
+      "css": ".ds-nav { display: flex; gap: 4px; font-family: ui-sans-serif, system-ui, sans-serif; } .ds-tab { border: none; background: transparent; color: #a8a29e; font-size: 0.9rem; font-weight: 500; padding: 8px 14px; border-radius: 8px; } .ds-tab:hover { color: #f5f0eb; background: #1c1917; } .ds-tab-on { color: #f5f0eb; background: #1c1917; box-shadow: inset 0 0 0 1px #3f3a36; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Ember on Stone",
+    "overview": "The playground is a warm workshop, not a neon tool demo. Surfaces sit on charcoal stone or cream parchment; a coral ember and companion gold mark the one thing that moves — the cursor, the active control, the primary action. Voice is technical and concise. Proof is the live cursor, not marketing claims.",
+    "keyCharacteristics": [
+      "Warm stone / parchment, never cool navy or neon",
+      "Ember + gold as a single accent voice",
+      "System sans for UI; mono only for code",
+      "Tonal surfaces with 1px borders; small offset shadows",
+      "Custom cursor is the signature motion"
+    ],
+    "rules": [
+      { "name": "The Ember Voice Rule", "body": "Ember and gold are one voice. Do not introduce a third accent. Gradient text is reserved for the brand wordmark only.", "section": "colors" },
+      { "name": "The Stone Ground Rule", "body": "Dark or light is chosen from the desk: a developer evaluating the library. Default follows prefers-color-scheme; both themes must exist.", "section": "colors" },
+      { "name": "The One Face Rule", "body": "No second display family. Emphasis is weight and size.", "section": "typography" },
+      { "name": "The Offset Shadow Rule", "body": "Shadows carry offset and blur. A zero-offset colored halo is decoration, except the brand mark.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do prove the library with a live useCursor on marketing surfaces — the cursor is the product.",
+      "Do keep install commands copyable and short (npm / pnpm).",
+      "Do use ember for the active thing and mute for the rest.",
+      "Do respect prefers-reduced-motion: snap cursor, no trails, no UI animation."
+    ],
+    "donts": [
+      "Don't introduce cool navy, electric blue CTAs, or a second brand accent.",
+      "Don't invent testimonials, download counts, or customer logos.",
+      "Don't wrap every section in a same-size icon+heading+text card grid.",
+      "Don't use gradient text except the existing brand wordmark.",
+      "Don't costume body copy in monospace."
+    ]
+  }
+}

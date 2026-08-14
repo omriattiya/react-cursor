@@ -7,12 +7,13 @@ import {
   type ClickEffectVariant,
 } from "@omriattiya/react-cursor";
 import { GettingStartedPage } from "./pages/GettingStartedPage";
+import { HomePage } from "./pages/HomePage";
 import { PlaygroundPage } from "./pages/PlaygroundPage";
 
 export const GITHUB_URL = "https://github.com/omriattiya/react-cursor";
 export const NPM_URL = "https://www.npmjs.com/package/@omriattiya/react-cursor";
 
-type Page = "playground" | "getting-started";
+type Page = "home" | "playground" | "getting-started";
 export type Theme = "dark" | "light";
 
 export type PlaygroundClickEffect = {
@@ -48,7 +49,7 @@ function GitHubIcon() {
 }
 
 export function App() {
-  const [page, setPage] = useState<Page>("playground");
+  const [page, setPage] = useState<Page>("home");
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
   const [clickEffect, setClickEffect] = useState<PlaygroundClickEffect>({
     enabled: false,
@@ -68,10 +69,10 @@ export function App() {
       <div className="app">
         <header className="navbar">
           <div className="navbar-inner">
-            <div className="brand">
+            <button type="button" className="brand" onClick={() => setPage("home")}>
               <span className="brand-mark" aria-hidden="true" />
               <span className="brand-name">react-cursor</span>
-            </div>
+            </button>
 
             <Tabs.Root
               value={page}
@@ -79,6 +80,9 @@ export function App() {
               className="tabs-root"
             >
               <Tabs.List className="tabs" aria-label="Pages">
+                <Tabs.Trigger value="home" className="tab">
+                  Home
+                </Tabs.Trigger>
                 <Tabs.Trigger value="playground" className="tab">
                   Playground
                 </Tabs.Trigger>
@@ -128,7 +132,9 @@ export function App() {
           </div>
         </header>
 
-        {page === "playground" ? (
+        {page === "home" ? (
+          <HomePage theme={theme} onNavigate={(next) => setPage(next)} />
+        ) : page === "playground" ? (
           <PlaygroundPage
             theme={theme}
             clickEffect={clickEffect}

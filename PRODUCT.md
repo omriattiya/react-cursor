@@ -21,7 +21,7 @@ One small surface for native CSS, shipped presets, and arbitrary React render �
 ## Operating Context
 
 - Consumed as an npm package (`@omriattiya/react-cursor`) in React 19+ apps
-- Evaluated and demonstrated via the Vite playground (`pnpm playground`) with Playground + Getting Started pages
+- Evaluated and demonstrated via the Vite playground (`pnpm playground`): Home (default landing, live cursor proof), Playground (interactive lab), Getting Started (usage docs)
 - Live demo: https://react-cursor-xi.vercel.app/
 - Source / issues: https://github.com/omriattiya/react-cursor
 - Domain terminology lives in `CONTEXT.md` (Cursor, Native/Custom Cursor, Preset, Provider, Cursor Zone, Global Cursor, Smoothing, Trail, Velocity Effect, Click Effect)
@@ -53,12 +53,12 @@ One small surface for native CSS, shipped presets, and arbitrary React render �
 - Name: **react-cursor** (npm: `@omriattiya/react-cursor`)
 - Authorship: Omri Attiya
 - Voice in docs/playground: technical, concise, code-first — no invented marketing claims
-- Playground is the canonical interactive proof surface; Getting Started is the usage docs surface
+- Home is the default landing and live proof (`useCursor` on the page); Playground is the interactive lab; Getting Started is the usage docs surface
 
 ## Evidence on Hand
 
 - README feature list, API docs, and code samples
-- Interactive playground + Getting Started pages under `playground/`
+- Interactive playground (Home + Playground + Getting Started) under `playground/`
 - Deployed demo at https://react-cursor-xi.vercel.app/
 - GitHub repo and npm package pages
 - No customer testimonials, case studies, benchmarks, or press assets — do not fabricate them
@@ -69,7 +69,7 @@ One small surface for native CSS, shipped presets, and arbitrary React render �
 2. **Declare, don’t wire** — consumers describe intent; the library owns tracking, priority, and cleanup.
 3. **Accessible by default** — touch and reduced-motion paths are first-class, not afterthoughts.
 4. **Tiny and honest** — stay dependency-light; don’t claim customers, metrics, or capabilities the repo doesn’t have.
-5. **Proof before polish** — playground and Getting Started must stay able to demonstrate every user-facing feature.
+5. **Proof before polish** — Home, Playground, and Getting Started must stay able to demonstrate every user-facing feature.
 
 ## Accessibility & Inclusion
 
