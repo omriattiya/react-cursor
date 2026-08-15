@@ -24,7 +24,7 @@ colors:
 typography:
   display:
     fontFamily: "ui-sans-serif, system-ui, Segoe UI, sans-serif"
-    fontSize: "clamp(2.25rem, 6vw, 3.25rem)"
+    fontSize: "clamp(1.4rem, 4.2dvh + 0.9rem, 3.25rem)"
     fontWeight: 700
     lineHeight: 1.05
     letterSpacing: "-0.03em"
@@ -165,13 +165,13 @@ Warm, slightly desaturated stone with one saturated ember. Light theme inverts t
 **Character:** Workhorse UI type. Hierarchy comes from size and weight, not a display face. Mono is for code and the package name, never as a costume for “developer.”
 
 ### Hierarchy
-- **Display** (700, `clamp(2.25rem, 6vw, 3.25rem)`, tracking `-0.03em`): homepage title only.
+- **Display** (700, `clamp(1.4rem, 4.2dvh + 0.9rem, 3.25rem)`, tracking `-0.03em`): homepage title only. The 1.4rem floor is the short-viewport compact step (also 1.55rem / 1.65rem / 1.85rem along the way).
 - **Title** (700, `clamp(1.6rem, 2.5vw, 2rem)`, tracking `-0.02em`): Playground / Getting Started page titles.
 - **Headline** (600, `1.15rem`): card / section titles.
 - **Body** (400, `1rem`, line-height 1.6, measure ≤65ch): ledes and explanations. Homepage lede may wrap at ~36ch because it is a centered stack, not a reading column.
 - **Control** (500, `0.9rem`): tabs, chips, buttons, table cells.
 - **Label** (600, `0.8rem`, tracking `0.05em`, uppercase): field labels and panel titles. One kicker per surface is enough; do not eyebrow every section.
-- **Caption** (600, `0.75rem`): code-block toolbar labels.
+- **Caption** (600, `0.75rem`; compact home `0.68rem` / `0.7rem`): code-block toolbar labels; the compact steps keep the home stage on-screen.
 - **Mono** (400, `0.85rem`, line-height 1.65): code blocks, install commands, footer package name.
 
 ### Named Rules
@@ -181,7 +181,7 @@ Warm, slightly desaturated stone with one saturated ember. Light theme inverts t
 
 Single column, max-width 960px, centered, 24px inline padding (16px below 640px). Vertical rhythm: 24px between page sections, 40px page top padding. More space above a heading than below it. Navbar is sticky; footer is a thin credit bar. Below 640px, nav tabs wrap full-width under brand + actions.
 
-Home is a narrower centered stack (max-width 34rem). Vertically center the stack on tall viewports; below ~900px height, start from the top so logo, offer, install well, and usage snippet stay in the first viewport.
+Home fills the viewport between navbar and footer with no page scroll. Hero + install stay a centered 34rem stack; the proof pair (usage + features) may use up to 46rem. Mark size, type, and gaps compress with viewport height so the full offer stays on screen. On tall screens the stack is vertically centered. Below 720px the proof pair stacks and features become a two-column compact list. Below 560px height, or below 700px height on narrow screens, the footer hides so the stage still fits.
 
 ## Elevation & Depth
 
