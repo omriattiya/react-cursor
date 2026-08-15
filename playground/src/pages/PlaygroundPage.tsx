@@ -249,6 +249,71 @@ function buildClickEffectSnippet(clickEffect: PlaygroundClickEffect): string {
   ].join("\n");
 }
 
+function isCssColor(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed) return false;
+  if (typeof CSS !== "undefined" && typeof CSS.supports === "function") {
+    return CSS.supports("color", trimmed);
+  }
+  return Boolean(parseHex6(trimmed) ?? parseHex8(trimmed) ?? rgbaParts(trimmed));
+}
+
+function ColorControl({
+  id,
+  label,
+  value,
+  swatchAriaLabel,
+  span,
+  onSwatchChange,
+  onTextChange,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  swatchAriaLabel: string;
+  span?: boolean;
+  onSwatchChange: (hex: string) => void;
+  onTextChange: (value: string) => void;
+}) {
+  const valid = isCssColor(value);
+  const textId = `${id}-text`;
+  const swatchId = `${id}-swatch`;
+
+  return (
+    <div className={span ? "control control-span" : "control"}>
+      <Label.Root htmlFor={textId} className="field-label">
+        {label}
+      </Label.Root>
+      <div className="color-field">
+        <span className="color-swatch">
+          <span
+            className="color-swatch-fill"
+            style={valid ? { background: value } : undefined}
+            aria-hidden
+          />
+          <input
+            id={swatchId}
+            type="color"
+            aria-label={swatchAriaLabel}
+            value={colorPickerValue(value)}
+            onChange={(e) => onSwatchChange(e.target.value)}
+          />
+        </span>
+        <input
+          id={textId}
+          type="text"
+          className="text-input"
+          value={value}
+          onChange={(e) => onTextChange(e.target.value)}
+          spellCheck={false}
+          autoComplete="off"
+          aria-invalid={!valid}
+        />
+      </div>
+    </div>
+  );
+}
+
 function RangeControl({
   id,
   label,
@@ -539,30 +604,16 @@ export function PlaygroundPage({
                 />
 
                 {meta.hasColor && (
-                  <div className="control">
-                    <Label.Root htmlFor="color-text" className="field-label">
-                      Color
-                    </Label.Root>
-                    <div className="color-row">
-                      <input
-                        id="color-swatch"
-                        type="color"
-                        aria-label="Color swatch"
-                        value={colorPickerValue(current.color)}
-                        onChange={(e) =>
-                          setOverride({ color: colorFromPicker(e.target.value, presetName) })
-                        }
-                      />
-                      <input
-                        id="color-text"
-                        type="text"
-                        className="text-input"
-                        value={current.color ?? ""}
-                        onChange={(e) => setOverride({ color: e.target.value })}
-                        spellCheck={false}
-                      />
-                    </div>
-                  </div>
+                  <ColorControl
+                    id="color"
+                    label="Color"
+                    value={current.color ?? ""}
+                    swatchAriaLabel="Color swatch"
+                    onSwatchChange={(hex) =>
+                      setOverride({ color: colorFromPicker(hex, presetName) })
+                    }
+                    onTextChange={(color) => setOverride({ color })}
+                  />
                 )}
 
                 {meta.hasContent && (
@@ -720,32 +771,19 @@ export function PlaygroundPage({
                       </ToggleGroup.Item>
                     </ToggleGroup.Root>
                   </div>
-                  <div className="control control-span">
-                    <Label.Root htmlFor="click-color-text" className="field-label">
-                      Color
-                    </Label.Root>
-                    <div className="color-row">
-                      <input
-                        id="click-color-swatch"
-                        type="color"
-                        aria-label="Click effect color swatch"
-                        value={colorPickerValue(clickEffect.color)}
-                        onChange={(e) =>
-                          patchClickEffect({
-                            color: clickColorFromPicker(e.target.value, clickEffect.color),
-                          })
-                        }
-                      />
-                      <input
-                        id="click-color-text"
-                        type="text"
-                        className="text-input"
-                        value={clickEffect.color}
-                        onChange={(e) => patchClickEffect({ color: e.target.value })}
-                        spellCheck={false}
-                      />
-                    </div>
-                  </div>
+                  <ColorControl
+                    id="click-color"
+                    label="Color"
+                    value={clickEffect.color}
+                    swatchAriaLabel="Click effect color swatch"
+                    span
+                    onSwatchChange={(hex) =>
+                      patchClickEffect({
+                        color: clickColorFromPicker(hex, clickEffect.color),
+                      })
+                    }
+                    onTextChange={(color) => patchClickEffect({ color })}
+                  />
                   <RangeControl
                     id="click-size"
                     label="Size"
