@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link, NavLink, Navigate, Route, Routes } from "react-router";
 import { Moon, Package, Sun } from "lucide-react";
 import {
   CursorProvider,
+  CursorZone,
   type ClickEffectConfig,
   type ClickEffectVariant,
 } from "@omriattiya/react-cursor";
@@ -37,6 +38,22 @@ function toClickEffectConfig(state: PlaygroundClickEffect): false | ClickEffectC
     size: state.size,
     duration: state.duration,
   };
+}
+
+const NAV_CURSOR = { preset: "hand" as const, color: "#111827" };
+const NAV_CLICK: ClickEffectConfig = {
+  variant: "ripple",
+  color: "rgba(255, 122, 89, 0.75)",
+};
+
+function NavTab({ to, end, children }: { to: string; end?: boolean; children: ReactNode }) {
+  return (
+    <CursorZone className="tab-zone" cursor={NAV_CURSOR} clickEffect={NAV_CLICK}>
+      <NavLink to={to} end={end} className="tab">
+        {children}
+      </NavLink>
+    </CursorZone>
+  );
 }
 
 function GitHubIcon() {
@@ -74,15 +91,11 @@ export function App() {
 
             <nav className="tabs-root" aria-label="Pages">
               <div className="tabs">
-                <NavLink to="/" end className="tab">
+                <NavTab to="/" end>
                   Home
-                </NavLink>
-                <NavLink to="/playground" className="tab">
-                  Playground
-                </NavLink>
-                <NavLink to="/getting-started" className="tab">
-                  Getting Started
-                </NavLink>
+                </NavTab>
+                <NavTab to="/playground">Playground</NavTab>
+                <NavTab to="/getting-started">Getting Started</NavTab>
               </div>
             </nav>
 

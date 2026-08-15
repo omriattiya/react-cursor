@@ -1,5 +1,5 @@
-import { act, fireEvent, render } from "@testing-library/react";
-import { CursorProvider, useCursor } from "../index";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { CursorProvider, CursorZone, useCursor } from "../index";
 
 function mockMatchMedia({ reducedMotion }: { reducedMotion: boolean }) {
   vi.stubGlobal(
@@ -199,6 +199,82 @@ describe("click effect", () => {
     act(() => {
       vi.advanceTimersByTime(1);
     });
+    expect(getClickEffects()).toHaveLength(0);
+  });
+
+  test("a hovered zone clickEffect spawns without a provider effect", () => {
+    mockMatchMedia({ reducedMotion: false });
+
+    render(
+      <CursorProvider>
+        <CursorZone cursor="pointer" clickEffect={{ variant: "ripple" }} data-testid="zone">
+          zone
+        </CursorZone>
+      </CursorProvider>,
+    );
+
+    press();
+    expect(getClickEffects()).toHaveLength(0);
+
+    fireEvent.mouseEnter(screen.getByTestId("zone"));
+    press();
+    expect(getClickEffects()[0]).toHaveAttribute("data-react-cursor-click", "ripple");
+  });
+
+  test("leaving a zone restores the provider clickEffect", () => {
+    mockMatchMedia({ reducedMotion: false });
+
+    render(
+      <CursorProvider clickEffect={{ variant: "rays" }}>
+        <CursorZone cursor="pointer" clickEffect={{ variant: "ripple" }} data-testid="zone">
+          zone
+        </CursorZone>
+      </CursorProvider>,
+    );
+
+    fireEvent.mouseEnter(screen.getByTestId("zone"));
+    press();
+    expect(getClickEffects()[0]).toHaveAttribute("data-react-cursor-click", "ripple");
+
+    fireEvent.mouseLeave(screen.getByTestId("zone"));
+    press();
+    const effects = getClickEffects();
+    expect(effects.at(-1)).toHaveAttribute("data-react-cursor-click", "rays");
+  });
+
+  test("the innermost zone clickEffect wins", () => {
+    mockMatchMedia({ reducedMotion: false });
+
+    render(
+      <CursorProvider>
+        <CursorZone cursor="pointer" clickEffect={{ variant: "ripple" }} data-testid="outer">
+          <CursorZone cursor="pointer" clickEffect={{ variant: "rays" }} data-testid="inner">
+            inner
+          </CursorZone>
+        </CursorZone>
+      </CursorProvider>,
+    );
+
+    fireEvent.mouseEnter(screen.getByTestId("outer"));
+    fireEvent.mouseEnter(screen.getByTestId("inner"));
+    press();
+
+    expect(getClickEffects()[0]).toHaveAttribute("data-react-cursor-click", "rays");
+  });
+
+  test("clickEffect={false} on a zone disables the provider effect", () => {
+    mockMatchMedia({ reducedMotion: false });
+
+    render(
+      <CursorProvider clickEffect={{ variant: "ripple" }}>
+        <CursorZone cursor="pointer" clickEffect={false} data-testid="zone">
+          zone
+        </CursorZone>
+      </CursorProvider>,
+    );
+
+    fireEvent.mouseEnter(screen.getByTestId("zone"));
+    press();
     expect(getClickEffects()).toHaveLength(0);
   });
 });

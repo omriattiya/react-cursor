@@ -43,8 +43,11 @@ function Page() {
 
 const ZONES = `import { CursorZone } from "@omriattiya/react-cursor";
 
-<CursorZone cursor={{ preset: "emoji", content: "🔥" }}>
-  <p>Hover me!</p>
+<CursorZone
+  cursor={{ preset: "hand", color: "#111827" }}
+  clickEffect={{ variant: "ripple", color: "rgba(255, 122, 89, 0.75)" }}
+>
+  <button>Home</button>
 </CursorZone>
 
 // Zones nest — the innermost hovered zone wins
@@ -116,8 +119,9 @@ export function GettingStartedPage({ theme }: { theme: Theme }) {
         <h2>3. Add a click effect (optional)</h2>
         <p>
           Pass <code>clickEffect</code> on the Provider for press feedback at the pointer —{" "}
-          <code>ripple</code> or <code>rays</code>. Independent of the active cursor (including
-          native). Disabled under <code>prefers-reduced-motion</code>.
+          <code>ripple</code> (ring) or <code>rays</code>. Independent of the active cursor
+          (including native). Zones can override it. Disabled under{" "}
+          <code>prefers-reduced-motion</code>.
         </p>
         <CodeBlock code={CLICK_EFFECT} theme={theme} />
       </section>
@@ -135,7 +139,9 @@ export function GettingStartedPage({ theme }: { theme: Theme }) {
         <h2>5. Override per region with zones</h2>
         <p>
           <code>CursorZone</code> swaps in its cursor while hovered, then falls back to the
-          enclosing zone, the global cursor, or the browser default.
+          enclosing zone, the global cursor, or the browser default. Pass{" "}
+          <code>clickEffect</code> on a zone to override the Provider — <code>ripple</code> is the
+          ring click. Omit it to inherit; <code>false</code> disables while hovered.
         </p>
         <CodeBlock code={ZONES} theme={theme} />
       </section>

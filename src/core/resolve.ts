@@ -1,4 +1,4 @@
-import type { CursorStyle } from "./types";
+import type { ClickEffectConfig, CursorStyle } from "./types";
 
 export const DEFAULT_CURSOR: CursorStyle = { native: "auto" };
 
@@ -11,4 +11,20 @@ export function resolveCursor(
   hoveredZones: readonly CursorStyle[],
 ): CursorStyle {
   return hoveredZones.at(-1) ?? global ?? DEFAULT_CURSOR;
+}
+
+/**
+ * Decides the active click effect. Innermost zone with an explicit value wins
+ * (`false` disables); zones that omit it inherit the enclosing zone, then the
+ * Provider.
+ */
+export function resolveClickEffect(
+  provider: false | ClickEffectConfig | undefined,
+  hoveredZones: readonly (false | ClickEffectConfig | undefined)[],
+): false | ClickEffectConfig | undefined {
+  for (let i = hoveredZones.length - 1; i >= 0; i--) {
+    const zone = hoveredZones[i];
+    if (zone !== undefined) return zone;
+  }
+  return provider;
 }

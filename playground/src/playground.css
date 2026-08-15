@@ -207,6 +207,10 @@ code {
   gap: 4px;
 }
 
+.tab-zone {
+  display: inline-flex;
+}
+
 .tab {
   display: inline-flex;
   align-items: center;
@@ -974,6 +978,27 @@ html:has(.page-home) .footer-inner {
   border-bottom: 1px solid var(--border);
 }
 
+.control-panel p {
+  margin: 0 0 14px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.zone-click-demo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px dashed var(--border);
+  background: var(--bg-soft);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
 .control-panel:last-child {
   border-bottom: none;
 }
@@ -1721,8 +1746,14 @@ html:has(.page-home) .footer-inner {
     width: 100%;
   }
 
+  .tab-zone {
+    flex: 1;
+    min-width: 0;
+  }
+
   .tab {
     flex: 1;
+    width: 100%;
     text-align: center;
   }
 

@@ -30,4 +30,4 @@ interface CursorProviderProps {
 - `useCursor` and `CursorZone` must be used under this provider.
 - Native cursors are applied to the document.
 - Custom cursors render in a fixed, click-through layer.
-- `clickEffect` is Provider-scoped (see [Click Effect](./click-effect.md)); omit or pass `false` to disable.
+- `clickEffect` on the Provider is the default (see [Click Effect](./click-effect.md)); omit or pass `false` to disable. `CursorZone` can override it while hovered.
