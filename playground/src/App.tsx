@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import * as Tabs from "@radix-ui/react-tabs";
+import { Link, NavLink, Navigate, Route, Routes } from "react-router";
 import { Moon, Package, Sun } from "lucide-react";
 import {
   CursorProvider,
@@ -13,7 +13,6 @@ import { PlaygroundPage } from "./pages/PlaygroundPage";
 export const GITHUB_URL = "https://github.com/omriattiya/react-cursor";
 export const NPM_URL = "https://www.npmjs.com/package/@omriattiya/react-cursor";
 
-type Page = "home" | "playground" | "getting-started";
 export type Theme = "dark" | "light";
 
 export type PlaygroundClickEffect = {
@@ -49,7 +48,6 @@ function GitHubIcon() {
 }
 
 export function App() {
-  const [page, setPage] = useState<Page>("home");
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
   const [clickEffect, setClickEffect] = useState<PlaygroundClickEffect>({
     enabled: false,
@@ -69,28 +67,24 @@ export function App() {
       <div className="app">
         <header className="navbar">
           <div className="navbar-inner">
-            <button type="button" className="brand" onClick={() => setPage("home")}>
+            <Link to="/" className="brand">
               <span className="brand-mark" aria-hidden="true" />
               <span className="brand-name">react-cursor</span>
-            </button>
+            </Link>
 
-            <Tabs.Root
-              value={page}
-              onValueChange={(value) => setPage(value as Page)}
-              className="tabs-root"
-            >
-              <Tabs.List className="tabs" aria-label="Pages">
-                <Tabs.Trigger value="home" className="tab">
+            <nav className="tabs-root" aria-label="Pages">
+              <div className="tabs">
+                <NavLink to="/" end className="tab">
                   Home
-                </Tabs.Trigger>
-                <Tabs.Trigger value="playground" className="tab">
+                </NavLink>
+                <NavLink to="/playground" className="tab">
                   Playground
-                </Tabs.Trigger>
-                <Tabs.Trigger value="getting-started" className="tab">
+                </NavLink>
+                <NavLink to="/getting-started" className="tab">
                   Getting Started
-                </Tabs.Trigger>
-              </Tabs.List>
-            </Tabs.Root>
+                </NavLink>
+              </div>
+            </nav>
 
             <div className="navbar-actions">
               <a
@@ -132,17 +126,21 @@ export function App() {
           </div>
         </header>
 
-        {page === "home" ? (
-          <HomePage theme={theme} onNavigate={(next) => setPage(next)} />
-        ) : page === "playground" ? (
-          <PlaygroundPage
-            theme={theme}
-            clickEffect={clickEffect}
-            onClickEffectChange={setClickEffect}
+        <Routes>
+          <Route path="/" element={<HomePage theme={theme} />} />
+          <Route
+            path="/playground"
+            element={
+              <PlaygroundPage
+                theme={theme}
+                clickEffect={clickEffect}
+                onClickEffectChange={setClickEffect}
+              />
+            }
           />
-        ) : (
-          <GettingStartedPage theme={theme} />
-        )}
+          <Route path="/getting-started" element={<GettingStartedPage theme={theme} />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
 
         <footer className="footer">
           <div className="footer-inner">

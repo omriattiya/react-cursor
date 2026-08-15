@@ -169,6 +169,7 @@ code {
   font-family: inherit;
   cursor: pointer;
   color: inherit;
+  text-decoration: none;
 }
 
 .brand:focus-visible {
@@ -207,6 +208,9 @@ code {
 }
 
 .tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   background: transparent;
   color: var(--text-muted);
@@ -216,6 +220,7 @@ code {
   border-radius: 8px;
   font-family: inherit;
   cursor: pointer;
+  text-decoration: none;
   transition:
     color var(--dur-fast) var(--ease-out),
     background-color var(--dur-fast) var(--ease-out),
@@ -227,7 +232,7 @@ code {
   background: var(--bg-soft);
 }
 
-.tab[data-state="active"] {
+.tab[aria-current="page"] {
   color: var(--text);
   background: var(--bg-soft);
   box-shadow: inset 0 0 0 1px var(--border);
