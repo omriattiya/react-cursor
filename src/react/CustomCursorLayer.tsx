@@ -40,14 +40,18 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
     reducedMotion || "render" in style ? undefined : (style as PresetCursor).velocity;
   const trail = reducedMotion ? undefined : style.trail;
   const trailCount = trail === undefined ? 0 : (trail.count ?? 3);
+  // Survive effect re-runs (slider-driven smoothing/trail/velocity changes)
+  // so the cursor doesn't jump offscreen or snap while the pointer is down.
+  const currentRef = useRef<Point>(OFFSCREEN);
+  const targetRef = useRef<Point>(OFFSCREEN);
 
   useEffect(() => {
     const el = ref.current;
     const visual = visualRef.current;
     if (el === null) return;
 
-    let current = OFFSCREEN;
-    let target = OFFSCREEN;
+    let current = currentRef.current;
+    let target = targetRef.current;
     let effectVelocity: Point = { x: 0, y: 0 };
     const trailVelocities = Array.from({ length: trailCount }, (): Point => ({ x: 0, y: 0 }));
     let lastTrailPos: Point[] = [];
@@ -68,6 +72,7 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
 
       const previous = current;
       current = nextPosition({ current, target, smoothing });
+      currentRef.current = current;
       el.style.transform = `translate3d(${current.x}px, ${current.y}px, 0)`;
 
       const stretchAmount = velocity?.stretch ?? 1;
@@ -201,21 +206,30 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
       }
     };
 
-    const onMouseMove = (e: MouseEvent) => {
+    const onMove = (e: MouseEvent) => {
       // Jump instead of lerping across the screen on the very first movement
       if (current === OFFSCREEN) {
         current = { x: e.clientX, y: e.clientY };
       }
       target = { x: e.clientX, y: e.clientY };
+      currentRef.current = current;
+      targetRef.current = target;
       movedSinceTick = true;
       if (frame === null) {
         frame = requestAnimationFrame(tick);
       }
     };
 
-    window.addEventListener("mousemove", onMouseMove);
+    // Capture phase: pointer capture / stopPropagation (sliders) still reach us.
+    // mousemove remains for environments that don't dispatch pointer events.
+    window.addEventListener("pointermove", onMove, true);
+    window.addEventListener("mousemove", onMove, true);
+    if (current.x !== target.x || current.y !== target.y) {
+      frame = requestAnimationFrame(tick);
+    }
     return () => {
-      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("pointermove", onMove, true);
+      window.removeEventListener("mousemove", onMove, true);
       if (frame !== null) {
         cancelAnimationFrame(frame);
       }
