@@ -15,6 +15,7 @@ import { Check, Copy } from "lucide-react";
 import clsx from "clsx";
 import { useCursor, useHasCursor } from "@omriattiya/react-cursor";
 import type { Theme } from "../App";
+import { BrandLogo } from "../components/BrandLogo";
 import { CodeBlock } from "../components/CodeBlock";
 
 const NPM_INSTALL = "npm install @omriattiya/react-cursor";
@@ -33,10 +34,6 @@ const INSTALL: Record<Installer, string> = {
   npm: NPM_INSTALL,
   pnpm: PNPM_INSTALL,
 };
-
-function HomeLogo() {
-  return <span className="home-logo" aria-hidden="true" />;
-}
 
 function InstallWell({ command }: { command: string }) {
   const [copied, setCopied] = useState(false);
@@ -94,7 +91,7 @@ export function HomePage({ theme }: { theme: Theme }) {
   return (
     <main className="page page-home">
       <header className="home-hero">
-        <HomeLogo />
+        <BrandLogo variant="home" />
         <h1 className="home-title">react-cursor</h1>
         <p className="home-lede">
           Custom cursors for React. Native, preset, or any element — one API.
