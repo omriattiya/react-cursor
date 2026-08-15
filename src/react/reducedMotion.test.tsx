@@ -97,4 +97,24 @@ describe("prefers-reduced-motion", () => {
     const visual = document.querySelector<HTMLElement>("[data-react-cursor-visual]")!;
     expect(visual.style.transform).toBe("");
   });
+
+  test("leaving the page hides the cursor instantly when reduced motion is preferred", () => {
+    mockMatchMedia({ reducedMotion: true });
+
+    render(
+      <CursorProvider>
+        <SmoothedDot />
+      </CursorProvider>,
+    );
+
+    fireEvent.mouseMove(window, { clientX: 100, clientY: 100 });
+    act(() => {
+      vi.advanceTimersToNextFrame();
+    });
+    fireEvent.mouseLeave(document.documentElement);
+
+    const root = document.querySelector<HTMLElement>("[data-react-cursor-root]")!;
+    expect(root.style.opacity).toBe("0");
+    expect(root.style.transition).toBe("");
+  });
 });

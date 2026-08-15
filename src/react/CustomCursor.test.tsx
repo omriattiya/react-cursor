@@ -223,4 +223,67 @@ describe("custom cursor", () => {
     const visual = document.querySelector<HTMLElement>("[data-react-cursor-visual]")!;
     expect(visual.style.transform).toBe("");
   });
+
+  test("the cursor fades out when the pointer leaves the page", () => {
+    render(
+      <CursorProvider>
+        <DotCursor />
+      </CursorProvider>,
+    );
+
+    fireEvent.mouseMove(window, { clientX: 120, clientY: 80 });
+    act(() => {
+      vi.advanceTimersToNextFrame();
+    });
+
+    fireEvent.mouseLeave(document.documentElement);
+
+    expect(document.querySelector<HTMLElement>("[data-react-cursor-root]")!.style.opacity).toBe("0");
+  });
+
+  test("the cursor fades back in at the re-entry point without lerping across the page", () => {
+    function SmoothCursor() {
+      useCursor({ preset: "dot", smoothing: 0.2 });
+      return null;
+    }
+
+    render(
+      <CursorProvider>
+        <SmoothCursor />
+      </CursorProvider>,
+    );
+
+    fireEvent.mouseMove(window, { clientX: 100, clientY: 100 });
+    act(() => {
+      vi.advanceTimersToNextFrame();
+    });
+    fireEvent.mouseLeave(document.documentElement);
+
+    fireEvent.mouseMove(window, { clientX: 400, clientY: 300 });
+    act(() => {
+      vi.advanceTimersToNextFrame();
+    });
+
+    const root = document.querySelector<HTMLElement>("[data-react-cursor-root]")!;
+    expect(root.style.opacity).toBe("1");
+    expect(getCursorElement()!.style.transform).toBe("translate3d(400px, 300px, 0)");
+  });
+
+  test("the cursor fades out when the pointer is dragged off the page", () => {
+    render(
+      <CursorProvider>
+        <DotCursor />
+      </CursorProvider>,
+    );
+
+    fireEvent.mouseMove(window, { clientX: 40, clientY: 40 });
+    act(() => {
+      vi.advanceTimersToNextFrame();
+    });
+
+    fireEvent.pointerMove(window, { clientX: -8, clientY: 40 });
+
+    expect(document.querySelector<HTMLElement>("[data-react-cursor-root]")!.style.opacity).toBe("0");
+    expect(getCursorElement()!.style.transform).toBe("translate3d(40px, 40px, 0)");
+  });
 });

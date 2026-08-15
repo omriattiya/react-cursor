@@ -310,6 +310,10 @@ export function GettingStartedPage({ theme }: { theme: Theme }) {
             skipped, trails are not rendered, and click effects are disabled.
           </li>
           <li>
+            The cursor fades out when the pointer leaves the page (instantly when{" "}
+            <code>prefers-reduced-motion</code> is on) and fades back in on return.
+          </li>
+          <li>
             The cursor layer is <code>aria-hidden</code> and never intercepts clicks.
           </li>
           <li>

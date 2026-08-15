@@ -25,10 +25,24 @@ const TRAIL_SETTLE = 0.5;
 /** Duration (ms) of the trail's fade-out once the idle fade delay has elapsed. */
 const TRAIL_FADE_MS = 300;
 
+/** Duration (ms) of the cursor fade when the pointer leaves or re-enters the page. */
+const PAGE_FADE_MS = 180;
+
+const insidePage = (e: { clientX: number; clientY: number }) =>
+  e.clientX >= 0 &&
+  e.clientY >= 0 &&
+  e.clientX <= window.innerWidth &&
+  e.clientY <= window.innerHeight;
+
 /** Opacity of trail segment `i` out of `count` (deeper = fainter). */
 const trailOpacity = (i: number, count: number) => 1 - (i + 1) / (count + 1);
 
+const rootStyle: CSSProperties = {
+  pointerEvents: "none",
+};
+
 export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
+  const rootRef = useRef<HTMLDivElement>(null);
   const ref = useRef<HTMLDivElement>(null);
   const visualRef = useRef<HTMLDivElement>(null);
   const trailRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -44,14 +58,34 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
   // so the cursor doesn't jump offscreen or snap while the pointer is down.
   const currentRef = useRef<Point>(OFFSCREEN);
   const targetRef = useRef<Point>(OFFSCREEN);
+  const leftPageRef = useRef(false);
 
   useEffect(() => {
+    const root = rootRef.current;
     const el = ref.current;
     const visual = visualRef.current;
-    if (el === null) return;
+    if (el === null || root === null) return;
+
+    const pageFadeMs = reducedMotion ? 0 : PAGE_FADE_MS;
+    root.style.transition = pageFadeMs === 0 ? "" : `opacity ${pageFadeMs}ms ease-out`;
+    if (leftPageRef.current) root.style.opacity = "0";
 
     let current = currentRef.current;
     let target = targetRef.current;
+    let leftPage = leftPageRef.current;
+
+    const hide = () => {
+      leftPage = true;
+      leftPageRef.current = true;
+      root.style.opacity = "0";
+    };
+
+    const show = () => {
+      leftPage = false;
+      leftPageRef.current = false;
+      root.style.opacity = "1";
+    };
+
     let effectVelocity: Point = { x: 0, y: 0 };
     const trailVelocities = Array.from({ length: trailCount }, (): Point => ({ x: 0, y: 0 }));
     let lastTrailPos: Point[] = [];
@@ -207,9 +241,15 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
     };
 
     const onMove = (e: MouseEvent) => {
-      // Jump instead of lerping across the screen on the very first movement
-      if (current === OFFSCREEN) {
+      if (!insidePage(e)) {
+        hide();
+        return;
+      }
+      // Jump instead of lerping across the screen on first movement or re-entry
+      if (current === OFFSCREEN || leftPage) {
         current = { x: e.clientX, y: e.clientY };
+        el.style.transform = `translate3d(${current.x}px, ${current.y}px, 0)`;
+        show();
       }
       target = { x: e.clientX, y: e.clientY };
       currentRef.current = current;
@@ -224,23 +264,27 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
     // mousemove remains for environments that don't dispatch pointer events.
     window.addEventListener("pointermove", onMove, true);
     window.addEventListener("mousemove", onMove, true);
+    document.documentElement.addEventListener("pointerleave", hide);
+    document.documentElement.addEventListener("mouseleave", hide);
     if (current.x !== target.x || current.y !== target.y) {
       frame = requestAnimationFrame(tick);
     }
     return () => {
       window.removeEventListener("pointermove", onMove, true);
       window.removeEventListener("mousemove", onMove, true);
+      document.documentElement.removeEventListener("pointerleave", hide);
+      document.documentElement.removeEventListener("mouseleave", hide);
       if (frame !== null) {
         cancelAnimationFrame(frame);
       }
     };
-  }, [smoothing, velocity, trail, trailCount]);
+  }, [smoothing, velocity, trail, trailCount, reducedMotion]);
 
   const visualNode =
     "render" in style && style.render !== undefined ? style.render : <PresetVisual style={style as PresetCursor} />;
 
   return (
-    <>
+    <div ref={rootRef} data-react-cursor-root="" aria-hidden style={rootStyle}>
       <div ref={ref} data-react-cursor="" aria-hidden style={layerStyle}>
         <div ref={visualRef} data-react-cursor-visual="">
           {visualNode}
@@ -273,7 +317,7 @@ export function CustomCursorLayer({ style }: { style: CustomCursorStyle }) {
           </div>
         );
       })}
-    </>
+    </div>
   );
 }
 
