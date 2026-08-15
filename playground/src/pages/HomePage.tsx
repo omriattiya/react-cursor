@@ -10,6 +10,7 @@ FIRST VIEWPORT: Centered column. Hero ring, title, lede, Get Started + Playgroun
 FORM: Joyride-canon centered stack, user-pinned. No concept-seed (precisely specified). Staging: centered.
 */
 import { useState } from "react";
+import { Link } from "react-router";
 import { Check, Copy } from "lucide-react";
 import clsx from "clsx";
 import { useCursor, useHasCursor } from "@omriattiya/react-cursor";
@@ -79,13 +80,7 @@ function InstallWell({ command }: { command: string }) {
   );
 }
 
-export function HomePage({
-  theme,
-  onNavigate,
-}: {
-  theme: Theme;
-  onNavigate: (page: "playground" | "getting-started") => void;
-}) {
+export function HomePage({ theme }: { theme: Theme }) {
   const hasCursor = useHasCursor();
   const [installer, setInstaller] = useState<Installer>("npm");
 
@@ -110,12 +105,12 @@ export function HomePage({
           </p>
         )}
         <div className="home-cta-row">
-          <button type="button" className="btn btn-primary" onClick={() => onNavigate("getting-started")}>
+          <Link to="/getting-started" className="btn btn-primary">
             Get Started
-          </button>
-          <button type="button" className="btn btn-ghost" onClick={() => onNavigate("playground")}>
+          </Link>
+          <Link to="/playground" className="btn btn-ghost">
             Playground
-          </button>
+          </Link>
         </div>
       </header>
 
