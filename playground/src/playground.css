@@ -1363,20 +1363,100 @@ html:has(.page-home) .footer-inner {
   outline-offset: 2px;
 }
 
-.color-row {
+.color-field {
   display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.color-row input[type="color"] {
-  width: 40px;
+  align-items: stretch;
   height: 34px;
-  padding: 2px;
+  min-height: 34px;
   border: 1px solid var(--border-strong);
   border-radius: 8px;
   background: var(--bg-inset);
+  overflow: hidden;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.color-field:hover {
+  border-color: color-mix(in srgb, var(--border-strong) 60%, var(--accent));
+}
+
+.color-field:has(:focus-visible) {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.color-field:has([aria-invalid="true"]) {
+  border-color: var(--warning);
+}
+
+.color-field:has([aria-invalid="true"]):hover {
+  border-color: var(--warning);
+}
+
+.color-field:has([aria-invalid="true"]:focus-visible),
+.color-field:has(:focus-visible):has([aria-invalid="true"]) {
+  border-color: var(--warning);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--warning) 40%, transparent);
+}
+
+.color-swatch {
+  --checker-a: color-mix(in srgb, var(--text) 22%, var(--bg-inset));
+  --checker-b: var(--bg-inset);
+  position: relative;
+  width: 40px;
+  align-self: stretch;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-right: 1px solid var(--border-strong);
+  background-color: var(--checker-b);
+  background-image:
+    linear-gradient(45deg, var(--checker-a) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--checker-a) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--checker-a) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--checker-a) 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0;
+}
+
+.color-swatch-fill {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.color-swatch input[type="color"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  border: none;
+  opacity: 0;
   cursor: pointer;
+}
+
+.color-swatch input[type="color"]:focus,
+.color-swatch input[type="color"]:focus-visible {
+  outline: none;
+}
+
+.color-field .text-input {
+  min-width: 0;
+  height: 100%;
+  padding: 0 12px;
+  line-height: 32px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.color-field .text-input:hover,
+.color-field .text-input:focus-visible {
+  border: none;
+  box-shadow: none;
 }
 
 .text-input {
