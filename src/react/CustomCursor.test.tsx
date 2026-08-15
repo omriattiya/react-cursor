@@ -57,6 +57,64 @@ describe("custom cursor", () => {
     expect(getCursorElement()!.style.transform).toBe("translate3d(120px, 80px, 0)");
   });
 
+  test("the cursor follows the pointer while dragging (e.g. sliders)", () => {
+    function SnapCursor() {
+      useCursor({ preset: "dot", smoothing: 0 });
+      return null;
+    }
+
+    render(
+      <CursorProvider>
+        <SnapCursor />
+      </CursorProvider>,
+    );
+
+    fireEvent.mouseMove(window, { clientX: 40, clientY: 40 });
+    act(() => {
+      vi.advanceTimersToNextFrame();
+    });
+
+    // Native slider drag uses pointer capture: pointermove fires, mousemove often does not.
+    fireEvent.pointerMove(window, { clientX: 220, clientY: 90 });
+    act(() => {
+      vi.advanceTimersToNextFrame();
+    });
+
+    expect(getCursorElement()!.style.transform).toBe("translate3d(220px, 90px, 0)");
+  });
+
+  test("the cursor keeps tracking when smoothing changes mid-drag", () => {
+    function SmoothCursor({ smoothing }: { smoothing: number }) {
+      useCursor({ preset: "dot", smoothing });
+      return null;
+    }
+
+    const { rerender } = render(
+      <CursorProvider>
+        <SmoothCursor smoothing={0.75} />
+      </CursorProvider>,
+    );
+
+    fireEvent.mouseMove(window, { clientX: 100, clientY: 100 });
+    act(() => {
+      vi.advanceTimersToNextFrame();
+    });
+
+    rerender(
+      <CursorProvider>
+        <SmoothCursor smoothing={0.2} />
+      </CursorProvider>,
+    );
+
+    fireEvent.pointerMove(window, { clientX: 400, clientY: 100 });
+    act(() => {
+      vi.advanceTimersToNextFrame();
+    });
+
+    // From 100 toward 400 at smoothing 0.2 → 160, not a snap to 400 or a jump offscreen.
+    expect(getCursorElement()!.style.transform).toBe("translate3d(160px, 100px, 0)");
+  });
+
   test("the pulse preset renders an animated ripple ring", () => {
     function PulseCursor() {
       useCursor({ preset: "pulse", color: "tomato", size: 40 });
