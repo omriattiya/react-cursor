@@ -284,7 +284,8 @@ Changing the input object also works — the hook re-registers when any of the c
 ## Touch devices and accessibility
 
 - **Touch-only devices:** custom cursors (presets and render) are only shown when the device reports a fine pointer (`(pointer: fine)` media query). On touch-only devices nothing is rendered and the native cursor is left alone. You can read the same signal yourself with `useHasCursor()`.
-- **Reduced motion:** when `prefers-reduced-motion: reduce` is active, `smoothing` is ignored (the cursor snaps directly to the mouse), velocity effects are not applied, trails are not rendered, and click effects are disabled.
+- **Reduced motion:** when `prefers-reduced-motion: reduce` is active, `smoothing` is ignored (the cursor snaps directly to the mouse), velocity effects are not applied, trails are not rendered, and click effects are disabled. Leaving the page hides the cursor instantly instead of fading.
+- **Pointer left the page:** the custom cursor (and its trail) fades out when the pointer leaves the document, and fades back in at the re-entry point.
 - **Screen readers:** the custom cursor and click-effect layers are `aria-hidden` and `pointer-events: none`, so they never intercept clicks or appear in the accessibility tree.
 
 ```tsx
