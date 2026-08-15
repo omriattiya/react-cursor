@@ -189,15 +189,15 @@ Tonal layering first: inset wells are darker, cards are slightly lifted stone wi
 
 ### Shadow Vocabulary
 - **Rest** (`0 1px 2px rgba(0, 0, 0, 0.4)` dark / `rgba(28, 25, 23, 0.06)` light): cards and thumbs.
-- **Mark** (`0 1px 8px` ember at 45%): the 12px nav brand ring.
-- **Hero mark** (`0 4px 28px` ember at 32%): the 96px open homepage ring.
+- **Mark** (`0 1px 8px` ember at 45%): the 22px nav brand disc.
+- **Hero mark** (`0 4px 28px` ember at 32%): the 96px homepage disc.
 
 ### Named Rules
 **The Offset Shadow Rule.** Shadows carry offset and blur. A zero-offset colored halo is decoration, except the brand marks.
 
 ## Shapes
 
-16px cards, 14px preset tiles, 12px code wells, 10px CTAs and segmented controls, 8px tabs/inputs/icon buttons, 999px chips and sliders. Geometry is rounded-rect, not squircles or sharp tools. The nav brand mark is a 12px circle with a 3px ember–gold gradient ring. The homepage hero mark is a 96px open hoop (10px gradient stroke, transparent center so page atmosphere shows through).
+16px cards, 14px preset tiles, 12px code wells, 10px CTAs and segmented controls, 8px tabs/inputs/icon buttons, 999px chips and sliders. Geometry is rounded-rect, not squircles or sharp tools. The brand mark is one ember–gold gradient disc (135deg, accent → gold): 22px in the navbar, 96px on Home, and the same disc as the favicon. Home adds the breathing ember glow; nav keeps a still mark shadow.
 
 ## Components
 

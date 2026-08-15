@@ -7,6 +7,7 @@ import {
   type ClickEffectConfig,
   type ClickEffectVariant,
 } from "@omriattiya/react-cursor";
+import { BrandLogo } from "./components/BrandLogo";
 import { GettingStartedPage } from "./pages/GettingStartedPage";
 import { HomePage } from "./pages/HomePage";
 import { PlaygroundPage } from "./pages/PlaygroundPage";
@@ -85,7 +86,7 @@ export function App() {
         <header className="navbar">
           <div className="navbar-inner">
             <Link to="/" className="brand">
-              <span className="brand-mark" aria-hidden="true" />
+              <BrandLogo />
               <span className="brand-name">react-cursor</span>
             </Link>
 
