@@ -4,6 +4,7 @@ import * as Slider from "@radix-ui/react-slider";
 import * as Switch from "@radix-ui/react-switch";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import {
+  CursorZone,
   PresetVisual,
   useCursor,
   useHasCursor,
@@ -248,6 +249,13 @@ function buildClickEffectSnippet(clickEffect: PlaygroundClickEffect): string {
     "</CursorProvider>",
   ].join("\n");
 }
+
+const ZONE_CLICK_SNIPPET = `<CursorZone
+  cursor={{ preset: "hand", color: "#111827" }}
+  clickEffect={{ variant: "ripple", color: "rgba(255, 122, 89, 0.75)" }}
+>
+  <Link to="/">Home</Link>
+</CursorZone>`;
 
 function isCssColor(value: string): boolean {
   const trimmed = value.trim();
@@ -736,8 +744,19 @@ export function PlaygroundPage({
             </h3>
             <p>
               Provider-level press feedback at the click point — works with native and custom
-              cursors. Click anywhere to preview.
+              cursors. Click anywhere to preview. Hover Home / Playground / Getting Started for a
+              zone override: hand cursor + ring click.
             </p>
+            <CursorZone
+              className="zone-click-demo"
+              cursor={{ preset: "hand", color: "#111827" }}
+              clickEffect={{
+                variant: "ripple",
+                color: "rgba(255, 122, 89, 0.75)",
+              }}
+            >
+              Hover this zone — hand cursor, click for a ring
+            </CursorZone>
             <div className="controls-options">
               <SwitchControl
                 id="click-effect-enabled"
@@ -815,6 +834,7 @@ export function PlaygroundPage({
             </h3>
             <CodeBlock code={snippet} label="Cursor" language="tsx" theme={theme} />
             <CodeBlock code={clickEffectSnippet} label="Provider" language="tsx" theme={theme} />
+            <CodeBlock code={ZONE_CLICK_SNIPPET} label="Zone" language="tsx" theme={theme} />
           </section>
         </div>
       </section>

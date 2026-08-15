@@ -232,17 +232,14 @@ The trail emerges from the cursor: at rest all segments sit stacked on the curso
 
 ```tsx
 <CursorZone
-  cursor={{ preset: "text", content: "Drag", color: "#fff" }}
-  className="gallery"
-  onMouseEnter={() => console.log("entered")} // your handlers still fire
+  cursor={{ preset: "hand", color: "#111827" }}
+  clickEffect={{ variant: "ripple", color: "rgba(255, 122, 89, 0.75)" }}
 >
-  {images.map((img) => (
-    <Photo key={img.id} {...img} />
-  ))}
+  <button>Home</button>
 </CursorZone>
 ```
 
-Zones nest naturally — the innermost hovered zone wins:
+Zones nest naturally — the innermost hovered zone wins. `clickEffect` on a zone overrides the Provider while hovered (`false` disables; omit to inherit).
 
 ```tsx
 <CursorZone cursor={{ preset: "ring" }}>
@@ -326,6 +323,7 @@ A `div` whose cursor overrides the Global Cursor while hovered. Accepts all `div
 | Prop | Type | Description |
 |---|---|---|
 | `cursor` | `CursorInput` | The cursor to apply while the zone is hovered. |
+| `clickEffect` | `false \| ClickEffectConfig` | Optional press feedback while hovered. Omit to inherit the enclosing zone / Provider; `false` disables. |
 | `...rest` | `ComponentPropsWithoutRef<"div">` | Forwarded to the underlying `div`; `onMouseEnter` / `onMouseLeave` are composed, not overwritten. |
 
 ### `useHasCursor()`
@@ -351,7 +349,7 @@ import type {
 } from "@omriattiya/react-cursor";
 ```
 
-`smoothing`, `trail`, and `hideNativeCursor` are accepted by both `PresetCursor` and `RenderCursor`. `velocity` is preset-only. `clickEffect` is a `CursorProvider` prop.
+`smoothing`, `trail`, and `hideNativeCursor` are accepted by both `PresetCursor` and `RenderCursor`. `velocity` is preset-only. `clickEffect` is accepted by `CursorProvider` and `CursorZone`.
 
 ## How it works
 
