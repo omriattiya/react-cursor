@@ -139,21 +139,23 @@ export function App() {
           </div>
         </header>
 
-        <Routes>
-          <Route path="/" element={<HomePage theme={theme} />} />
-          <Route
-            path="/playground"
-            element={
-              <PlaygroundPage
-                theme={theme}
-                clickEffect={clickEffect}
-                onClickEffectChange={setClickEffect}
-              />
-            }
-          />
-          <Route path="/getting-started" element={<GettingStartedPage theme={theme} />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <div className="app-main">
+          <Routes>
+            <Route path="/" element={<HomePage theme={theme} />} />
+            <Route
+              path="/playground"
+              element={
+                <PlaygroundPage
+                  theme={theme}
+                  clickEffect={clickEffect}
+                  onClickEffectChange={setClickEffect}
+                />
+              }
+            />
+            <Route path="/getting-started" element={<GettingStartedPage theme={theme} />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
 
         <footer className="footer">
           <div className="footer-inner">
