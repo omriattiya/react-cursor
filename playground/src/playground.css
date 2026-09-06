@@ -334,6 +334,8 @@ html:has(.page-home) .footer-inner {
 
 .page {
   max-width: 960px;
+  width: 100%;
+  min-width: 0;
   margin: 0 auto;
   padding: 40px 24px 48px;
   display: flex;
@@ -964,6 +966,7 @@ html:has(.page-home) .footer-inner {
 }
 
 .control-panel {
+  min-width: 0;
   padding: 20px 24px;
   border-bottom: 1px solid var(--border);
 }
@@ -1250,8 +1253,9 @@ html:has(.page-home) .footer-inner {
 
 .controls-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: 18px 28px;
+  min-width: 0;
 }
 
 .control-span {
@@ -1482,6 +1486,8 @@ html:has(.page-home) .footer-inner {
 .text-input {
   flex: 1;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid var(--border-strong);
@@ -1504,6 +1510,8 @@ html:has(.page-home) .footer-inner {
 /* ---------- Code blocks ---------- */
 
 .code-block-wrap {
+  min-width: 0;
+  max-width: 100%;
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
