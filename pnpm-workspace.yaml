@@ -2,3 +2,6 @@
 # versions, and never accept packages whose trust signals weaken.
 minimumReleaseAge: 10080
 trustPolicy: no-downgrade
+# Babel pins this 2023 line; semver@7 provenance makes trustPolicy treat it as a downgrade.
+trustPolicyExclude:
+  - semver@6.3.1
